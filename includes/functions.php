@@ -52,12 +52,30 @@ function cfg(string $path, $default = null)
  * hardcoded value silently breaks every asset URL the moment the port
  * doesn't match. Production has no HTTP_HOST override risk: debug is always
  * false there, so `app.base_url` (the real domain) is what renders.
+ *
+ * X-Forwarded-Host/-Proto win over Host/HTTPS when present: a reverse
+ * proxy sitting in front of the dev server (a Cloudflare Tunnel, ngrok)
+ * commonly rewrites the Host header to match its own connection to the
+ * origin -- cloudflared quick tunnels send Host: localhost:3000 to the
+ * origin regardless of the public hostname the visitor actually used --
+ * while still forwarding the original public host/scheme in the
+ * X-Forwarded-* pair. Trusting client-supplied headers is normally a
+ * spoofing risk, but this whole branch only runs when app.debug is true,
+ * which is never the case in production.
  */
 function base_url(): string
 {
-    if (cfg('app.debug', false) && !empty($_SERVER['HTTP_HOST'])) {
-        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-        return $scheme . '://' . $_SERVER['HTTP_HOST'];
+    if (cfg('app.debug', false)) {
+        // A chain of proxies appends to these comma-separated, like
+        // X-Forwarded-For -- the first entry is the original client-facing
+        // hop, which is the one that matters here.
+        $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'] ?? '';
+        $host = trim(explode(',', $host)[0]);
+        if ($host !== '') {
+            $scheme = trim(explode(',', $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')[0])
+                ?: ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http');
+            return $scheme . '://' . $host;
+        }
     }
 
     return rtrim((string) cfg('app.base_url', ''), '/');
