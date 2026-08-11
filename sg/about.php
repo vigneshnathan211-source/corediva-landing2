@@ -17,7 +17,8 @@ if (!$country) {
     exit('Country not configured.');
 }
 
-$stats = get_stats();
+$stats    = get_stats();
+$partners = get_partners();
 
 $seo = [
     'title'            => 'Who We Are | Corediva Tech Solutions Singapore',
@@ -56,6 +57,36 @@ include __DIR__ . '/../includes/header.php';
 <?php endforeach; ?>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partners: same cd-partner-band marquee as the homepage, reused
+         verbatim rather than re-styled -- it's the same 5 real partners
+         (payments, banking, cloud), just placed here so this page states
+         them too. Also gives the nav's "Partners" -> #partners anchor
+         something to land on on this page, which it didn't before. -->
+    <section class="cd-partner-band" id="partners">
+        <div class="cd-container">
+            <p class="cd-partner-lead">Payments, cloud and banking partners we build on</p>
+
+            <div class="cd-marquee">
+                <ul class="cd-marquee-track">
+<?php for ($pass = 0; $pass < 2; $pass++): ?>
+<?php foreach ($partners as $partner): ?>
+                    <li class="cd-partner simple-shadow"<?= $pass ? ' aria-hidden="true"' : '' ?>>
+                        <a href="<?= esc($partner['url'] ?: '#') ?>" target="_blank" rel="noopener"
+                           <?= $pass ? 'tabindex="-1" ' : '' ?>title="<?= esc($partner['name'] . ': ' . $partner['description']) ?>">
+<?php if ($partner['logo']): ?>
+                            <img class="cd-partner-mark" src="<?= esc(asset($partner['logo'])) ?>"
+                                 alt="" aria-hidden="true" width="36" height="36">
+<?php endif; ?>
+                            <span class="cd-partner-name"><?= esc($partner['name']) ?></span>
+                        </a>
+                    </li>
+<?php endforeach; ?>
+<?php endfor; ?>
+                </ul>
             </div>
         </div>
     </section>
