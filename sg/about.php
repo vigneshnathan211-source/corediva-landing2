@@ -91,6 +91,49 @@ include __DIR__ . '/../includes/header.php';
         </div>
     </section>
 
+    <!-- Certifications: real badges migrated from corediva365.com/about --
+         DGFT (IEC), MSME, DUNS, CERSAI and CKYC. cd-cert-grid sizes each
+         badge by height rather than width, since the source marks are
+         wildly different aspect ratios (IEC is a wide banner, the others
+         are closer to square) and matching height is what actually reads
+         as "one consistent row" the way the theme's own logo strips do. -->
+    <section class="about-area" id="certifications">
+        <div class="custom-container">
+            <div class="section-header text-center">
+                <h5 class="section-subtitle">Global Trust &amp; Verification</h5>
+                <h2 class="section-title">Fully Compliant &amp; Certified Operations</h2>
+            </div>
+
+            <div class="cd-cert-grid">
+                <div class="cd-cert-badge">
+                    <img src="<?= esc(asset('imgs/certifications/iec.png')) ?>"
+                         alt="DGFT Indian Government Approved" width="240" height="88" loading="lazy">
+                    <p>DGFT Indian Government Approved</p>
+                </div>
+                <div class="cd-cert-badge">
+                    <img src="<?= esc(asset('imgs/certifications/msme.png')) ?>"
+                         alt="MSME Certified" width="240" height="132" loading="lazy">
+                    <p>MSME Certified</p>
+                </div>
+                <div class="cd-cert-badge">
+                    <img src="<?= esc(asset('imgs/certifications/duns.png')) ?>"
+                         alt="DUNS Verified" width="240" height="197" loading="lazy">
+                    <p>DUNS Verified</p>
+                </div>
+                <div class="cd-cert-badge">
+                    <img src="<?= esc(asset('imgs/certifications/cersai.png')) ?>"
+                         alt="CERSAI Approved" width="240" height="225" loading="lazy">
+                    <p>CERSAI Approved</p>
+                </div>
+                <div class="cd-cert-badge">
+                    <img src="<?= esc(asset('imgs/certifications/ckyc.png')) ?>"
+                         alt="CKYC Verified" width="240" height="232" loading="lazy">
+                    <p>CKYC Verified</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Our company: banner panel + checklist, on the theme's about.html
          "company-service-area" panel (hero-service-about), wrapped in
          .about-area rather than .company-service-area so the section

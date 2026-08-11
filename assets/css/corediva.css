@@ -1521,6 +1521,63 @@ span.cd-nav-pending {
     }
 }
 
+/* The about page's hero otherwise stacks two theme spacing rules on its
+   way out -- 120px inside .hero-company-boxes, then another 40px from
+   .hero-section-content-wrap -- tuned for the theme's longer about.html,
+   which has several sections between the hero and whatever comes next.
+   This page doesn't, so the combined ~160px read as a stray gap before
+   the partners band. Both classes are exclusive to this page's hero. */
+.hero-about-wrap .hero-company-boxes {
+    padding-bottom: 48px;
+}
+
+.hero-about-wrap .hero-section-content-wrap {
+    padding-bottom: 0;
+}
+
+/* ---------- Certifications ---------- */
+
+.cd-cert-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 48px;
+    margin-top: 50px;
+}
+
+.cd-cert-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-width: 170px;
+    text-align: center;
+}
+
+.cd-cert-badge img {
+    height: 64px;
+    width: auto;
+    max-width: 100%;
+    filter: grayscale(1);
+    opacity: .8;
+    transition: filter .25s var(--cd-ease-out), opacity .25s var(--cd-ease-out);
+}
+
+.cd-cert-badge p {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cd-ink);
+    margin: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .cd-cert-badge:hover img {
+        filter: none;
+        opacity: 1;
+    }
+}
+
 /* ---------- About ---------- */
 
 .about-area {
