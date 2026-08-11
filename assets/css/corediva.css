@@ -999,6 +999,7 @@ span.cd-nav-pending {
 
 .about-area {
     padding: 90px 0;
+    background: var(--cd-surface-soft);
 }
 
 .cd-about-grid {
@@ -1044,29 +1045,40 @@ span.cd-nav-pending {
 
 .project-area {
     padding: 90px 0;
-    background: var(--cd-surface-soft);
 }
 
-.cd-partners {
-    padding: 80px 0;
+/* Sits directly beneath the hero, so it is a band rather than a section:
+   tight vertical rhythm, hairline rules top and bottom to separate it from
+   the white hero above and the stats below without introducing a third
+   background tone. */
+.cd-partner-band {
+    padding: 30px 0 34px;
+    border-top: 1px solid var(--cd-line);
+    border-bottom: 1px solid var(--cd-line);
+    background: #fff;
+}
+
+.cd-partner-lead {
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: .04em;
+    color: var(--cd-body);
+    margin: 0 0 20px;
 }
 
 .cd-partner-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: var(--cd-gap);
-    margin: 40px 0 0;
+    gap: 14px;
+    margin: 0;
     padding: 0;
     list-style: none;
 }
 
 .cd-partner {
-    background: #fff;
-    border: 1px solid var(--cd-line);
     border-radius: var(--cd-radius-card);
-    transition: transform .25s var(--cd-ease-out),
-                box-shadow .25s var(--cd-ease-out),
-                border-color .25s var(--cd-ease-out);
+    transition: background-color .25s var(--cd-ease-out),
+                transform .25s var(--cd-ease-out);
 }
 
 .cd-partner a {
@@ -1075,8 +1087,8 @@ span.cd-nav-pending {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    min-height: 108px;
-    padding: 22px 18px;
+    min-height: 74px;
+    padding: 14px 12px;
     text-align: center;
 }
 
@@ -1103,9 +1115,7 @@ span.cd-nav-pending {
 
 @media (hover: hover) and (pointer: fine) {
     .cd-partner:hover {
-        transform: translateY(-3px);
-        border-color: var(--cd-accent-2);
-        box-shadow: var(--cd-shadow-lift);
+        background: var(--cd-accent-soft);
     }
     .cd-partner:hover .cd-partner-mark {
         filter: grayscale(0);
@@ -1290,8 +1300,7 @@ span.cd-nav-pending {
         max-width: 520px;
     }
     .cd-service-grid,
-    .cd-product-grid,
-    .cd-partner-grid {
+    .cd-product-grid {
         grid-template-columns: repeat(3, 1fr);
     }
 }

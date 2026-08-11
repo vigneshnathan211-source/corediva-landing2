@@ -9,15 +9,30 @@
 
     var heroEl = document.querySelector('.cd-hero-swiper');
     if (heroEl && typeof Swiper !== 'undefined') {
+        var multiple = heroEl.querySelectorAll('.swiper-slide').length > 1;
+
         new Swiper(heroEl, {
-            loop: heroEl.querySelectorAll('.swiper-slide').length > 1,
+            loop: multiple,
             speed: 700,
             autoHeight: true,
-            autoplay: {
-                delay: 8000,
-                disableOnInteraction: true,
-                pauseOnMouseEnter: true
+
+            // An auto-advancing carousel is exactly the kind of motion that
+            // reduced-motion users ask to be spared, so drop it entirely
+            // rather than merely slowing it down.
+            autoplay: (multiple && !prefersReduced) && {
+                delay: 6500,
+
+                // Both of these default to fighting the user on a hero this
+                // large. pauseOnMouseEnter would stall the carousel whenever
+                // the cursor merely rests in the top half of the page, which
+                // is most of the time on desktop, and disableOnInteraction
+                // would kill autoplay permanently after a single click on a
+                // pagination bar. Neither reads as intentional; both read as
+                // broken.
+                pauseOnMouseEnter: false,
+                disableOnInteraction: false
             },
+
             pagination: {
                 el: '.cd-hero-pagination',
                 clickable: true

@@ -114,6 +114,40 @@ include __DIR__ . '/../includes/lead-form.php';
         </div>
     </section>
 
+    <!-- Partner band: sits directly under the hero as supporting proof.
+         No eyebrow or section heading here, since a logo wall this close to
+         the hero is a trust signal, not a destination section. -->
+    <section class="cd-partner-band" id="partners">
+        <div class="cd-container">
+            <p class="cd-partner-lead">Payments, cloud and banking partners we build on</p>
+
+            <?php /* Mark + name lockup rather than a bare logo wall. The
+                     available marks are glyph-only monograms (PayPal's "P",
+                     Payoneer's swoosh), which identify nobody on their own,
+                     so the name carries the recognition and the mark carries
+                     the brand. Partners with no artwork yet show the name
+                     alone and the row still reads as one set.
+                     Deliberately no category label under each: that turns a
+                     logo row into a caption grid and tells the reader
+                     nothing they can't infer. */ ?>
+            <ul class="cd-partner-grid">
+<?php foreach ($partners as $partner): ?>
+                <li class="cd-partner">
+                    <a href="<?= esc($partner['url'] ?: '#') ?>" target="_blank" rel="noopener"
+                       title="<?= esc($partner['name'] . ': ' . $partner['description']) ?>">
+<?php if ($partner['logo']): ?>
+                        <img class="cd-partner-mark" src="<?= esc(asset($partner['logo'])) ?>"
+                             alt="" aria-hidden="true" width="30" height="30">
+<?php endif; ?>
+                        <span class="cd-partner-name"><?= esc($partner['name']) ?></span>
+                    </a>
+                </li>
+<?php endforeach; ?>
+            </ul>
+        </div>
+    </section>
+
+
     <!-- Stats -->
     <section class="cd-stats">
         <div class="custom-container">
@@ -214,38 +248,6 @@ include __DIR__ . '/../includes/lead-form.php';
         </div>
     </section>
 
-    <!-- Partners -->
-    <section class="client-area cd-partners" id="partners">
-        <div class="custom-container">
-            <div class="section-header text-center">
-                <h5 class="section-subtitle">PARTNERS</h5>
-                <h2 class="section-title">Who we build with</h2>
-            </div>
-            <?php /* Mark + name lockup rather than a bare logo wall. The
-                     available marks are glyph-only monograms (PayPal's "P",
-                     Payoneer's swoosh), which identify nobody on their own,
-                     so the name carries the recognition and the mark carries
-                     the brand. Partners with no artwork yet show the name
-                     alone and the row still reads as one set.
-                     Deliberately no category label under each: that turns a
-                     logo row into a caption grid and tells the reader
-                     nothing they can't infer. */ ?>
-            <ul class="cd-partner-grid">
-<?php foreach ($partners as $partner): ?>
-                <li class="cd-partner">
-                    <a href="<?= esc($partner['url'] ?: '#') ?>" target="_blank" rel="noopener"
-                       title="<?= esc($partner['name'] . ': ' . $partner['description']) ?>">
-<?php if ($partner['logo']): ?>
-                        <img class="cd-partner-mark" src="<?= esc(asset($partner['logo'])) ?>"
-                             alt="" aria-hidden="true" width="30" height="30">
-<?php endif; ?>
-                        <span class="cd-partner-name"><?= esc($partner['name']) ?></span>
-                    </a>
-                </li>
-<?php endforeach; ?>
-            </ul>
-        </div>
-    </section>
 
     <!-- FAQ -->
     <section class="faq-area cd-faq" id="faq">
