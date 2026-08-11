@@ -104,6 +104,44 @@ include __DIR__ . '/../includes/header.php';
         </div>
     </section>
 
+    <!-- Our Expertise: three practice areas, on the same service-card
+         pattern the homepage uses for its full 16-service catalogue --
+         .cd-expertise-grid just pins it to 3 columns instead of 4 so a
+         3-item row doesn't leave a gap. -->
+    <section class="about-area" id="expertise">
+        <div class="custom-container">
+            <div class="section-header d-flex align-items-end justify-content-between">
+                <div class="left">
+                    <h5 class="section-subtitle">OUR EXPERTISE</h5>
+                    <h2 class="section-title">Three disciplines.<br>One accountable team.</h2>
+                </div>
+                <p>We don't split your project across three vendors. The same team that
+                   architects your ERP also wires up the AI layer and ships the interface.</p>
+            </div>
+
+            <div class="cd-service-grid cd-expertise-grid">
+                <article class="service-card simple-shadow">
+                    <i class="las la-code cd-service-icon" aria-hidden="true"></i>
+                    <h4>Custom Software Development</h4>
+                    <p>Web platforms, e-commerce and internal tools built to your process,
+                       not bent to fit a template.</p>
+                </article>
+                <article class="service-card simple-shadow">
+                    <i class="las la-layer-group cd-service-icon" aria-hidden="true"></i>
+                    <h4>ERP & CRM Implementations</h4>
+                    <p>SAP, Salesforce, Zoho and custom-built systems, configured to match
+                       how finance, sales and ops already work.</p>
+                </article>
+                <article class="service-card simple-shadow">
+                    <i class="las la-robot cd-service-icon" aria-hidden="true"></i>
+                    <h4>AI & Business Automation</h4>
+                    <p>WhatsApp bots, lead qualification and workflow automation that cut
+                       the manual work out of the funnel.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
     <!-- CTA -->
     <section class="cta-area">
         <div class="custom-container">

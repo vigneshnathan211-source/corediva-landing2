@@ -1381,6 +1381,13 @@ span.cd-nav-pending {
     gap: var(--cd-gap);
 }
 
+/* Three items, not sixteen -- pin it to 3 columns instead of inheriting the
+   4/3/2/1 responsive steps tuned for the homepage's full catalogue, which
+   would leave a gap in the last row at every breakpoint above mobile. */
+.cd-service-grid.cd-expertise-grid {
+    grid-template-columns: repeat(3, 1fr);
+}
+
 .cd-service-grid .service-card,
 .cd-product-grid .service-card {
     padding: 28px 24px;
@@ -2204,6 +2211,9 @@ span.cd-nav-pending {
     .cd-service-grid,
     .cd-product-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+    .cd-service-grid.cd-expertise-grid {
+        grid-template-columns: 1fr;
     }
     .cd-about-grid,
     .cd-contact-grid {
