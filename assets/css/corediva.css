@@ -63,6 +63,26 @@
     margin-right: auto;
 }
 
+/* The theme pins .section-title's line-height to a fixed px value that is
+   only slightly larger than (sometimes smaller than) its own font-size at
+   almost every breakpoint below 1700px -- e.g. 45px font / 42px line-height.
+   For most fonts a ratio just over 1 is enough headroom, but Yantramanav's
+   display weight has taller glyph metrics than that: measured against the
+   rendered page, even a 1.1 ratio left an 8px vertical overlap between
+   wrapped lines, and the theme's tightest variants (ratio 0.93) overlapped
+   by 16px. Every heading below wraps to two lines somewhere between mobile
+   and desktop width (service_content, product titles and FAQ questions are
+   admin-edited and can run longer than the seed copy), so this isn't a
+   one-off. A relative line-height fixes every breakpoint in one rule
+   instead of chasing each of the theme's fixed-px variants individually,
+   and 1.3 is the ratio that measured zero overlap for this font. */
+.service-area .service-section-header .section-title,
+.cd-about-copy .section-title,
+.section-header.text-center .section-title,
+.cd-consulting-area .left-content .section-title {
+    line-height: 1.3;
+}
+
 .cd-skip-link {
     position: absolute;
     left: -9999px;
@@ -1711,7 +1731,9 @@ span.cd-nav-pending {
     font-size: 30px;
     font-weight: 500;
     letter-spacing: -.5px;
-    line-height: 1.2;
+    /* Same Yantramanav overlap as .section-title elsewhere: 1.2 still
+       clipped by a couple of px when this wraps to two lines on mobile. */
+    line-height: 1.3;
     margin: 0 0 14px;
 }
 

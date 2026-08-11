@@ -257,7 +257,17 @@ if (!$isSerpentine) {
             <div class="service-section-header section-header d-flex align-items-end justify-content-between">
                 <div class="left">
                     <h5 class="section-subtitle">WHAT WE DO</h5>
-                    <h2 class="section-title">Enterprise technology,<br>delivered end to end.</h2>
+<?php
+    /* The theme hides this <br> below a breakpoint so the heading wraps
+     * naturally instead of forcing the desktop 2-line split into an
+     * awkward 3rd line. display:none on a <br> removes the break but
+     * inserts no space -- with no literal space in the source, the two
+     * halves glued together as "technology,delivered" once the <br>
+     * disappeared. The space here is what the hidden <br> was missing;
+     * at desktop, trailing whitespace before a rendered <br> is
+     * collapsed away and never shows. */
+?>
+                    <h2 class="section-title">Enterprise technology, <br>delivered end to end.</h2>
                 </div>
                 <p>Sixteen services across web, ERP, AI, cloud and marketing. Architected,
                    built and supported by one team, so nothing falls between vendors.</p>
