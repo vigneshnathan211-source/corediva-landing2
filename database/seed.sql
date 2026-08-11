@@ -180,12 +180,12 @@ INSERT INTO `hero_slides`
 (1,NULL,'home','Architecting Scalable Enterprise Solutions Globally',
  'Next-Generation IT, AI & Cloud Architecture for Global Leaders.','IT, AI & Cloud Architecture',
  'Headquartered in India, engineered for the world. Wherever your business is based, find the exact service you need in seconds — from custom ERPs to AI automation and resilient cloud infrastructure — for companies across India, the United Kingdom, and the United Arab Emirates, and beyond.',
- 'Schedule Global Discovery Call','#contact','Find Your Service','#services',3,10,1),
+ 'Schedule Global Discovery Call','https://wa.me/918903855325','Find Your Service','#services',3,10,1),
 
 (2,NULL,'home','AI Chatbots & WhatsApp Automation',
  'Let AI Qualify Your Leads While You Focus on Closing Deals.','AI Qualify Your Leads',
  'We build WhatsApp and web AI bots that greet, qualify, and route every enquiry the moment it lands — synced directly with your CRM, so no business owner has to chase a lead manually again.',
- 'See AI Chatbot Solutions','#services','Talk to Our Team','#contact',1,20,1),
+ 'See AI Chatbot Solutions','#services','Talk to Our Team','https://wa.me/918903855325',1,20,1),
 
 (3,NULL,'home','Custom ERP, Cloud & Cybersecurity',
  'One Secure System of Record for Your Entire Business.','Secure System of Record',
@@ -195,7 +195,7 @@ INSERT INTO `hero_slides`
 (4,1,'home','Trusted IT & AI Partner for Singapore SMEs',
  'Faster Replies, More Qualified Leads — Built for How Singapore Buys.','More Qualified Leads',
  'Most enquiries in Singapore happen on WhatsApp, and slow replies lose the deal. We build PDPA-compliant WhatsApp & web AI chatbots, ERP/CRM systems, and cloud infrastructure for Singapore SMEs who want faster response times without adding headcount.',
- 'Book a Free Consultation','#contact','See AI Chatbot Solutions','#services',4,5,1);
+ 'Book a Free Consultation','https://wa.me/918903855325','See AI Chatbot Solutions','#services',4,5,1);
 
 -- ---------------------------------------------------------------------
 -- Services (16). core_description / core_deliverables = client-supplied.

@@ -33,7 +33,13 @@ if (isset($region) && $region) {
 $navTree     = get_nav_tree();
 $hqOffice    = get_offices()[0] ?? null;
 $socials     = get_social_links();
-$contactHref = nav_target('contact', $country) ?? '#contact';
+// No standalone contact page exists yet for any country, and the SG
+// landing page no longer has a #contact section to fall back to (it was
+// replaced by the Consulting Excellence section). WhatsApp is the site's
+// own stated fastest channel, so it's the fallback until a real contact
+// page ships and nav_target() resolves to it instead.
+$contactHref   = nav_target('contact', $country) ?? whatsapp_url();
+$contactExtern = (bool) preg_match('#^https?://#i', $contactHref);
 $loginHref   = is_file(doc_root() . '/admin/login.php') ? url('admin/login.php') : null;
 ?>
 <!DOCTYPE html>
@@ -201,7 +207,7 @@ render_schema_localbusiness($country);
 <?php endforeach; ?>
                                                 </ul>
                                                 <p>Not sure which service fits?
-                                                    <a href="<?= esc($contactHref) ?>">Tell us the problem</a>
+                                                    <a href="<?= esc($contactHref) ?>"<?= $contactExtern ? ' target="_blank" rel="noopener"' : '' ?>>Tell us the problem</a>
                                                 </p>
                                             </div>
                                         </div>
@@ -222,7 +228,7 @@ render_schema_localbusiness($country);
                                                     <i class="las la-phone" aria-hidden="true"></i>
                                                     <?= esc(setting('phone_display')) ?>
                                                 </a>
-                                                <a href="<?= esc($contactHref) ?>" class="cd-mega-promo-link">
+                                                <a href="<?= esc($contactHref) ?>" class="cd-mega-promo-link"<?= $contactExtern ? ' target="_blank" rel="noopener"' : '' ?>>
                                                     Book a free consultation
                                                 </a>
                                             </div>
@@ -271,7 +277,7 @@ render_schema_localbusiness($country);
 <?php if ($loginHref): ?>
                         <a href="<?= esc($loginHref) ?>" class="cd-login-link">Login</a>
 <?php endif; ?>
-                        <a href="<?= esc($contactHref) ?>" class="theme-btn">Contact Us</a>
+                        <a href="<?= esc($contactHref) ?>" class="theme-btn"<?= $contactExtern ? ' target="_blank" rel="noopener"' : '' ?>>Contact Us</a>
                     </div>
                 </nav>
 

@@ -1148,31 +1148,41 @@ span.cd-nav-pending {
 }
 
 .cd-tab-body {
-    display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 2.2fr);
-    gap: 28px;
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
 }
 
+/* An intro row, not a card: a tinted panel here (as the theme's sidebar
+   card would be) reads as a second, competing surface against the white
+   product cards a few pixels away. A bottom rule does the same job of
+   separating "about this group" from "the group" without adding a colour
+   this section doesn't otherwise use. */
 .cd-tab-lead {
-    background: var(--cd-accent-soft);
-    border: 1px solid var(--cd-accent-ghost);
-    border-radius: var(--cd-radius-card);
-    padding: 28px 26px;
-}
-
-.cd-tab-lead h3 {
-    font-family: var(--font_syne), sans-serif;
-    font-size: 21px;
-    color: var(--cd-ink);
-    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--cd-line);
 }
 
 .cd-tab-lead p {
-    font-size: 14.5px;
-    line-height: 1.65;
+    font-size: 15px;
+    line-height: 1.6;
     color: var(--cd-body);
-    margin-bottom: 20px;
+    max-width: 62ch;
+    margin: 0;
+}
+
+.cd-tab-lead strong {
+    color: var(--cd-ink);
+    font-weight: 600;
+}
+
+.cd-tab-lead .theme-btn2 {
+    flex-shrink: 0;
 }
 
 .cd-tab-products {
@@ -1366,6 +1376,31 @@ span.cd-nav-pending {
     width: 100%;
     height: auto;
     border-radius: var(--cd-radius-card);
+}
+
+/* ---------- Consulting Excellence ----------
+   Markup reuses the theme's .about-area / .about-timeline classes (the
+   left-content copy block, the zigzag three-step timeline with its
+   connector lines), so only the deltas live here. It is the page's closing
+   section, so it carries the soft background the alternation expects in
+   that slot. */
+
+.cd-consulting-area {
+    background: var(--cd-surface-soft);
+}
+
+/* Theme cards rest on var(--primary_light) -- the same pale-blue tint
+   this pass removed from the product tabs above. White + a hairline
+   border keeps the zigzag layout without reintroducing it two sections
+   later. The dark hover invert is the theme's own rule and is untouched. */
+.cd-consulting-area .about-timeline-item {
+    background: #fff;
+    border: 1px solid var(--cd-line);
+}
+
+.cd-consulting-area .about-timeline-item .number {
+    background: var(--cd-accent);
+    color: #fff;
 }
 
 /* ---------- Products / partners ---------- */
@@ -1666,10 +1701,6 @@ span.cd-nav-pending {
 @media (max-width: 1099px) {
     .cd-topbar-address {
         display: none;
-    }
-    .cd-tab-body {
-        grid-template-columns: 1fr;
-        gap: 30px;
     }
     .cd-hero-grid {
         grid-template-columns: 1fr;

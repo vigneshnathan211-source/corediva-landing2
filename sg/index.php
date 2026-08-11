@@ -78,13 +78,19 @@ include __DIR__ . '/../includes/header.php';
                                     <p class="cd-hero-sub"><?= esc($slide['subheading']) ?></p>
 <?php endif; ?>
                                     <div class="cd-hero-ctas">
+<?php
+    $cta1Url = $slide['cta1_url'] ?: whatsapp_url();
+    $cta2Url = $slide['cta2_url'] ?: '#services';
+    $cta1Ext = (bool) preg_match('#^https?://#i', $cta1Url);
+    $cta2Ext = (bool) preg_match('#^https?://#i', $cta2Url);
+?>
 <?php if ($slide['cta1_text']): ?>
-                                        <a href="<?= esc($slide['cta1_url'] ?: '#contact') ?>" class="theme-btn">
+                                        <a href="<?= esc($cta1Url) ?>" class="theme-btn"<?= $cta1Ext ? ' target="_blank" rel="noopener"' : '' ?>>
                                             <?= esc($slide['cta1_text']) ?> <i class="iconoir-arrow-up-right" aria-hidden="true"></i>
                                         </a>
 <?php endif; ?>
 <?php if ($slide['cta2_text']): ?>
-                                        <a href="<?= esc($slide['cta2_url'] ?: '#services') ?>" class="theme-btn2">
+                                        <a href="<?= esc($cta2Url) ?>" class="theme-btn2"<?= $cta2Ext ? ' target="_blank" rel="noopener"' : '' ?>>
                                             <?= esc($slide['cta2_text']) ?>
                                         </a>
 <?php endif; ?>
@@ -199,7 +205,7 @@ if (!$isSerpentine) {
                         <h2 class="section-title">How we do</h2>
                         <p>One team from first call to ongoing support.</p>
                     </div>
-                    <a href="#contact" class="theme-btn">
+                    <a href="<?= esc(whatsapp_url()) ?>" target="_blank" rel="noopener" class="theme-btn">
                         Talk to us
                         <i class="iconoir-arrow-up-right"></i>
                     </a>
@@ -295,7 +301,7 @@ if (!$isSerpentine) {
                         <li><i class="las la-check-circle" aria-hidden="true"></i> Delivery hours aligned to SGT (UTC+8)</li>
                         <li><i class="las la-check-circle" aria-hidden="true"></i> PDPA-aligned data handling on every build</li>
                     </ul>
-                    <a href="#contact" class="theme-btn">Talk to our team</a>
+                    <a href="<?= esc(whatsapp_url()) ?>" target="_blank" rel="noopener" class="theme-btn">Talk to our team</a>
                 </div>
                 <div class="cd-about-media">
                     <img src="<?= esc(asset('imgs/about-service-2.png')) ?>"
@@ -345,12 +351,19 @@ if (!$isSerpentine) {
                          role="tabpanel" aria-labelledby="ptab-<?= $i ?>" tabindex="0">
                         <div class="cd-tab-body">
 
+<?php
+    /* A sidebar card here (as the theme's case-studio panel uses) has to
+     * match the height of whatever sits beside it. Two products sit in one
+     * row and look fine next to it; four sit in two rows and leave the card
+     * stranded above a slab of empty background. A slim strip above the
+     * grid carries the same information without depending on how many rows
+     * the group happens to have. */
+?>
                             <div class="cd-tab-lead">
-                                <h3><?= esc($group) ?></h3>
-                                <p><?= count($productGroups[$group]) ?> of our twelve platforms sit in this
-                                   group. Each ships as a working product and can be extended to match how
-                                   your business already operates.</p>
-                                <a href="#contact" class="theme-btn2">
+                                <p><strong><?= count($productGroups[$group]) ?> of our twelve platforms</strong>
+                                   sit in this group. Each ships as a working product and can be extended to
+                                   match how your business already operates.</p>
+                                <a href="<?= esc(whatsapp_url()) ?>" target="_blank" rel="noopener" class="theme-btn2">
                                     Ask about <?= esc($group) ?> <i class="iconoir-arrow-up-right"></i>
                                 </a>
                             </div>
@@ -407,38 +420,55 @@ if (!$isSerpentine) {
         </div>
     </section>
 
-    <!-- Contact -->
-    <section class="contact-area" id="contact">
+    <!-- Consulting Excellence: process pathway, on the theme's about-timeline
+         layout. Three condensed steps rather than a duplicate of the six-step
+         "How we do" section above: each description is a compression of that
+         section's own copy (Discovery+Architecture, Build+Integrate,
+         Deploy+Support), not a separate set of claims. -->
+    <section class="about-area cd-consulting-area" id="approach">
         <div class="custom-container">
-            <div class="cd-contact-grid">
-                <div class="cd-contact-copy">
-                    <h5 class="section-subtitle">GET IN TOUCH</h5>
-                    <h2 class="section-title">Tell us what you're building.</h2>
-                    <p>Send us the problem, not a spec. We'll come back within
-                       <?= esc(setting('response_time_hours')) ?> hours with a technical read on it.
-                       No obligation, no sales sequence.</p>
-
-                    <ul class="cd-contact-list">
-                        <li>
-                            <i class="las la-phone" aria-hidden="true"></i>
-                            <a href="tel:<?= esc(setting('phone_e164')) ?>"><?= esc(setting('phone_display')) ?></a>
-                        </li>
-                        <li>
-                            <i class="las la-envelope" aria-hidden="true"></i>
-                            <a href="mailto:<?= esc(setting('email')) ?>"><?= esc(setting('email')) ?></a>
-                        </li>
-                        <li>
-                            <i class="lab la-whatsapp" aria-hidden="true"></i>
-                            <a href="<?= esc(whatsapp_url()) ?>" target="_blank" rel="noopener">WhatsApp us</a>
-                        </li>
+            <div class="custom-row justify-content-between align-items-center">
+                <div class="left-content">
+                    <h5 class="section-subtitle">CONSULTING EXCELLENCE</h5>
+                    <h2 class="section-title">A clear path to the system you need.</h2>
+                    <p>Every engagement starts the same way: a straight assessment of
+                       what's running today, where it's costing you time, and what
+                       actually needs to change.</p>
+                    <ul class="cd-about-points">
+                        <li><i class="las la-check-circle" aria-hidden="true"></i>
+                            24/7 automated lead qualification, not a contact form black hole</li>
+                        <li><i class="las la-check-circle" aria-hidden="true"></i>
+                            One point of contact from scoping to launch</li>
+                        <li><i class="las la-check-circle" aria-hidden="true"></i>
+                            PDPA-compliant data handling, built in by default</li>
                     </ul>
                 </div>
 
-                <div class="cd-contact-form">
-<?php
-$lead_variant = 'full';
-include __DIR__ . '/../includes/lead-form.php';
-?>
+                <div class="right-content">
+                    <div class="about-timeline">
+                        <div class="about-timeline-item">
+                            <img src="<?= esc(asset('imgs/bg-shape-2.svg')) ?>" alt="" aria-hidden="true" class="line-shape">
+                            <span class="number">01</span>
+                            <h3>Discovery and Analysis</h3>
+                            <p>We map the problem, the systems already in place, and the
+                               architecture decisions that follow, before a line of code
+                               is written.</p>
+                        </div>
+                        <div class="about-timeline-item">
+                            <img src="<?= esc(asset('imgs/bg-shape-2.svg')) ?>" alt="" aria-hidden="true" class="line-shape">
+                            <span class="number">02</span>
+                            <h3>Tailored Solutions</h3>
+                            <p>Built in short sprints against the agreed scope, and connected
+                               to the CRM, accounting or payment systems you already run.</p>
+                        </div>
+                        <div class="about-timeline-item">
+                            <img src="<?= esc(asset('imgs/bg-shape-2.svg')) ?>" alt="" aria-hidden="true" class="line-shape">
+                            <span class="number">03</span>
+                            <h3>Deployment and Support</h3>
+                            <p>Released with monitoring and rollback in place, then maintained
+                               and patched once it's carrying real work.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

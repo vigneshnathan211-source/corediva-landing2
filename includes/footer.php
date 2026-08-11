@@ -41,7 +41,7 @@ $allOffices     = get_offices();
                             <h2>Let&rsquo;s get started on something great</h2>
                             <p>Tell us what you're building. We reply to every enquiry within
                                <?= esc(setting('response_time_hours', '4')) ?> hours on business days.</p>
-                            <a href="#contact" class="theme-btn">Get a free consultation</a>
+                            <a href="<?= esc(whatsapp_url()) ?>" target="_blank" rel="noopener" class="theme-btn">Get a free consultation</a>
 
                             <div class="footer-experience d-flex align-items-center">
 <?php foreach (get_stats() as $stat): ?>
