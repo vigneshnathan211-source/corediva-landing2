@@ -43,7 +43,7 @@ $loginHref   = is_file(doc_root() . '/admin/login.php') ? url('admin/login.php')
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="<?= esc(setting('theme_color', '#0D1155')) ?>">
+    <meta name="theme-color" content="<?= esc(setting('theme_color', '#1351D8')) ?>">
 
 <?php render_seo_tags($seo); ?>
 
@@ -114,7 +114,7 @@ render_schema_localbusiness($country);
 <?php foreach (get_countries() as $c): ?>
                         <option value="<?= esc(country_url($c['code'])) ?>"
                             <?= $c['code'] === $country['code'] ? 'selected' : '' ?>>
-                            <?= esc(strtoupper($c['code'])) ?> — <?= esc($c['name']) ?>
+                            <?= esc(strtoupper($c['code'])) ?> / <?= esc($c['name']) ?>
                         </option>
 <?php endforeach; ?>
                     </select>
@@ -223,7 +223,7 @@ render_schema_localbusiness($country);
 <?php if ($loginHref): ?>
                         <a href="<?= esc($loginHref) ?>" class="cd-login-link">Login</a>
 <?php endif; ?>
-                        <a href="<?= esc($contactHref) ?>" class="cd-btn cd-btn-primary">Contact Us</a>
+                        <a href="<?= esc($contactHref) ?>" class="theme-btn">Contact Us</a>
                     </div>
                 </nav>
 

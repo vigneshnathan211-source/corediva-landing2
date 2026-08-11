@@ -42,7 +42,7 @@ $formId       = $isHero ? 'hero' : 'main';
 
 <?php if ($lead_result && $lead_result['ok']): ?>
     <div class="alert alert-success" role="status">
-        <strong>Thank you.</strong> Your enquiry has reached us — we reply within
+        <strong>Thank you.</strong> Your enquiry has reached us. We reply within
         <?= esc(setting('response_time_hours', '4')) ?> hours on business days.
     </div>
 <?php else: ?>
@@ -116,8 +116,8 @@ $formId       = $isHero ? 'hero' : 'main';
         </div>
 <?php endif; ?>
 
-        <button type="submit" class="cd-btn cd-btn-submit">
-            Get Free Consultation <i class="las la-arrow-right" aria-hidden="true"></i>
+        <button type="submit" class="theme-btn cd-btn-block">
+            Get Free Consultation <i class="iconoir-arrow-up-right" aria-hidden="true"></i>
         </button>
 
         <p class="cd-form-note">

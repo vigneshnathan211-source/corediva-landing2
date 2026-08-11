@@ -76,12 +76,12 @@ include __DIR__ . '/../includes/header.php';
 <?php endif; ?>
                                     <div class="cd-hero-ctas">
 <?php if ($slide['cta1_text']): ?>
-                                        <a href="<?= esc($slide['cta1_url'] ?: '#contact') ?>" class="cd-btn cd-btn-gold">
-                                            <?= esc($slide['cta1_text']) ?> <i class="las la-arrow-right" aria-hidden="true"></i>
+                                        <a href="<?= esc($slide['cta1_url'] ?: '#contact') ?>" class="theme-btn">
+                                            <?= esc($slide['cta1_text']) ?> <i class="iconoir-arrow-up-right" aria-hidden="true"></i>
                                         </a>
 <?php endif; ?>
 <?php if ($slide['cta2_text']): ?>
-                                        <a href="<?= esc($slide['cta2_url'] ?: '#services') ?>" class="cd-btn cd-btn-ghost">
+                                        <a href="<?= esc($slide['cta2_url'] ?: '#services') ?>" class="theme-btn2">
                                             <?= esc($slide['cta2_text']) ?>
                                         </a>
 <?php endif; ?>
@@ -136,7 +136,7 @@ include __DIR__ . '/../includes/lead-form.php';
                     <h5 class="section-subtitle">WHAT WE DO</h5>
                     <h2 class="section-title">Enterprise technology,<br>delivered end to end.</h2>
                 </div>
-                <p>Sixteen services across web, ERP, AI, cloud and marketing — architected,
+                <p>Sixteen services across web, ERP, AI, cloud and marketing. Architected,
                    built and supported by one team, so nothing falls between vendors.</p>
             </div>
 
@@ -165,12 +165,12 @@ include __DIR__ . '/../includes/lead-form.php';
                     <h5 class="section-subtitle">WHO WE ARE</h5>
                     <h2 class="section-title">Headquartered in India.<br>Engineered for Singapore.</h2>
                     <p>Corediva Tech Solutions has been building enterprise systems since
-                       <?= esc(setting('founding_year')) ?> — custom ERP and CRM platforms, AI and
+                       <?= esc(setting('founding_year')) ?>: custom ERP and CRM platforms, AI and
                        WhatsApp automation, cloud infrastructure and cybersecurity. We work with
                        Singapore SMEs that need enterprise-grade engineering without
                        enterprise-grade overhead.</p>
                     <p>Most enquiries in Singapore arrive on WhatsApp, and a slow reply loses the
-                       deal. Everything we build — chatbots, CRM integrations, lead routing — is
+                       deal. Everything we build (chatbots, CRM integrations, lead routing) is
                        designed around that reality, and around PDPA-compliant data handling.</p>
                     <ul class="cd-about-points">
                         <li><i class="las la-check-circle" aria-hidden="true"></i> <?= esc(setting('credentials')) ?></li>
@@ -194,7 +194,7 @@ include __DIR__ . '/../includes/lead-form.php';
             <div class="section-header text-center">
                 <h5 class="section-subtitle">PRODUCTS</h5>
                 <h2 class="section-title">Ready-to-deploy platforms</h2>
-                <p>Twelve products already running in production — deploy as-is, or use one as the
+                <p>Twelve products already running in production. Deploy as-is, or use one as the
                    foundation for something built to your process.</p>
             </div>
 
@@ -269,8 +269,8 @@ include __DIR__ . '/../includes/lead-form.php';
                     <h5 class="section-subtitle">GET IN TOUCH</h5>
                     <h2 class="section-title">Tell us what you're building.</h2>
                     <p>Send us the problem, not a spec. We'll come back within
-                       <?= esc(setting('response_time_hours')) ?> hours with a technical read on it —
-                       no obligation, no sales sequence.</p>
+                       <?= esc(setting('response_time_hours')) ?> hours with a technical read on it.
+                       No obligation, no sales sequence.</p>
 
                     <ul class="cd-contact-list">
                         <li>

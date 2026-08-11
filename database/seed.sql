@@ -72,7 +72,7 @@ INSERT INTO `site_settings` (`setting_key`,`setting_value`,`setting_group`) VALU
 ('canonical_base','https://www.corediva365.com','seo'),
 ('logo_url','imgs/corediva-logo.png','brand'),
 ('favicon_url','/favicon.ico','brand'),
-('theme_color','#2563eb','brand'),
+('theme_color','#1351D8','brand'),
 ('about_image_url','assets/imgs/about-service-2.png','brand'),
 ('about_image_alt','Corediva Tech Solutions engineering team at work','brand'),
 ('linkedin_url','https://www.linkedin.com/company/corediva-tech-solutions','social'),

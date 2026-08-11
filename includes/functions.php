@@ -542,7 +542,7 @@ function render_schema_localbusiness(array $country): void
             '@context'   => 'https://schema.org',
             '@type'      => 'Organization',
             '@id'        => url($country['code'] . '/#organization'),
-            'name'       => setting('site_name') . ' — ' . $country['name'],
+            'name'       => setting('site_name') . ' ' . $country['name'],
             'url'        => country_url($country['code']),
             'parentOrganization' => ['@id' => url('#organization')],
             'areaServed' => [

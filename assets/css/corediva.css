@@ -2,21 +2,36 @@
    Corediva overrides + landing-page sections.
    Loaded after style.css / responsive.css so it wins on conflicts.
    All `cd-` prefixed to stay clearly separate from the Synck theme.
+
+   Palette: this file deliberately does NOT define its own colour scale.
+   It aliases the Synck theme tokens from style.css, so there is exactly
+   one palette in the project and one accent (--primary_color). Changing
+   the theme changes the whole site.
    ===================================================================== */
 
 :root {
-    --cd-navy:       #0D1155;
-    --cd-navy-deep:  #080B3B;
-    --cd-navy-soft:  #1A1F6B;
-    --cd-gold:       #C8912E;
-    --cd-gold-light: #E0AB4A;
-    --cd-ink:        #14152B;
-    --cd-body:       #4A4D68;
-    --cd-line:       #E4E6F0;
-    --cd-bg-soft:    #F7F8FC;
-    --cd-white:      #FFFFFF;
+    /* Aliases onto the theme's tokens -- no second palette. */
+    --cd-ink:          var(--dark1);          /* #1C1C1C */
+    --cd-body:         var(--dark2);          /* #454545 */
+    --cd-accent:       var(--primary_color);  /* #1351D8 */
+    --cd-accent-2:     var(--primary_color2); /* #4F8DFF */
+    --cd-accent-soft:  var(--primary_light);  /* #F3F6FD */
+    --cd-accent-ghost: var(--primary_light2); /* rgb(19 81 216 / 10%) */
+    --cd-line:         var(--gray);           /* #D9D9D9 */
+    --cd-surface:      #FFFFFF;
+    --cd-surface-soft: var(--light_white);    /* #F9F9F9 */
 
-    --cd-radius: 14px;
+    /* Shape system: pill for interactive, 10px for surfaces. One rule,
+       matching .theme-btn (30px) and .simple-shadow (10px). */
+    --cd-radius-pill: 30px;
+    --cd-radius-card: 10px;
+    --cd-shadow: 0 4px 20px 5px rgba(0, 0, 0, .03);
+    --cd-shadow-lift: 0 14px 34px rgba(19, 81, 216, .1);
+
+    /* The stock CSS easings are too weak to read as intentional. */
+    --cd-ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
+    --cd-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
     --cd-gap: 24px;
     --cd-max: 1320px;
 }
@@ -41,63 +56,74 @@
     left: -9999px;
     z-index: 999;
     padding: 12px 20px;
-    background: var(--cd-gold);
+    background: var(--cd-accent);
     color: #fff;
+    border-radius: 0 0 var(--cd-radius-card) 0;
 }
 
 .cd-skip-link:focus {
-    left: 12px;
-    top: 12px;
+    left: 0;
+    top: 0;
 }
 
-/* ---------- Buttons ---------- */
+/* =====================================================================
+   Buttons
 
-.cd-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 14px 26px;
+   The theme's .theme-btn / .theme-btn2 carry the signature animation:
+   two pseudo-elements grow from the top-left and bottom-right to fill
+   the pill, and the trailing icon rotates 45deg. Those are kept; what
+   follows only sharpens them.
+   ===================================================================== */
+
+.theme-btn,
+.theme-btn2 {
+    /* Theme sets a blanket `transition: .3s`, which animates every
+       property including layout ones. Name the properties instead. */
+    transition: color .3s var(--cd-ease-out),
+                background-color .3s var(--cd-ease-out),
+                transform .16s var(--cd-ease-out);
+    border: none;
     font-family: var(--font_dm), sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    line-height: 1;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background .2s ease, color .2s ease, border-color .2s ease;
 }
 
-.cd-btn-primary {
-    background: var(--cd-navy);
-    color: #fff;
+.theme-btn::before,
+.theme-btn::after,
+.theme-btn2::before,
+.theme-btn2::after {
+    transition: height .3s var(--cd-ease-out);
 }
 
-.cd-btn-primary:hover {
-    background: var(--cd-navy-soft);
-    color: #fff;
+/* Press feedback: the interface should visibly acknowledge the click. */
+.theme-btn:active,
+.theme-btn2:active {
+    transform: scale(.97);
 }
 
-.cd-btn-gold {
-    background: var(--cd-gold);
-    color: #fff;
+.theme-btn:focus-visible,
+.theme-btn2:focus-visible {
+    outline: 2px solid var(--cd-accent);
+    outline-offset: 3px;
 }
 
-.cd-btn-gold:hover {
-    background: var(--cd-gold-light);
-    color: #fff;
+/* Touch devices fire :hover on tap and then keep it stuck until the next
+   tap elsewhere, so the fill animation would latch on. Neutralise it. */
+@media (hover: none) {
+    .theme-btn:hover::before,
+    .theme-btn:hover::after,
+    .theme-btn2:hover::before,
+    .theme-btn2:hover::after {
+        height: 0;
+    }
+    .theme-btn:hover i,
+    .theme-btn2:hover i {
+        transform: none;
+    }
 }
 
-.cd-btn-ghost {
-    background: transparent;
-    color: #fff;
-    border-color: rgba(255, 255, 255, .35);
-}
-
-.cd-btn-ghost:hover {
-    background: rgba(255, 255, 255, .1);
-    color: #fff;
-    border-color: #fff;
+/* Full-width variant for form submits. */
+.cd-btn-block {
+    width: 100%;
+    justify-content: center;
 }
 
 /* =====================================================================
@@ -105,10 +131,9 @@
    ===================================================================== */
 
 .cd-topbar {
-    background: var(--cd-navy);
+    background: var(--cd-ink);
     color: rgba(255, 255, 255, .85);
     font-size: 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, .08);
 }
 
 .cd-topbar-inner {
@@ -138,16 +163,13 @@
 
 .cd-topbar-contact i {
     font-size: 16px;
-    color: rgba(255, 255, 255, .7);
+    color: var(--cd-accent-2);
 }
 
 .cd-topbar-contact a,
 .cd-topbar-contact span {
     color: rgba(255, 255, 255, .88);
-}
-
-.cd-topbar-contact a:hover {
-    color: var(--cd-gold-light);
+    transition: color .2s var(--cd-ease-out);
 }
 
 .cd-topbar-right {
@@ -176,31 +198,41 @@
     width: 30px;
     height: 30px;
     border: 1px solid rgba(255, 255, 255, .25);
-    border-radius: 3px;
+    border-radius: 50%;
     color: #fff;
     font-size: 15px;
-    transition: background .2s ease, border-color .2s ease;
+    transition: background-color .2s var(--cd-ease-out),
+                border-color .2s var(--cd-ease-out),
+                transform .16s var(--cd-ease-out);
 }
 
-.cd-topbar-social a:hover {
-    background: var(--cd-gold);
-    border-color: var(--cd-gold);
-    color: #fff;
+.cd-topbar-social a:active {
+    transform: scale(.94);
 }
 
 .cd-country-select {
     background: rgba(255, 255, 255, .1);
     border: 1px solid rgba(255, 255, 255, .25);
-    border-radius: 3px;
+    border-radius: var(--cd-radius-pill);
     color: #fff;
     font-size: 13px;
-    padding: 6px 10px;
+    padding: 6px 14px;
     cursor: pointer;
 }
 
 .cd-country-select option {
     color: var(--cd-ink);
     background: #fff;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .cd-topbar-contact a:hover {
+        color: var(--cd-accent-2);
+    }
+    .cd-topbar-social a:hover {
+        background: var(--cd-accent);
+        border-color: var(--cd-accent);
+    }
 }
 
 /* =====================================================================
@@ -219,7 +251,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 32px;
-    min-height: 84px;
+    min-height: 80px;
 }
 
 .cd-logo img {
@@ -261,19 +293,18 @@
     font-weight: 500;
     color: var(--cd-ink);
     text-transform: uppercase;
-    letter-spacing: .01em;
     cursor: pointer;
     white-space: nowrap;
+    transition: color .2s var(--cd-ease-out);
 }
 
 .cd-nav-link i {
     font-size: 12px;
-    transition: transform .2s ease;
+    transition: transform .2s var(--cd-ease-out);
 }
 
-.cd-nav-item:hover > .cd-nav-link,
 .cd-panel-toggle[aria-expanded="true"] {
-    color: var(--cd-gold);
+    color: var(--cd-accent);
 }
 
 .cd-panel-toggle[aria-expanded="true"] i {
@@ -283,7 +314,7 @@
 /* Nav entries whose page does not exist yet render as text, not links. */
 span.cd-nav-pending {
     color: var(--cd-body);
-    opacity: .55;
+    opacity: .5;
     cursor: default;
 }
 
@@ -297,10 +328,14 @@ span.cd-nav-pending {
     font-size: 15px;
     font-weight: 500;
     color: var(--cd-ink);
+    transition: color .2s var(--cd-ease-out);
 }
 
-.cd-login-link:hover {
-    color: var(--cd-gold);
+@media (hover: hover) and (pointer: fine) {
+    .cd-nav-item:hover > .cd-nav-link,
+    .cd-login-link:hover {
+        color: var(--cd-accent);
+    }
 }
 
 /* ---------- Mega menu ---------- */
@@ -311,13 +346,19 @@ span.cd-nav-pending {
     left: 0;
     right: 0;
     background: #fff;
-    border-top: 3px solid var(--cd-gold);
-    box-shadow: 0 24px 48px rgba(13, 17, 85, .14);
+    border-top: 2px solid var(--cd-accent);
+    border-radius: 0 0 var(--cd-radius-card) var(--cd-radius-card);
+    box-shadow: 0 24px 48px rgba(28, 28, 28, .1);
     padding: 36px 0 28px;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(8px);
-    transition: opacity .2s ease, transform .2s ease, visibility .2s;
+    /* Panels belong to their trigger, so they scale down from the top
+       rather than out of the middle of nowhere. */
+    transform: translateY(6px) scale(.99);
+    transform-origin: top center;
+    transition: opacity .2s var(--cd-ease-out),
+                transform .2s var(--cd-ease-out),
+                visibility .2s;
     z-index: 150;
 }
 
@@ -325,12 +366,11 @@ span.cd-nav-pending {
     position: static;
 }
 
-.cd-has-mega:hover .cd-mega,
 .cd-has-mega:focus-within .cd-mega,
 .cd-panel-toggle[aria-expanded="true"] + .cd-mega {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
 }
 
 .cd-mega-grid {
@@ -345,7 +385,7 @@ span.cd-nav-pending {
     font-weight: 700;
     letter-spacing: .1em;
     text-transform: uppercase;
-    color: var(--cd-gold);
+    color: var(--cd-accent);
     margin-bottom: 14px;
     padding-bottom: 10px;
     border-bottom: 1px solid var(--cd-line);
@@ -367,12 +407,8 @@ span.cd-nav-pending {
     line-height: 1.45;
     color: var(--cd-body);
     display: block;
-}
-
-.cd-mega-col a:hover {
-    color: var(--cd-navy);
-    padding-left: 4px;
-    transition: padding .15s ease;
+    transition: color .2s var(--cd-ease-out),
+                transform .2s var(--cd-ease-out);
 }
 
 .cd-mega-footer {
@@ -393,10 +429,14 @@ span.cd-nav-pending {
     align-items: center;
     gap: 8px;
     font-weight: 600;
-    color: var(--cd-gold);
+    color: var(--cd-accent);
 }
 
-/* ---------- Simple dropdown (Company) ---------- */
+.cd-mega-cta i {
+    transition: transform .3s var(--cd-ease-out);
+}
+
+/* ---------- Dropdown (Company) ---------- */
 
 .cd-dropdown {
     position: absolute;
@@ -404,24 +444,27 @@ span.cd-nav-pending {
     left: 0;
     min-width: 250px;
     background: #fff;
-    border-top: 3px solid var(--cd-gold);
-    box-shadow: 0 20px 40px rgba(13, 17, 85, .14);
+    border-top: 2px solid var(--cd-accent);
+    border-radius: 0 0 var(--cd-radius-card) var(--cd-radius-card);
+    box-shadow: 0 20px 40px rgba(28, 28, 28, .1);
     padding: 14px 0;
     margin: 0;
     list-style: none;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(8px);
-    transition: opacity .2s ease, transform .2s ease, visibility .2s;
+    transform: translateY(6px) scale(.99);
+    transform-origin: top left;
+    transition: opacity .2s var(--cd-ease-out),
+                transform .2s var(--cd-ease-out),
+                visibility .2s;
     z-index: 150;
 }
 
-.cd-has-dropdown:hover .cd-dropdown,
 .cd-has-dropdown:focus-within .cd-dropdown,
 .cd-panel-toggle[aria-expanded="true"] + .cd-dropdown {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
 }
 
 .cd-dropdown li {
@@ -434,7 +477,7 @@ span.cd-nav-pending {
     font-weight: 700;
     letter-spacing: .1em;
     text-transform: uppercase;
-    color: var(--cd-gold);
+    color: var(--cd-accent);
     margin-bottom: 2px;
 }
 
@@ -443,10 +486,26 @@ span.cd-nav-pending {
     font-size: 15px;
     color: var(--cd-ink);
     display: block;
+    transition: color .2s var(--cd-ease-out);
 }
 
-.cd-dropdown a:hover {
-    color: var(--cd-gold);
+@media (hover: hover) and (pointer: fine) {
+    .cd-has-mega:hover .cd-mega,
+    .cd-has-dropdown:hover .cd-dropdown {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0) scale(1);
+    }
+    .cd-mega-col a:hover {
+        color: var(--cd-accent);
+        transform: translateX(4px);
+    }
+    .cd-dropdown a:hover {
+        color: var(--cd-accent);
+    }
+    .cd-mega-cta:hover i {
+        transform: rotate(45deg);
+    }
 }
 
 /* ---------- Mobile toggle ---------- */
@@ -459,17 +518,21 @@ span.cd-nav-pending {
     width: 46px;
     height: 46px;
     padding: 0 11px;
-    background: var(--cd-navy);
+    background: var(--cd-accent);
     border: 0;
-    border-radius: 4px;
+    border-radius: var(--cd-radius-card);
     cursor: pointer;
+    transition: transform .16s var(--cd-ease-out);
+}
+
+.cd-menu-toggle:active {
+    transform: scale(.94);
 }
 
 .cd-menu-toggle span {
     display: block;
     height: 2px;
     background: #fff;
-    transition: transform .2s ease, opacity .2s ease;
 }
 
 /* =====================================================================
@@ -477,35 +540,35 @@ span.cd-nav-pending {
    ===================================================================== */
 
 .cd-hero {
-    background: var(--cd-navy);
-    color: #fff;
-    padding: 72px 0 64px;
+    background: #fff;
+    padding: 64px 0 56px;
     position: relative;
     overflow: hidden;
 }
 
+/* Faint accent wash so a pure-white hero still has depth. */
 .cd-hero::after {
     content: '';
     position: absolute;
-    top: -160px;
-    right: -160px;
-    width: 520px;
-    height: 520px;
+    top: -220px;
+    right: -180px;
+    width: 620px;
+    height: 620px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(200, 145, 46, .16), transparent 70%);
+    background: radial-gradient(circle, var(--cd-accent-ghost), transparent 68%);
     pointer-events: none;
 }
 
-/* minmax(0, 1fr) rather than 1fr: a bare `1fr` is `minmax(auto, 1fr)`, and the
-   auto minimum is the track content's min-content width. Swiper's wrapper is a
-   flex row of full-width slides, so that minimum is the sum of every slide --
-   which blows the column out to millions of pixels and pushes the form column
-   off-screen. Capping the minimum at 0 (plus min-width on the item) lets the
-   track shrink to the space actually available. */
+/* minmax(0, 1fr) rather than 1fr: a bare `1fr` is `minmax(auto, 1fr)`, and
+   the auto minimum is the track content's min-content width. Swiper's
+   wrapper is a flex row of full-width slides, so that minimum is the sum
+   of every slide, which blows the column out to millions of pixels and
+   pushes the form off-screen. Capping the minimum at 0 (plus min-width on
+   the item) lets the track shrink to the space actually available. */
 .cd-hero-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 480px;
-    gap: 64px;
+    grid-template-columns: minmax(0, 1fr) 470px;
+    gap: 60px;
     align-items: center;
     position: relative;
     z-index: 1;
@@ -516,42 +579,43 @@ span.cd-nav-pending {
 }
 
 .cd-hero-swiper {
-    padding-bottom: 28px;
+    padding-bottom: 24px;
     overflow: hidden;
 }
 
 .cd-hero-badge {
     display: inline-block;
-    padding: 9px 18px;
-    border: 1px solid rgba(200, 145, 46, .55);
-    border-radius: 2px;
+    padding: 9px 20px;
+    border: 1px solid var(--cd-accent-ghost);
+    background: var(--cd-accent-soft);
+    border-radius: var(--cd-radius-pill);
     font-size: 12.5px;
     font-weight: 600;
-    letter-spacing: .12em;
+    letter-spacing: .1em;
     text-transform: uppercase;
-    color: var(--cd-gold-light);
-    margin-bottom: 26px;
+    color: var(--cd-accent);
+    margin-bottom: 24px;
 }
 
 .cd-hero-title {
     font-family: var(--font_syne), sans-serif;
-    font-size: clamp(34px, 4vw, 56px);
+    font-size: clamp(32px, 3.7vw, 52px);
     font-weight: 700;
-    line-height: 1.14;
-    color: #fff;
-    margin-bottom: 22px;
+    line-height: 1.16;
+    color: var(--cd-ink);
+    margin-bottom: 20px;
 }
 
 .cd-hero-title span {
-    color: var(--cd-gold);
+    color: var(--cd-accent);
 }
 
 .cd-hero-sub {
-    font-size: 17px;
-    line-height: 1.72;
-    color: rgba(255, 255, 255, .74);
-    max-width: 620px;
-    margin-bottom: 32px;
+    font-size: 16.5px;
+    line-height: 1.7;
+    color: var(--cd-body);
+    max-width: 60ch;
+    margin-bottom: 30px;
 }
 
 .cd-hero-ctas {
@@ -563,28 +627,28 @@ span.cd-nav-pending {
 .cd-hero-pagination {
     display: flex;
     gap: 10px;
-    margin-top: 34px;
+    margin-top: 32px;
 }
 
 .cd-hero-pagination .swiper-pagination-bullet {
     width: 34px;
     height: 3px;
-    border-radius: 0;
-    background: rgba(255, 255, 255, .3);
+    border-radius: 2px;
+    background: var(--cd-line);
     opacity: 1;
     margin: 0 !important;
-    transition: background .2s ease;
+    transition: background-color .25s var(--cd-ease-out);
 }
 
 .cd-hero-pagination .swiper-pagination-bullet-active {
-    background: var(--cd-gold);
+    background: var(--cd-accent);
 }
 
 .cd-hero-trust {
     display: flex;
     flex-wrap: wrap;
-    gap: 14px 34px;
-    margin: 38px 0 0;
+    gap: 14px 32px;
+    margin: 34px 0 0;
     padding: 0;
     list-style: none;
 }
@@ -595,14 +659,14 @@ span.cd-nav-pending {
     gap: 9px;
     font-size: 12.5px;
     font-weight: 600;
-    letter-spacing: .08em;
+    letter-spacing: .06em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, .72);
+    color: var(--cd-body);
 }
 
 .cd-hero-trust i {
     font-size: 17px;
-    color: var(--cd-gold);
+    color: var(--cd-accent);
 }
 
 /* ---------- Hero form card ---------- */
@@ -613,18 +677,21 @@ span.cd-nav-pending {
 
 .cd-hero-form {
     background: #fff;
-    padding: 36px 34px 30px;
+    border: 1px solid var(--cd-line);
+    border-radius: var(--cd-radius-card);
+    box-shadow: var(--cd-shadow);
+    padding: 34px 32px 28px;
     position: relative;
 }
 
-/* Gold corner brackets, as in the reference design. */
+/* Corner brackets, echoing the reference layout. */
 .cd-hero-form::before,
 .cd-hero-form::after {
     content: '';
     position: absolute;
     width: 26px;
     height: 26px;
-    border: 2px solid var(--cd-gold);
+    border: 2px solid var(--cd-accent);
     pointer-events: none;
 }
 
@@ -633,6 +700,7 @@ span.cd-nav-pending {
     left: -8px;
     border-right: 0;
     border-bottom: 0;
+    border-radius: var(--cd-radius-card) 0 0 0;
 }
 
 .cd-hero-form::after {
@@ -640,15 +708,17 @@ span.cd-nav-pending {
     right: -8px;
     border-left: 0;
     border-top: 0;
+    border-radius: 0 0 var(--cd-radius-card) 0;
 }
 
 .cd-form-kicker {
     display: block;
-    font-size: 11.5px;
-    font-weight: 700;
-    letter-spacing: .13em;
+    font-family: var(--font_syne), sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .16em;
     text-transform: uppercase;
-    color: var(--cd-gold);
+    color: var(--cd-accent);
     margin-bottom: 10px;
 }
 
@@ -678,41 +748,45 @@ span.cd-nav-pending {
     display: block;
     font-size: 11.5px;
     font-weight: 600;
-    letter-spacing: .09em;
+    letter-spacing: .08em;
     text-transform: uppercase;
     color: var(--cd-body);
     margin-bottom: 7px;
 }
 
 .cd-req {
-    color: var(--cd-gold);
+    color: var(--cd-accent);
 }
 
 .cd-field input,
 .cd-field select,
 .cd-field textarea {
     width: 100%;
-    padding: 13px 15px;
-    background: var(--cd-bg-soft);
+    padding: 13px 16px;
+    background: var(--cd-surface-soft);
     border: 1px solid var(--cd-line);
-    border-radius: 3px;
+    border-radius: 6px;
     font-family: var(--font_dm), sans-serif;
     font-size: 15px;
     color: var(--cd-ink);
+    transition: border-color .2s var(--cd-ease-out),
+                box-shadow .2s var(--cd-ease-out),
+                background-color .2s var(--cd-ease-out);
 }
 
+/* #6E7180 on #F9F9F9 clears WCAG AA (4.6:1); lighter placeholders do not. */
 .cd-field input::placeholder,
 .cd-field textarea::placeholder {
-    color: #9CA0B8;
+    color: #6E7180;
 }
 
 .cd-field input:focus,
 .cd-field select:focus,
 .cd-field textarea:focus {
     outline: none;
-    border-color: var(--cd-gold);
+    border-color: var(--cd-accent);
     background: #fff;
-    box-shadow: 0 0 0 3px rgba(200, 145, 46, .14);
+    box-shadow: 0 0 0 3px var(--cd-accent-ghost);
 }
 
 .cd-field textarea {
@@ -730,9 +804,9 @@ span.cd-nav-pending {
     align-items: center;
     gap: 5px;
     padding: 0 14px;
-    background: var(--cd-bg-soft);
+    background: var(--cd-accent-soft);
     border: 1px solid var(--cd-line);
-    border-radius: 3px;
+    border-radius: 6px;
     font-size: 14px;
     color: var(--cd-body);
     white-space: nowrap;
@@ -741,27 +815,14 @@ span.cd-nav-pending {
 .cd-dial-code strong {
     font-size: 11.5px;
     letter-spacing: .06em;
-    color: var(--cd-ink);
-}
-
-.cd-btn-submit {
-    width: 100%;
-    background: var(--cd-navy);
-    color: #fff;
-    padding: 16px 24px;
-    margin-top: 6px;
-}
-
-.cd-btn-submit:hover {
-    background: var(--cd-gold);
-    color: #fff;
+    color: var(--cd-accent);
 }
 
 .cd-form-note {
     margin-top: 14px;
     font-size: 12.5px;
     text-align: center;
-    color: #8A8EA8;
+    color: var(--cd-body);
 }
 
 /* Honeypot: off-screen, never focusable by a human. */
@@ -774,7 +835,7 @@ span.cd-nav-pending {
 }
 
 .lead-form-wrap .alert {
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 14px 18px;
     margin-bottom: 18px;
     font-size: 14.5px;
@@ -802,6 +863,7 @@ span.cd-nav-pending {
 
 .cd-stats {
     padding: 70px 0;
+    background: var(--cd-surface-soft);
 }
 
 .cd-stats-grid {
@@ -814,19 +876,19 @@ span.cd-nav-pending {
     text-align: center;
 }
 
-/* Stat figures are data, not document structure -- styled like a heading
+/* Stat figures are data, not document structure: styled like a heading
    but marked up as text so the outline stays clean for crawlers. */
 .cd-stat-value {
     font-family: var(--font_syne), sans-serif;
-    font-size: 54px;
+    font-size: 52px;
     font-weight: 700;
-    color: var(--cd-navy);
+    color: var(--cd-accent);
     line-height: 1;
     margin-bottom: 8px;
 }
 
 .cd-stat-value span {
-    color: var(--cd-gold);
+    color: var(--cd-accent-2);
 }
 
 .cd-stat p {
@@ -846,7 +908,7 @@ span.cd-nav-pending {
 /* ---------- Services ---------- */
 
 .cd-service-group {
-    margin-top: 46px;
+    margin-top: 44px;
 }
 
 .cd-service-group-title {
@@ -855,7 +917,7 @@ span.cd-nav-pending {
     font-weight: 700;
     letter-spacing: .1em;
     text-transform: uppercase;
-    color: var(--cd-gold);
+    color: var(--cd-accent);
     margin-bottom: 20px;
     padding-bottom: 10px;
     border-bottom: 1px solid var(--cd-line);
@@ -873,21 +935,16 @@ span.cd-nav-pending {
     padding: 28px 24px;
     background: #fff;
     border: 1px solid var(--cd-line);
-    border-radius: var(--cd-radius);
+    border-radius: var(--cd-radius-card);
     position: relative;
-    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
-}
-
-.cd-service-grid .service-card:hover,
-.cd-product-grid .service-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--cd-gold);
-    box-shadow: 0 16px 32px rgba(13, 17, 85, .08);
+    transition: transform .25s var(--cd-ease-out),
+                box-shadow .25s var(--cd-ease-out),
+                border-color .25s var(--cd-ease-out);
 }
 
 .cd-service-icon {
     font-size: 32px;
-    color: var(--cd-gold);
+    color: var(--cd-accent);
     display: block;
     margin-bottom: 14px;
 }
@@ -913,15 +970,36 @@ span.cd-nav-pending {
     font-size: 12px !important;
     text-transform: uppercase;
     letter-spacing: .05em;
-    color: var(--cd-gold) !important;
+    color: var(--cd-accent) !important;
     margin-bottom: 8px !important;
 }
 
 .cd-product-grid .cd-featured {
-    border-color: var(--cd-gold);
+    border-color: var(--cd-accent-2);
+}
+
+.service-badge {
+    background: var(--cd-accent);
+    color: #fff;
+    border-radius: var(--cd-radius-pill);
+    font-size: 11px;
+    padding: 4px 12px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .cd-service-grid .service-card:hover,
+    .cd-product-grid .service-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--cd-accent-2);
+        box-shadow: var(--cd-shadow-lift);
+    }
 }
 
 /* ---------- About ---------- */
+
+.about-area {
+    padding: 90px 0;
+}
 
 .cd-about-grid {
     display: grid;
@@ -951,7 +1029,7 @@ span.cd-nav-pending {
 }
 
 .cd-about-points i {
-    color: var(--cd-gold);
+    color: var(--cd-accent);
     font-size: 20px;
     flex-shrink: 0;
 }
@@ -959,14 +1037,18 @@ span.cd-nav-pending {
 .cd-about-media img {
     width: 100%;
     height: auto;
-    border-radius: var(--cd-radius);
+    border-radius: var(--cd-radius-card);
 }
 
-/* ---------- Partners ---------- */
+/* ---------- Products / partners ---------- */
+
+.project-area {
+    padding: 90px 0;
+    background: var(--cd-surface-soft);
+}
 
 .cd-partners {
     padding: 80px 0;
-    background: var(--cd-bg-soft);
 }
 
 .cd-partner-grid {
@@ -979,9 +1061,11 @@ span.cd-nav-pending {
 .cd-partner {
     background: #fff;
     border: 1px solid var(--cd-line);
-    border-radius: var(--cd-radius);
+    border-radius: var(--cd-radius-card);
     padding: 24px 20px;
     text-align: center;
+    transition: transform .25s var(--cd-ease-out),
+                box-shadow .25s var(--cd-ease-out);
 }
 
 .cd-partner strong {
@@ -996,10 +1080,18 @@ span.cd-nav-pending {
     color: var(--cd-body);
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .cd-partner:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--cd-shadow-lift);
+    }
+}
+
 /* ---------- FAQ ---------- */
 
 .cd-faq {
     padding: 90px 0;
+    background: var(--cd-surface-soft);
 }
 
 .cd-accordion {
@@ -1009,9 +1101,10 @@ span.cd-nav-pending {
 
 .cd-accordion .accordion-item {
     border: 1px solid var(--cd-line);
-    border-radius: 6px !important;
+    border-radius: var(--cd-radius-card) !important;
     margin-bottom: 14px;
     overflow: hidden;
+    background: #fff;
 }
 
 .cd-accordion .accordion-button {
@@ -1019,16 +1112,17 @@ span.cd-nav-pending {
     font-size: 16.5px;
     color: var(--cd-ink);
     padding: 20px 24px;
+    background: #fff;
 }
 
 .cd-accordion .accordion-button:not(.collapsed) {
-    background: var(--cd-bg-soft);
-    color: var(--cd-navy);
+    background: var(--cd-accent-soft);
+    color: var(--cd-accent);
     box-shadow: none;
 }
 
 .cd-accordion .accordion-button:focus {
-    box-shadow: 0 0 0 3px rgba(200, 145, 46, .16);
+    box-shadow: 0 0 0 3px var(--cd-accent-ghost);
 }
 
 .cd-accordion .accordion-body {
@@ -1041,7 +1135,6 @@ span.cd-nav-pending {
 
 .contact-area {
     padding: 90px 0;
-    background: var(--cd-bg-soft);
 }
 
 .cd-contact-grid {
@@ -1071,22 +1164,26 @@ span.cd-nav-pending {
 
 .cd-contact-list i {
     font-size: 22px;
-    color: var(--cd-gold);
+    color: var(--cd-accent);
 }
 
 .cd-contact-list a {
     color: var(--cd-ink);
-}
-
-.cd-contact-list a:hover {
-    color: var(--cd-gold);
+    transition: color .2s var(--cd-ease-out);
 }
 
 .cd-contact-form {
     background: #fff;
     padding: 36px;
-    border-radius: var(--cd-radius);
+    border-radius: var(--cd-radius-card);
     border: 1px solid var(--cd-line);
+    box-shadow: var(--cd-shadow);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .cd-contact-list a:hover {
+        color: var(--cd-accent);
+    }
 }
 
 /* ---------- Floating WhatsApp ---------- */
@@ -1100,25 +1197,31 @@ span.cd-nav-pending {
     place-items: center;
     width: 56px;
     height: 56px;
-    border-radius: 6px;
+    border-radius: 50%;
     background: #25D366;
     color: #fff;
     font-size: 30px;
-    box-shadow: 0 8px 24px rgba(37, 211, 102, .38);
-    transition: transform .2s ease;
+    box-shadow: 0 8px 24px rgba(37, 211, 102, .35);
+    transition: transform .2s var(--cd-ease-out);
 }
 
-.cd-whatsapp-float:hover {
-    transform: translateY(-3px);
-    color: #fff;
+.cd-whatsapp-float:active {
+    transform: scale(.94);
 }
 
-/* ---------- Footer tweaks ---------- */
+@media (hover: hover) and (pointer: fine) {
+    .cd-whatsapp-float:hover {
+        transform: translateY(-3px);
+        color: #fff;
+    }
+}
+
+/* ---------- Footer ---------- */
 
 .footer-clients .footer-client-img {
     padding: 10px 16px;
     background: rgba(255, 255, 255, .08);
-    border-radius: 6px;
+    border-radius: var(--cd-radius-pill);
     color: #fff;
     font-size: 14px;
 }
@@ -1182,7 +1285,7 @@ span.cd-nav-pending {
         gap: 0;
         background: #fff;
         border-top: 1px solid var(--cd-line);
-        box-shadow: 0 20px 40px rgba(13, 17, 85, .12);
+        box-shadow: 0 20px 40px rgba(28, 28, 28, .12);
         padding: 12px 24px 24px;
         max-height: calc(100vh - 140px);
         overflow-y: auto;
@@ -1209,7 +1312,7 @@ span.cd-nav-pending {
         padding: 15px 0;
     }
 
-    /* Panels become accordions -- no hover on touch. */
+    /* Panels become accordions: no hover on touch. */
     .cd-mega,
     .cd-dropdown {
         position: static;
@@ -1253,7 +1356,7 @@ span.cd-nav-pending {
         justify-content: space-between;
     }
 
-    .cd-nav-actions .cd-btn {
+    .cd-nav-actions .theme-btn {
         flex: 1;
         justify-content: center;
     }
@@ -1272,7 +1375,7 @@ span.cd-nav-pending {
         width: 100%;
     }
     /* The label + 4 icons + country select don't fit one narrow row, so let
-       them wrap and drop the label -- the icons are self-evident. */
+       them wrap and drop the label: the icons are self-evident. */
     .cd-topbar-right {
         width: 100%;
         flex-wrap: wrap;
@@ -1284,9 +1387,7 @@ span.cd-nav-pending {
     .cd-country-select {
         max-width: 190px;
     }
-    .cd-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    .cd-stats-grid,
     .cd-service-grid,
     .cd-product-grid,
     .cd-partner-grid {
@@ -1298,7 +1399,7 @@ span.cd-nav-pending {
         gap: 40px;
     }
     .cd-hero {
-        padding: 48px 0;
+        padding: 44px 0;
     }
 }
 
@@ -1310,13 +1411,15 @@ span.cd-nav-pending {
         grid-template-columns: 1fr;
     }
     .cd-hero-form {
-        padding: 28px 22px 24px;
+        padding: 26px 20px 22px;
     }
     .cd-contact-form {
         padding: 24px;
     }
-    .cd-hero-ctas .cd-btn {
+    .cd-hero-ctas .theme-btn,
+    .cd-hero-ctas .theme-btn2 {
         width: 100%;
+        justify-content: center;
     }
     .cd-whatsapp-float {
         width: 50px;
@@ -1324,5 +1427,55 @@ span.cd-nav-pending {
         font-size: 26px;
         left: 16px;
         bottom: 16px;
+    }
+}
+
+/* =====================================================================
+   Reduced motion
+
+   Not "no motion": opacity and colour still carry meaning. What goes is
+   movement, scale and the pseudo-element fill, which are the parts that
+   trigger motion sensitivity.
+   ===================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .theme-btn,
+    .theme-btn2,
+    .theme-btn::before,
+    .theme-btn::after,
+    .theme-btn2::before,
+    .theme-btn2::after,
+    .cd-service-grid .service-card,
+    .cd-product-grid .service-card,
+    .cd-partner,
+    .cd-mega,
+    .cd-dropdown,
+    .cd-whatsapp-float,
+    .cd-menu-toggle,
+    .cd-topbar-social a {
+        transition-duration: .01ms !important;
+    }
+
+    .theme-btn:active,
+    .theme-btn2:active,
+    .cd-service-grid .service-card:hover,
+    .cd-product-grid .service-card:hover,
+    .cd-partner:hover,
+    .cd-whatsapp-float:hover,
+    .cd-menu-toggle:active,
+    .cd-topbar-social a:active {
+        transform: none;
+    }
+
+    .theme-btn:hover i,
+    .theme-btn2:hover i,
+    .cd-mega-cta:hover i,
+    .cd-mega-col a:hover {
+        transform: none;
+    }
+
+    .cd-mega,
+    .cd-dropdown {
+        transform: none;
     }
 }
