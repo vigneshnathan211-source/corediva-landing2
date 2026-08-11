@@ -157,17 +157,6 @@ include __DIR__ . '/../includes/header.php';
         </div>
     </section>
 
-    <!-- CTA -->
-    <section class="cta-area">
-        <div class="custom-container">
-            <div class="cta-body text-center">
-                <h2>Not sure which service fits?</h2>
-                <p>Tell us what's slowing the business down and we'll scope the work, no obligation.</p>
-                <a href="<?= esc(whatsapp_url()) ?>" target="_blank" rel="noopener" class="theme-btn">Chat on WhatsApp</a>
-            </div>
-        </div>
-    </section>
-
 <?php
 render_schema_breadcrumbs([
     'Home'        => 'sg/',
