@@ -133,18 +133,28 @@
         });
     }
 
-    /* ---------------- Skeleton-loading reveal ---------------- */
+    /* ---------------- Scroll reveal (skeleton swap + stagger fade-in) ---------------- */
 
-    var revealGrids = Array.prototype.slice.call(document.querySelectorAll('[data-cd-reveal]'));
+    var revealGrids = Array.prototype.slice.call(
+        document.querySelectorAll('[data-cd-reveal], [data-cd-stagger]')
+    );
 
     if (revealGrids.length && !prefersReduced) {
+        // [data-cd-reveal] grids swap a skeleton placeholder for real
+        // content via .cd-loading (see the Expertise section). Everything
+        // else -- [data-cd-stagger] -- just needs .is-revealed added once,
+        // permanently, to run its CSS stagger transition.
         var triggerReveal = function (grid) {
             if (grid.dataset.revealed) { return; }
             grid.dataset.revealed = 'true';
-            grid.classList.add('cd-loading');
-            window.setTimeout(function () {
-                grid.classList.remove('cd-loading');
-            }, 600);
+            if (grid.hasAttribute('data-cd-reveal')) {
+                grid.classList.add('cd-loading');
+                window.setTimeout(function () {
+                    grid.classList.remove('cd-loading');
+                }, 600);
+            } else {
+                grid.classList.add('is-revealed');
+            }
         };
 
         if ('IntersectionObserver' in window) {

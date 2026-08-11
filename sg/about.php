@@ -19,6 +19,7 @@ if (!$country) {
 
 $stats    = get_stats();
 $partners = get_partners();
+$offices  = get_offices();
 
 $seo = [
     'title'            => 'Who We Are | Corediva Tech Solutions Singapore',
@@ -242,14 +243,28 @@ include __DIR__ . '/../includes/header.php';
         </div>
     </section>
 
-    <!-- CTA -->
-    <section class="cta-area">
+    <!-- Where We Work: real office/representative locations, replacing
+         the CTA that used to sit here -- it duplicated "Our Company"'s
+         own "Talk to our team" button (same WhatsApp link, same intent).
+         No eyebrow: this page already has one above every section, so a
+         fifth would be excessive. A stagger fade-in rather than the
+         Expertise section's skeleton -- there's no data to wait on here,
+         a skeleton would be theatre, not a loading state. -->
+    <section class="about-area" id="presence">
         <div class="custom-container">
-            <div class="cta-body text-center">
-                <h2>Need to talk to someone first?</h2>
-                <p>Tell us what you're building and we'll route it to the right engineer.</p>
-                <a href="<?= esc(whatsapp_url()) ?>" target="_blank" rel="noopener" class="theme-btn">Chat on WhatsApp</a>
+            <div class="section-header text-center">
+                <h2 class="section-title">A global presence, grounded in India.</h2>
             </div>
+
+            <ul class="cd-presence-row" data-cd-stagger>
+<?php foreach ($offices as $i => $office): ?>
+                <li class="cd-presence-stop" style="--cd-stagger-index: <?= $i ?>">
+                    <i class="las la-map-marker-alt" aria-hidden="true"></i>
+                    <p class="cd-presence-city"><?= esc($office['city']) ?></p>
+                    <p class="cd-presence-role"><?= esc($office['badge']) ?></p>
+                </li>
+<?php endforeach; ?>
+            </ul>
         </div>
     </section>
 
