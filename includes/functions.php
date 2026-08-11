@@ -42,9 +42,24 @@ function cfg(string $path, $default = null)
     return $node;
 }
 
-/** Site base URL with no trailing slash. */
+/**
+ * Site base URL with no trailing slash.
+ *
+ * In debug mode, derived from the incoming request instead of
+ * config.local.php's `base_url`. Local dev servers change port depending on
+ * how they're launched -- `php -S 127.0.0.1:8000`, the VS Code PHP Server
+ * extension, a different port picked because 8000 was busy -- and a
+ * hardcoded value silently breaks every asset URL the moment the port
+ * doesn't match. Production has no HTTP_HOST override risk: debug is always
+ * false there, so `app.base_url` (the real domain) is what renders.
+ */
 function base_url(): string
 {
+    if (cfg('app.debug', false) && !empty($_SERVER['HTTP_HOST'])) {
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        return $scheme . '://' . $_SERVER['HTTP_HOST'];
+    }
+
     return rtrim((string) cfg('app.base_url', ''), '/');
 }
 
