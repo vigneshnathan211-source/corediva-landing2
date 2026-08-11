@@ -153,32 +153,80 @@ render_schema_localbusiness($country);
                                 <?= esc($item['label']) ?>
                                 <i class="las la-angle-down" aria-hidden="true"></i>
                             </button>
+<?php
+    /* Panel laid out like the theme's mega menu: a wide left column of link
+       groups sitting above a social + hiring footer, and a tinted right rail
+       whose background bleeds to the viewport edge.
+
+       The theme's own left column pairs four icon "service cards" with two
+       link lists. We keep all five category columns instead -- those five
+       categories ARE the site's service taxonomy, and collapsing them to two
+       lists to make room for decorative cards would hide half the catalogue. */
+?>
                             <div class="cd-mega">
-                                <div class="cd-container">
-                                    <div class="cd-mega-grid">
+                                <div class="cd-mega-inner">
+                                    <div class="cd-container cd-mega-cols">
+                                        <div class="cd-mega-main">
+                                            <div class="cd-mega-link-wrap">
+                                                <div class="cd-mega-grid">
 <?php foreach (get_services_by_category() as $category => $services): ?>
-                                        <div class="cd-mega-col">
-                                            <h3 class="cd-mega-heading"><?= esc($category) ?></h3>
-                                            <ul>
+                                                    <div class="cd-mega-col">
+                                                        <h3 class="cd-mega-heading"><?= esc($category) ?></h3>
+                                                        <ul>
 <?php foreach ($services as $service): ?>
 <?php $svcHref = nav_target('services/' . $service['slug'] . '-{suffix}', $country); ?>
-                                                <li>
+                                                            <li>
 <?php if ($svcHref): ?>
-                                                    <a href="<?= esc($svcHref) ?>"><?= esc($service['title']) ?></a>
+                                                                <a href="<?= esc($svcHref) ?>"><?= esc($service['title']) ?></a>
 <?php else: ?>
-                                                    <span class="cd-nav-pending"><?= esc($service['title']) ?></span>
+                                                                <span class="cd-nav-pending"><?= esc($service['title']) ?></span>
 <?php endif; ?>
-                                                </li>
+                                                            </li>
 <?php endforeach; ?>
-                                            </ul>
+                                                        </ul>
+                                                    </div>
+<?php endforeach; ?>
+                                                </div>
+                                            </div>
+
+                                            <div class="cd-mega-foot">
+                                                <ul class="cd-mega-social">
+<?php foreach ($socials as $social): ?>
+                                                    <li>
+                                                        <a href="<?= esc($social['url']) ?>" target="_blank" rel="noopener"
+                                                           aria-label="<?= esc($social['platform']) ?>">
+                                                            <i class="<?= esc($social['icon']) ?>" aria-hidden="true"></i>
+                                                        </a>
+                                                    </li>
+<?php endforeach; ?>
+                                                </ul>
+                                                <p>Not sure which service fits?
+                                                    <a href="<?= esc($contactHref) ?>">Tell us the problem</a>
+                                                </p>
+                                            </div>
                                         </div>
-<?php endforeach; ?>
-                                    </div>
-                                    <div class="cd-mega-footer">
-                                        <span>Not sure which service fits? Tell us the problem and we'll scope it.</span>
-                                        <a href="#contact" class="cd-mega-cta">
-                                            Get a free consultation <i class="iconoir-arrow-up-right"></i>
-                                        </a>
+
+                                        <div class="cd-mega-aside">
+<?php
+    /* The theme fills this rail with a product screenshot captioned "Our
+       product hits". We have no product imagery, so the rail carries the
+       thing a visitor stuck in a service menu actually needs: a way to
+       talk to someone. */
+?>
+                                            <div class="cd-mega-promo">
+                                                <span class="cd-mega-promo-eyebrow">Talk it through</span>
+                                                <h3>Not sure where to start?</h3>
+                                                <p>Tell us what is slowing the business down and we will scope
+                                                   the work, no obligation.</p>
+                                                <a class="cd-mega-promo-phone" href="tel:<?= esc(setting('phone_e164')) ?>">
+                                                    <i class="las la-phone" aria-hidden="true"></i>
+                                                    <?= esc(setting('phone_display')) ?>
+                                                </a>
+                                                <a href="<?= esc($contactHref) ?>" class="cd-mega-promo-link">
+                                                    Book a free consultation
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

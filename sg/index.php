@@ -148,12 +148,12 @@ include __DIR__ . '/../includes/lead-form.php';
                 <ul class="cd-marquee-track">
 <?php for ($pass = 0; $pass < 2; $pass++): ?>
 <?php foreach ($partners as $partner): ?>
-                    <li class="cd-partner"<?= $pass ? ' aria-hidden="true"' : '' ?>>
+                    <li class="cd-partner simple-shadow"<?= $pass ? ' aria-hidden="true"' : '' ?>>
                         <a href="<?= esc($partner['url'] ?: '#') ?>" target="_blank" rel="noopener"
                            <?= $pass ? 'tabindex="-1" ' : '' ?>title="<?= esc($partner['name'] . ': ' . $partner['description']) ?>">
 <?php if ($partner['logo']): ?>
                             <img class="cd-partner-mark" src="<?= esc(asset($partner['logo'])) ?>"
-                                 alt="" aria-hidden="true" width="30" height="30">
+                                 alt="" aria-hidden="true" width="36" height="36">
 <?php endif; ?>
                             <span class="cd-partner-name"><?= esc($partner['name']) ?></span>
                         </a>
@@ -165,32 +165,67 @@ include __DIR__ . '/../includes/lead-form.php';
         </div>
     </section>
 
-    <!-- How we do: delivery process -->
-    <section class="cd-process" id="how-we-do">
-        <div class="cd-container">
-            <div class="cd-process-grid">
-                <div class="cd-process-intro">
-                    <h5 class="section-subtitle">Our Model</h5>
-                    <h2 class="section-title">How we do</h2>
-                    <p>One team from first call to ongoing support, so scope, architecture
-                       and delivery never get handed between vendors.</p>
+    <!-- How we do: delivery process, on the theme's how-we-do layout -->
+<?php
+/* The theme's serpentine connectors are hand-positioned for exactly three
+ * rows of 3 / 2 / 1: fixed 100px gaps, an 80px row rhythm and three separate
+ * 181px-tall elbow images. Six active steps is the only arrangement those
+ * numbers describe, so anything else falls back to an even grid with the
+ * connectors suppressed -- process_steps is admin-editable, and a seventh
+ * step must not leave lines pointing into empty space.
+ */
+$stepRows = [];
+if (count($processSteps) === 6) {
+    $offset = 0;
+    foreach ([3, 2, 1] as $perRow) {
+        $stepRows[] = array_slice($processSteps, $offset, $perRow);
+        $offset    += $perRow;
+    }
+}
+$isSerpentine = $stepRows !== [];
+if (!$isSerpentine) {
+    $stepRows = array_chunk($processSteps, 3);
+}
+?>
+    <section class="how-we-do-area cd-process<?= $isSerpentine ? '' : ' cd-process-even' ?>" id="how-we-do">
+        <div class="custom-container">
+            <div class="custom-row">
+                <img src="<?= esc(asset('imgs/bg-shape-1.svg')) ?>" alt="" aria-hidden="true"
+                     class="how-we-do-bg" width="360" height="360">
+
+                <div class="how-we-do-left-content">
+                    <div class="top">
+                        <h5 class="section-subtitle">Our Model</h5>
+                        <h2 class="section-title">How we do</h2>
+                        <p>One team from first call to ongoing support.</p>
+                    </div>
                     <a href="#contact" class="theme-btn">
-                        Talk through your project <i class="iconoir-arrow-up-right"></i>
+                        Talk to us
+                        <i class="iconoir-arrow-up-right"></i>
                     </a>
                 </div>
 
-                <ol class="cd-process-steps">
-<?php foreach ($processSteps as $i => $step): ?>
-                    <li class="cd-process-card">
-                        <span class="cd-process-num"><?= str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT) ?></span>
-                        <img class="cd-process-icon" src="<?= esc(asset($step['icon'])) ?>"
-                             alt="" aria-hidden="true" width="40" height="40" loading="lazy">
-                        <h3><?= esc($step['title']) ?></h3>
-                        <p class="cd-process-sub"><?= esc($step['subtitle']) ?></p>
-                        <p class="cd-process-summary"><?= esc($step['summary']) ?></p>
-                    </li>
+                <div class="how-we-do-right-content">
+<?php foreach ($stepRows as $row): ?>
+                    <div class="how-we-do-items d-flex align-items-center justify-content-center">
+<?php foreach ($row as $step): ?>
+                        <div class="how-we-do-card">
+                            <div class="circle-shape"></div>
+                            <div class="line-shape"></div>
+
+                            <div class="how-we-do-icon">
+                                <img src="<?= esc(asset($step['icon'])) ?>" alt="" aria-hidden="true"
+                                     width="40" height="40" loading="lazy">
+                            </div>
+                            <div class="how-we-do-content">
+                                <h3><?= esc($step['title']) ?></h3>
+                                <p><?= esc($step['subtitle']) ?></p>
+                            </div>
+                        </div>
 <?php endforeach; ?>
-                </ol>
+                    </div>
+<?php endforeach; ?>
+                </div>
             </div>
         </div>
     </section>

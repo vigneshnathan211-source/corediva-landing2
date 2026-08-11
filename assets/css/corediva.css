@@ -340,16 +340,18 @@ span.cd-nav-pending {
 
 /* ---------- Mega menu ---------- */
 
+/* Structured like the theme's mega menu: a full-bleed white sheet dropped
+   from the header, a wide left column of link groups over a social footer,
+   and a tinted right rail. The theme scrims the page below with a
+   half-black overlay 100vh tall; we skip that -- it swallows the scrollbar
+   and traps a stray hover -- and lean on the sheet's own shadow instead. */
 .cd-mega {
     position: absolute;
     top: 100%;
     left: 0;
     right: 0;
-    background: #fff;
-    border-top: 2px solid var(--cd-accent);
-    border-radius: 0 0 var(--cd-radius-card) var(--cd-radius-card);
+    border-top: 1px solid var(--cd-line);
     box-shadow: 0 24px 48px rgba(28, 28, 28, .1);
-    padding: 36px 0 28px;
     opacity: 0;
     visibility: hidden;
     /* Panels belong to their trigger, so they scale down from the top
@@ -360,6 +362,24 @@ span.cd-nav-pending {
                 transform .2s var(--cd-ease-out),
                 visibility .2s;
     z-index: 150;
+}
+
+.cd-mega-inner {
+    background: #fff;
+    /* The right rail's tint bleeds to the viewport edge, so nothing inside
+       may paint outside the sheet. */
+    overflow: hidden;
+}
+
+.cd-mega-cols {
+    display: flex;
+    align-items: stretch;
+}
+
+.cd-mega-main {
+    flex: 1;
+    min-width: 0;
+    padding: 46px 70px 0 0;
 }
 
 .cd-has-mega {
@@ -373,22 +393,28 @@ span.cd-nav-pending {
     transform: translateY(0) scale(1);
 }
 
-.cd-mega-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 32px;
+.cd-mega-link-wrap {
+    border-bottom: 1px solid var(--cd-line);
+    padding-bottom: 40px;
 }
 
+.cd-mega-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 34px;
+}
+
+/* Theme heading treatment: quiet dark label, generous gap to the list, no
+   rule and no accent colour -- the links below carry the colour. */
 .cd-mega-heading {
-    font-family: var(--font_syne), sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    color: var(--cd-accent);
-    margin-bottom: 14px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--cd-line);
+    font-family: var(--font_dm), sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    line-height: 1.2;
+    color: var(--cd-ink);
+    margin-bottom: 22px;
 }
 
 .cd-mega-col ul {
@@ -397,43 +423,132 @@ span.cd-nav-pending {
     list-style: none;
 }
 
-.cd-mega-col li {
-    margin-bottom: 9px;
+.cd-mega-col li + li {
+    margin-top: 16px;
 }
 
 .cd-mega-col a,
 .cd-mega-col span {
-    font-size: 14.5px;
-    line-height: 1.45;
+    font-size: 15px;
+    line-height: 1.35;
+    font-weight: 400;
     color: var(--cd-body);
     display: block;
     transition: color .2s var(--cd-ease-out),
                 transform .2s var(--cd-ease-out);
 }
 
-.cd-mega-footer {
+.cd-mega-foot {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 20px;
     flex-wrap: wrap;
-    margin-top: 28px;
-    padding-top: 20px;
-    border-top: 1px solid var(--cd-line);
-    font-size: 14.5px;
+    padding: 26px 0;
+}
+
+.cd-mega-social {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.cd-mega-social a {
+    display: block;
+    font-size: 21px;
+    line-height: 1;
+    color: var(--cd-accent);
+    transition: transform .2s var(--cd-ease-out);
+}
+
+.cd-mega-foot p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1;
     color: var(--cd-body);
 }
 
-.cd-mega-cta {
+.cd-mega-foot p a {
+    color: var(--cd-accent);
+    font-weight: 500;
+    border-bottom: 1px solid currentColor;
+}
+
+/* ---------- Mega menu right rail ---------- */
+
+.cd-mega-aside {
+    position: relative;
+    z-index: 1;
+    flex: none;
+    width: 320px;
+    padding: 46px 0 46px 46px;
+}
+
+/* Wide pseudo-element rather than a background on the rail itself: the tint
+   has to run to the viewport edge, but .cd-container is centred and capped. */
+.cd-mega-aside::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 1500px;
+    z-index: -1;
+    background: #F6F6F6;
+}
+
+.cd-mega-promo h3 {
+    font-family: var(--font_yantramanv), sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -.5px;
+    color: var(--cd-ink);
+    margin: 0 0 10px;
+}
+
+.cd-mega-promo-eyebrow {
+    display: block;
+    font-family: var(--font_syne), sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--cd-accent);
+    margin-bottom: 12px;
+}
+
+.cd-mega-promo p {
+    font-size: 15px;
+    line-height: 25px;
+    color: var(--cd-body);
+    margin: 0 0 18px;
+}
+
+.cd-mega-promo-phone {
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    font-size: 16px;
     font-weight: 600;
+    color: var(--cd-ink);
+    margin-bottom: 18px;
+    transition: color .2s var(--cd-ease-out);
+}
+
+.cd-mega-promo-phone i {
     color: var(--cd-accent);
 }
 
-.cd-mega-cta i {
-    transition: transform .3s var(--cd-ease-out);
+.cd-mega-promo-link {
+    display: inline-block;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--cd-accent);
+    border-bottom: 1px solid var(--cd-accent);
+    padding-bottom: 2px;
 }
 
 /* ---------- Dropdown (Company) ---------- */
@@ -500,11 +615,12 @@ span.cd-nav-pending {
         color: var(--cd-accent);
         transform: translateX(4px);
     }
-    .cd-dropdown a:hover {
+    .cd-dropdown a:hover,
+    .cd-mega-promo-phone:hover {
         color: var(--cd-accent);
     }
-    .cd-mega-cta:hover i {
-        transform: rotate(45deg);
+    .cd-mega-social a:hover {
+        transform: translateY(-2px);
     }
 }
 
@@ -904,92 +1020,67 @@ span.cd-nav-pending {
     margin-bottom: 6px;
 }
 
-/* ---------- How we do ---------- */
+/* ---------- How we do ----------
+   Markup reuses the theme's .how-we-do-* classes, so the dark panel, the
+   serpentine connectors and every breakpoint in responsive.css come along
+   unchanged. Only the deltas live here. */
 
 .cd-process {
-    padding: 90px 0;
+    /* The theme sets padding-top only. The dark panel is a card, not a
+       section fill, so the section keeps the soft tone that alternation
+       across the page expects. */
+    padding-bottom: 95px;
     background: var(--cd-surface-soft);
+    overflow: hidden;
 }
 
-.cd-process-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 2fr);
-    gap: 56px;
-    align-items: start;
+/* One <h1> per page: the theme's how-we-do title is an h1, ours is an h2,
+   and .section-title alone does not carry the size at this level. */
+.cd-process .how-we-do-left-content .top h2.section-title {
+    font-size: 45px;
+    line-height: 1.1;
 }
 
-.cd-process-intro p {
-    color: var(--cd-body);
-    line-height: 1.75;
-    margin: 14px 0 26px;
+/* Same swap inside the cards -- theme markup uses h4, ours uses h3 so the
+   heading order under the section's h2 stays unbroken. */
+.cd-process .how-we-do-card .how-we-do-content h3 {
+    font-family: var(--font_dm), sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--primary_color);
+    margin: 0 0 5px;
 }
 
-.cd-process-steps {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    counter-reset: step;
-}
-
-.cd-process-card {
-    position: relative;
-    background: #fff;
-    border: 1px solid var(--cd-line);
-    border-radius: var(--cd-radius-card);
-    padding: 26px 22px 24px;
-    transition: transform .25s var(--cd-ease-out),
-                box-shadow .25s var(--cd-ease-out),
-                border-color .25s var(--cd-ease-out);
-}
-
-.cd-process-num {
-    position: absolute;
-    top: 18px;
-    right: 20px;
-    font-family: var(--font_syne), sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--cd-accent);
-    opacity: .35;
-}
-
-.cd-process-icon {
+.cd-process .how-we-do-card .how-we-do-icon img {
     width: 40px;
     height: 40px;
     object-fit: contain;
-    margin-bottom: 16px;
 }
 
-.cd-process-card h3 {
-    font-family: var(--font_syne), sans-serif;
-    font-size: 17px;
-    color: var(--cd-ink);
-    margin-bottom: 2px;
+/* Fallback when the step count is not 6: the hand-tuned connectors no
+   longer describe the layout, so drop them and lay the cards out evenly. */
+.cd-process-even .how-we-do-items {
+    flex-wrap: wrap;
+    gap: 24px;
 }
 
-.cd-process-sub {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    color: var(--cd-accent);
-    margin-bottom: 10px;
+.cd-process-even .how-we-do-items + .how-we-do-items {
+    margin-top: 24px;
 }
 
-.cd-process-summary {
-    font-size: 14.5px;
-    line-height: 1.6;
-    color: var(--cd-body);
-    margin: 0;
+.cd-process-even .circle-shape,
+.cd-process-even .line-shape {
+    display: none;
 }
 
 @media (hover: hover) and (pointer: fine) {
-    .cd-process-card:hover {
+    .cd-process .how-we-do-card {
+        transition: transform .25s var(--cd-ease-out),
+                    box-shadow .25s var(--cd-ease-out);
+    }
+    .cd-process .how-we-do-card:hover {
         transform: translateY(-4px);
-        border-color: var(--cd-accent-2);
         box-shadow: var(--cd-shadow-lift);
     }
 }
@@ -1306,9 +1397,13 @@ span.cd-nav-pending {
 /* ---------- Running marquee ----------
    The track holds the partner set twice and slides exactly -50%, so the
    second copy lands where the first began and the wrap is invisible. Edges
-   are faded with a mask so items enter and leave rather than popping. */
+   are faded with a mask so items enter and leave rather than popping.
+
+   The vertical padding lives here, not on the track: .simple-shadow spreads
+   20px of blur that overflow:hidden would otherwise shear off the cards. */
 .cd-marquee {
     overflow: hidden;
+    padding: 12px 0;
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
             mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
@@ -1316,7 +1411,6 @@ span.cd-nav-pending {
 .cd-marquee-track {
     display: flex;
     align-items: center;
-    gap: 14px;
     width: max-content;
     margin: 0;
     padding: 0;
@@ -1338,56 +1432,57 @@ span.cd-nav-pending {
     animation-play-state: paused;
 }
 
+/* Spacing is margin-right on every item, deliberately not `gap` on the
+   track. With gap, the track measures 2n items but only 2n-1 gaps, so half
+   its width lands half a gap short of where the second copy starts and the
+   loop hops backwards on every wrap. A trailing margin makes the two halves
+   byte-identical in width. */
 .cd-marquee .cd-partner {
     flex: 0 0 auto;
-    min-width: 210px;
+    min-width: 230px;
+    margin-right: 24px;
 }
 
 .cd-partner {
-    border-radius: var(--cd-radius-card);
-    transition: background-color .25s var(--cd-ease-out),
-                transform .25s var(--cd-ease-out);
+    border-radius: 10px;
+    transition: transform .25s var(--cd-ease-out),
+                box-shadow .25s var(--cd-ease-out);
 }
 
+/* Theme's client-strip proportions: a padded white card, mark and name on
+   one line so the lockup reads as a single unit. */
 .cd-partner a {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    min-height: 74px;
-    padding: 14px 12px;
-    text-align: center;
+    gap: 12px;
+    min-height: 72px;
+    padding: 10px 18px;
+    text-align: left;
 }
 
 .cd-partner-mark {
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
+    flex: none;
     object-fit: contain;
-    /* Marks rest desaturated so the row reads as one set rather than five
-       competing brand colours, then return to full colour on hover. */
-    filter: grayscale(1);
-    opacity: .55;
-    transition: filter .25s var(--cd-ease-out),
-                opacity .25s var(--cd-ease-out);
 }
 
 .cd-partner-name {
     font-family: var(--font_syne), sans-serif;
     font-size: 15px;
     font-weight: 600;
-    line-height: 1.3;
-    color: var(--cd-body);
+    line-height: 1.25;
+    color: var(--cd-ink);
     transition: color .25s var(--cd-ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
+    /* Marks already sit in full colour, so hover lifts the card instead of
+       restoring saturation. */
     .cd-partner:hover {
-        background: var(--cd-accent-soft);
-    }
-    .cd-partner:hover .cd-partner-mark {
-        filter: grayscale(0);
-        opacity: 1;
+        transform: translateY(-3px);
+        box-shadow: var(--cd-shadow-lift);
     }
     .cd-partner:hover .cd-partner-name {
         color: var(--cd-accent);
@@ -1554,8 +1649,17 @@ span.cd-nav-pending {
         font-size: 14px;
     }
     .cd-mega-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 26px 32px;
+    }
+    /* Below ~1280 the five columns and the 320px rail cannot both fit
+       without squeezing service names onto three lines each. The rail is
+       the expendable half -- it only restates the header's Contact Us. */
+    .cd-mega-aside {
+        display: none;
+    }
+    .cd-mega-main {
+        padding-right: 0;
     }
 }
 
@@ -1563,13 +1667,9 @@ span.cd-nav-pending {
     .cd-topbar-address {
         display: none;
     }
-    .cd-process-grid,
     .cd-tab-body {
         grid-template-columns: 1fr;
         gap: 30px;
-    }
-    .cd-process-steps {
-        grid-template-columns: repeat(2, 1fr);
     }
     .cd-hero-grid {
         grid-template-columns: 1fr;
@@ -1659,13 +1759,38 @@ span.cd-nav-pending {
         padding: 0;
     }
 
+    .cd-mega-inner {
+        overflow: visible;
+    }
+
+    .cd-mega-cols {
+        display: block;
+    }
+
+    .cd-mega-main {
+        padding: 0;
+    }
+
+    .cd-mega-link-wrap {
+        border-bottom: 0;
+        padding-bottom: 0;
+    }
+
     .cd-mega-grid {
         grid-template-columns: 1fr;
         gap: 18px;
     }
 
-    .cd-mega-footer {
+    .cd-mega-foot {
+        padding: 16px 0 0;
+        border-top: 1px solid var(--cd-line);
         margin-top: 16px;
+    }
+
+    /* The rail only repeats the Contact Us button already sitting at the
+       bottom of the open mobile nav, so it earns none of the height. */
+    .cd-mega-aside {
+        display: none;
     }
 
     .cd-nav-actions {
@@ -1723,7 +1848,6 @@ span.cd-nav-pending {
     .cd-stats-grid,
     .cd-service-grid,
     .cd-product-grid,
-    .cd-process-steps,
     .cd-tab-products {
         grid-template-columns: 1fr;
     }
@@ -1789,8 +1913,8 @@ span.cd-nav-pending {
 
     .theme-btn:hover i,
     .theme-btn2:hover i,
-    .cd-mega-cta:hover i,
-    .cd-mega-col a:hover {
+    .cd-mega-col a:hover,
+    .cd-mega-social a:hover {
         transform: none;
     }
 
@@ -1812,15 +1936,21 @@ span.cd-nav-pending {
         transform: none;
     }
 
-    .cd-process-card,
+    .cd-process .how-we-do-card,
     .cd-tab-products .service-card,
     .cd-tab-nav .nav-link {
         transition-duration: .01ms !important;
     }
 
-    .cd-process-card:hover,
+    .cd-process .how-we-do-card:hover,
     .cd-tab-products .service-card:hover,
     .cd-tab-nav .nav-link:active {
+        transform: none;
+    }
+
+    /* The theme animates this shape in from the left on scroll. */
+    .cd-process .how-we-do-bg {
+        animation: none;
         transform: none;
     }
 
