@@ -5,9 +5,16 @@
  * Expects in scope:
  *   $country      array        row from `countries`
  * Optional:
- *   $lead_variant string       'hero' | 'short' | 'full' (default)
+ *   $lead_variant string       'hero' | 'short' | 'full' | 'rfq' (default 'full')
  *   $lead_result  array|null   return value of save_lead(), if the page
  *                              already handled a POST
+ *   $lead_service array|null   a single row from `services`. When set, the
+ *                              "Interested in" field is restricted to this
+ *                              one service instead of listing all of them --
+ *                              for service-detail pages, where the visitor
+ *                              already picked a service by being on that
+ *                              page. Ignored on 'hero', which has no service
+ *                              field at all.
  *
  * The page including this is responsible for handling the POST, e.g.:
  *
@@ -20,24 +27,36 @@
  *   hero  -- compact card for the hero panel: name, email, phone, interest
  *   short -- same fields, page-body styling
  *   full  -- adds the free-text message field
+ *   rfq   -- "Request a Quote" framing for the services overview page and
+ *            (once built) individual service-detail pages; same fields as
+ *            full, restrictable via $lead_service
  */
 
 declare(strict_types=1);
 
 $lead_variant = $lead_variant ?? 'full';
 $lead_result  = $lead_result  ?? null;
+$lead_service = $lead_service ?? null;
 $isHero       = $lead_variant === 'hero';
-$showMessage  = $lead_variant === 'full';
+$isRfq        = $lead_variant === 'rfq';
+$showHeader   = $isHero || $isRfq;
+$showMessage  = $lead_variant === 'full' || $isRfq;
 $sourceUrl    = ($_SERVER['REQUEST_URI'] ?? '/');
-$formId       = $isHero ? 'hero' : 'main';
+$formId       = $isHero ? 'hero' : ($isRfq ? 'rfq' : 'main');
 ?>
 
-<div class="lead-form-wrap<?= $isHero ? ' cd-hero-form' : '' ?>">
+<div class="lead-form-wrap<?= $isHero ? ' cd-hero-form' : '' ?><?= $isRfq ? ' cd-rfq-form' : '' ?>" id="<?= $formId ?>-form">
 
+<?php if ($showHeader): ?>
 <?php if ($isHero): ?>
     <span class="cd-form-kicker">Free Consultation</span>
     <h2 class="cd-form-title">Tell us what you're building</h2>
     <p class="cd-form-sub">We'll respond within <?= esc(setting('response_time_hours', '4')) ?> hours.</p>
+<?php else: ?>
+    <span class="cd-form-kicker">Request a Quote</span>
+    <h2 class="cd-form-title"><?= $lead_service ? 'Get a quote for ' . esc($lead_service['title']) : 'Get a fixed-scope quote' ?></h2>
+    <p class="cd-form-sub">Tell us what you need and we'll reply within <?= esc(setting('response_time_hours', '4')) ?> hours with next steps, not a sales call.</p>
+<?php endif; ?>
 <?php endif; ?>
 
 <?php if ($lead_result && $lead_result['ok']): ?>
@@ -57,7 +76,7 @@ $formId       = $isHero ? 'hero' : 'main';
     </div>
     <?php endif; ?>
 
-    <form method="post" action="#<?= $isHero ? 'top' : 'contact' ?>" class="cd-form" novalidate>
+    <form method="post" action="#<?= $formId ?>-form" class="cd-form" novalidate>
         <input type="hidden" name="form" value="lead">
         <input type="hidden" name="csrf_token" value="<?= esc(csrf_token()) ?>">
         <input type="hidden" name="country_code" value="<?= esc($country['code']) ?>">
@@ -95,6 +114,14 @@ $formId       = $isHero ? 'hero' : 'main';
             </div>
         </div>
 
+<?php if ($lead_service): ?>
+        <div class="cd-field">
+            <label for="service-<?= $formId ?>">Service</label>
+            <select id="service-<?= $formId ?>" name="service_interest">
+                <option value="<?= esc($lead_service['title']) ?>" selected><?= esc($lead_service['title']) ?></option>
+            </select>
+        </div>
+<?php else: ?>
         <div class="cd-field">
             <label for="service-<?= $formId ?>">Interested in</label>
             <select id="service-<?= $formId ?>" name="service_interest">
@@ -107,6 +134,7 @@ $formId       = $isHero ? 'hero' : 'main';
 <?php endforeach; ?>
             </select>
         </div>
+<?php endif; ?>
 
 <?php if ($showMessage): ?>
         <div class="cd-field">
@@ -117,7 +145,7 @@ $formId       = $isHero ? 'hero' : 'main';
 <?php endif; ?>
 
         <button type="submit" class="theme-btn cd-btn-block">
-            Get Free Consultation <i class="iconoir-arrow-up-right" aria-hidden="true"></i>
+            <?= $isRfq ? 'Request a Quote' : 'Get Free Consultation' ?> <i class="iconoir-arrow-up-right" aria-hidden="true"></i>
         </button>
 
         <p class="cd-form-note">

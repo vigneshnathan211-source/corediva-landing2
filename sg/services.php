@@ -17,6 +17,12 @@ if (!$country) {
     exit('Country not configured.');
 }
 
+// Handle the RFQ form before any output, so we can redirect/re-render cleanly.
+$lead_result = null;
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form'] ?? '') === 'lead') {
+    $lead_result = save_lead($_POST);
+}
+
 $servicesByCategory = get_services_by_category();
 $serviceCount        = count(get_services());
 $categoryCount       = count($servicesByCategory);
@@ -154,6 +160,18 @@ include __DIR__ . '/../includes/header.php';
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- RFQ: reusable request-a-quote form, built once in
+         includes/lead-form.php (variant 'rfq') so it can sit unchanged on
+         every future service-detail page too. $lead_service stays null
+         here, so "Interested in" is a full dropdown of all 16 services --
+         a detail page will instead pass its own $lead_service row, which
+         restricts the field to just that one service. -->
+    <section class="about-area cd-rfq-area">
+        <div class="custom-container">
+<?php $lead_variant = 'rfq'; $lead_service = null; include __DIR__ . '/../includes/lead-form.php'; ?>
         </div>
     </section>
 

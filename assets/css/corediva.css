@@ -1077,6 +1077,23 @@ button.cd-panel-toggle:not(.cd-nav-link) {
     color: var(--cd-body);
 }
 
+/* RFQ: the same lead-form-wrap/cd-form markup as the hero card, but
+   presented as its own centred page section instead of a compact panel
+   docked beside hero copy -- no corner brackets, no left alignment. */
+.cd-rfq-form {
+    max-width: 560px;
+    margin: 0 auto;
+    background: var(--cd-surface-soft);
+    border: 1px solid var(--cd-line);
+    border-radius: var(--cd-radius-card);
+    padding: 40px 36px;
+    text-align: center;
+}
+
+.cd-rfq-form .cd-field {
+    text-align: left;
+}
+
 /* Honeypot: off-screen, never focusable by a human. */
 .cd-hp {
     position: absolute;
