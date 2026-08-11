@@ -43,15 +43,10 @@ $defaults = [
     ],
 
     'security' => [
-        // Minutes an emailed admin OTP stays valid.
-        'otp_ttl_minutes'     => 10,
-        // Wrong-code attempts before the OTP is burned.
-        'otp_max_attempts'    => 5,
-        // Max OTP requests per IP per hour.
-        'otp_max_per_hour'    => 5,
-        // Admin session lifetime in hours.
-        'session_hours'       => 8,
-        // Max lead submissions from one IP per hour.
+        // Max lead submissions from one IP per hour. Admin-panel security
+        // settings (OTP TTL, password policy, session lifetime) live in
+        // admin/includes/config.php instead -- nothing outside /admin/
+        // reads them, so they don't belong in the public site's config.
         'lead_max_per_hour'   => 5,
     ],
 ];

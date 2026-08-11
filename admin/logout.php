@@ -1,14 +1,12 @@
 <?php
 /**
- * Admin logout. POST-only (see the form in dashboard.php) so a logout
- * can't be triggered by just linking to this URL.
+ * Admin logout. POST-only (see the form in the topbar) so a logout can't
+ * be triggered by just linking to this URL.
  */
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../includes/db.php';
-require_once __DIR__ . '/../includes/functions.php';
-require_once __DIR__ . '/../includes/admin-auth.php';
+require_once __DIR__ . '/includes/auth.php';
 
 ensure_session();
 

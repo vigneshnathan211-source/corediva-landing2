@@ -1,20 +1,22 @@
 <?php
 /**
- * Admin dashboard. Deliberately blank -- the modules that will fill it
- * (leads, services, products, admin users) aren't built yet.
+ * Admin dashboard. Content area is deliberately blank -- the modules
+ * that will fill it (leads, services, products) aren't built yet. The
+ * Admin Users / Roles & Permissions module is, and is linked from the
+ * topbar nav below, gated behind the admins.manage permission.
  */
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../includes/db.php';
-require_once __DIR__ . '/../includes/functions.php';
-require_once __DIR__ . '/../includes/admin-auth.php';
+require_once __DIR__ . '/includes/auth.php';
 
 ensure_session();
 $admin = require_admin_login();
 
+$canManageAdmins = in_array('admins.manage', $admin['permissions'], true);
+
 $pageTitle = 'Dashboard';
-require __DIR__ . '/../includes/admin-header.php';
+require __DIR__ . '/includes/layout-header.php';
 ?>
 
 <header class="cd-admin-topbar">
@@ -22,6 +24,14 @@ require __DIR__ . '/../includes/admin-header.php';
         <img src="<?= esc(asset('imgs/corediva-logo.png')) ?>"
              alt="<?= esc(setting('site_name')) ?>" width="150" height="19">
     </a>
+
+    <nav class="cd-admin-nav" aria-label="Admin">
+        <a href="<?= esc(admin_url('dashboard.php')) ?>" class="cd-admin-nav-link is-active">Dashboard</a>
+<?php if ($canManageAdmins): ?>
+        <a href="<?= esc(admin_url('users.php')) ?>" class="cd-admin-nav-link">Admin Users</a>
+        <a href="<?= esc(admin_url('roles.php')) ?>" class="cd-admin-nav-link">Roles &amp; Permissions</a>
+<?php endif; ?>
+    </nav>
 
     <div class="cd-admin-topbar-user">
         <span class="cd-admin-topbar-name"><?= esc($admin['name']) ?></span>
@@ -38,4 +48,4 @@ require __DIR__ . '/../includes/admin-header.php';
     <p class="cd-admin-lede">Welcome back, <?= esc($admin['name']) ?>. Nothing's been built here yet.</p>
 </main>
 
-<?php require __DIR__ . '/../includes/admin-footer.php'; ?>
+<?php require __DIR__ . '/includes/layout-footer.php'; ?>

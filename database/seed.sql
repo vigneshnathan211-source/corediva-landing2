@@ -304,8 +304,11 @@ WHERE `slug` IN ('leads.view','leads.edit','leads.export');
 INSERT INTO `role_permissions` (`role_id`,`permission_id`)
 SELECT 4, `id` FROM `permissions` WHERE `slug` LIKE '%.view';
 
--- First super admin. CHANGE THIS EMAIL before deploying -- whoever owns this
--- inbox can log in, because auth is passwordless email OTP.
+-- First super admin. CHANGE THIS EMAIL before deploying -- whoever owns
+-- this inbox can sign in once a password is set (this row seeds no
+-- password_hash on purpose -- a real hash has no business sitting in
+-- version control, even for a dev seed). Set one via the Admin Users
+-- screen, or a one-off `UPDATE admin_users SET password_hash = ...`.
 INSERT INTO `admin_users` (`email`,`name`,`role_id`,`is_active`) VALUES
 ('vigneshnathan211@gmail.com','Vignesh Nathan',1,1);
 

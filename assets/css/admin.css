@@ -204,6 +204,11 @@ a {
     color: var(--cda-dev);
 }
 
+.cd-admin-alert-ok {
+    background: #E9F7EF;
+    color: #1E7B3C;
+}
+
 /* ---------- Dashboard shell ---------- */
 
 .cd-admin-topbar {
@@ -219,6 +224,35 @@ a {
 .cd-admin-topbar-logo {
     display: block;
     line-height: 0;
+}
+
+.cd-admin-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    margin: 0 24px;
+}
+
+.cd-admin-nav-link {
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--cda-body);
+    text-decoration: none;
+    transition: background-color .2s var(--cda-ease-out),
+                color .2s var(--cda-ease-out);
+}
+
+.cd-admin-nav-link:hover {
+    color: var(--cda-ink);
+    background: var(--cda-surface-soft);
+}
+
+.cd-admin-nav-link.is-active {
+    color: var(--cda-accent);
+    background: rgba(19, 81, 216, .08);
 }
 
 .cd-admin-topbar-user {
@@ -273,6 +307,222 @@ a {
     margin: 0 0 10px;
 }
 
+/* ---------- Panels, forms, tables (Admin Users / Roles) ---------- */
+
+.cd-admin-panel {
+    background: var(--cda-surface);
+    border: 1px solid var(--cda-line);
+    border-radius: var(--cda-radius);
+    padding: 28px 30px;
+    margin-top: 28px;
+}
+
+.cd-admin-panel h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 18px;
+}
+
+.cd-admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.cd-admin-form-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.cd-admin-form label {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--cda-ink);
+    margin-bottom: 6px;
+}
+
+.cd-admin-form input[type="text"],
+.cd-admin-form input[type="email"],
+.cd-admin-form input[type="password"],
+.cd-admin-form select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--cda-line);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14.5px;
+    color: var(--cda-ink);
+    background: var(--cda-surface);
+    transition: border-color .2s var(--cda-ease-out),
+                box-shadow .2s var(--cda-ease-out);
+}
+
+.cd-admin-form input:focus-visible,
+.cd-admin-form select:focus-visible {
+    outline: none;
+    border-color: var(--cda-accent);
+    box-shadow: 0 0 0 3px rgba(19, 81, 216, .15);
+}
+
+.cd-admin-form input[readonly] {
+    background: var(--cda-surface-soft);
+    color: var(--cda-body);
+}
+
+.cd-admin-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--cda-ink);
+    cursor: pointer;
+}
+
+.cd-admin-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.cd-admin-form .cd-admin-btn {
+    margin-top: 0;
+}
+
+.cd-admin-btn-ghost {
+    padding: 12px 20px;
+    border: 1px solid var(--cda-line);
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--cda-ink);
+    text-decoration: none;
+    transition: border-color .2s var(--cda-ease-out);
+}
+
+.cd-admin-btn-ghost:hover {
+    border-color: var(--cda-accent);
+    color: var(--cda-accent);
+}
+
+.cd-admin-link-btn {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--cda-error);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.cd-admin-table-wrap {
+    overflow-x: auto;
+}
+
+.cd-admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.cd-admin-table th,
+.cd-admin-table td {
+    text-align: left;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--cda-line);
+    white-space: nowrap;
+}
+
+.cd-admin-table th {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--cda-body);
+}
+
+.cd-admin-you {
+    color: var(--cda-body);
+    font-weight: 400;
+}
+
+.cd-admin-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 30px;
+    background: var(--cda-surface-soft);
+    color: var(--cda-body);
+    font-size: 12.5px;
+    font-weight: 500;
+}
+
+.cd-admin-badge-ok {
+    background: #E9F7EF;
+    color: #1E7B3C;
+}
+
+.cd-admin-badge-off {
+    background: var(--cda-error-soft);
+    color: var(--cda-error);
+}
+
+/* ---------- Permission matrix ---------- */
+
+.cd-admin-matrix th,
+.cd-admin-matrix td {
+    white-space: normal;
+}
+
+.cd-admin-matrix th:first-child,
+.cd-admin-matrix td:first-child {
+    white-space: nowrap;
+}
+
+.cd-admin-matrix-module td {
+    background: var(--cda-surface-soft);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--cda-body);
+}
+
+.cd-admin-matrix-cell {
+    text-align: center !important;
+}
+
+.cd-admin-matrix-cell input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--cda-accent);
+    cursor: pointer;
+}
+
+.cd-admin-matrix-cell input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+    opacity: .6;
+}
+
+@media (max-width: 767px) {
+    .cd-admin-topbar {
+        flex-wrap: wrap;
+    }
+    .cd-admin-nav {
+        order: 3;
+        width: 100%;
+        margin: 4px 0 0;
+        overflow-x: auto;
+    }
+    .cd-admin-form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 575px) {
     .cd-admin-card {
         padding: 32px 24px;
@@ -283,5 +533,8 @@ a {
     }
     .cd-admin-main {
         padding: 32px 20px;
+    }
+    .cd-admin-panel {
+        padding: 22px 20px;
     }
 }

@@ -1,13 +1,12 @@
 <?php
 /**
- * Admin login, step 2: enter the code that was emailed.
+ * Admin login, step 2: enter the code that was emailed after the
+ * email + password step.
  */
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../includes/db.php';
-require_once __DIR__ . '/../includes/functions.php';
-require_once __DIR__ . '/../includes/admin-auth.php';
+require_once __DIR__ . '/includes/auth.php';
 
 ensure_session();
 
@@ -16,8 +15,6 @@ if (admin_current_user() !== null) {
     exit;
 }
 
-// Anti-enumeration relies on this same check succeeding whether or not
-// the pending email actually belongs to an account -- see admin_otp_request().
 $pendingEmail = $_SESSION['admin_otp_pending_email'] ?? null;
 if ($pendingEmail === null) {
     header('Location: ' . admin_url('login.php'));
@@ -41,11 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Only ever set in debug mode, and only when the real send failed --
-// see admin_otp_request(). Never present in production.
+// see admin_login_step1(). Never present in production.
 $devCode = cfg('app.debug', false) ? ($_SESSION['admin_dev_code'] ?? null) : null;
 
 $pageTitle = 'Enter your code';
-require __DIR__ . '/../includes/admin-header.php';
+require __DIR__ . '/includes/layout-header.php';
 ?>
 
 <main class="cd-admin-auth">
@@ -55,11 +52,11 @@ require __DIR__ . '/../includes/admin-header.php';
 
         <h1>Enter your code</h1>
         <p class="cd-admin-lede">We sent a 6-digit code to <strong><?= esc($pendingEmail) ?></strong>.
-           It expires in <?= esc((string) cfg('security.otp_ttl_minutes', 10)) ?> minutes.</p>
+           It expires in <?= esc((string) admin_cfg('otp.ttl_minutes', 10)) ?> minutes.</p>
 
 <?php if ($devCode): ?>
         <div class="cd-admin-alert cd-admin-alert-dev">
-            <p><strong>Dev mode</strong> — SMTP isn't configured yet, so the code wasn't actually
+            <p><strong>Dev mode</strong> — SMTP send failed, so the code wasn't actually
                emailed. Your code: <strong><?= esc($devCode) ?></strong></p>
         </div>
 <?php endif; ?>
@@ -84,9 +81,9 @@ require __DIR__ . '/../includes/admin-header.php';
         </form>
 
         <a class="cd-admin-resend" href="<?= esc(admin_url('login.php?email=' . urlencode($pendingEmail))) ?>">
-            Didn't get it? Send a new code
+            Didn't get it? Sign in again to resend
         </a>
     </div>
 </main>
 
-<?php require __DIR__ . '/../includes/admin-footer.php'; ?>
+<?php require __DIR__ . '/includes/layout-footer.php'; ?>

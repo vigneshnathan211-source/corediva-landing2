@@ -1,13 +1,11 @@
 <?php
 /**
- * Admin login, step 1: request a one-time code.
+ * Admin login, step 1: email + password.
  */
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../includes/db.php';
-require_once __DIR__ . '/../includes/functions.php';
-require_once __DIR__ . '/../includes/admin-auth.php';
+require_once __DIR__ . '/includes/auth.php';
 
 ensure_session();
 
@@ -27,11 +25,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: ' . admin_url('verify.php'));
         exit;
     } else {
-        $email = trim((string) ($_POST['email'] ?? ''));
-        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'Enter a valid email address.';
+        $email    = trim((string) ($_POST['email'] ?? ''));
+        $password = (string) ($_POST['password'] ?? '');
+        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || $password === '') {
+            $errors[] = 'Enter your email and password.';
         } else {
-            $result = admin_otp_request($email);
+            $result = admin_login_step1($email, $password);
             if (!$result['ok']) {
                 $errors[] = $result['message'];
             } else {
@@ -42,10 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$prefillEmail = $_GET['email'] ?? ($_SESSION['admin_otp_pending_email'] ?? '');
+$prefillEmail = $_GET['email'] ?? '';
 
 $pageTitle = 'Admin sign in';
-require __DIR__ . '/../includes/admin-header.php';
+require __DIR__ . '/includes/layout-header.php';
 ?>
 
 <main class="cd-admin-auth">
@@ -54,7 +53,7 @@ require __DIR__ . '/../includes/admin-header.php';
              alt="<?= esc(setting('site_name')) ?>" class="cd-admin-logo" width="180" height="23">
 
         <h1>Admin sign in</h1>
-        <p class="cd-admin-lede">Enter your admin email and we'll send you a one-time login code.</p>
+        <p class="cd-admin-lede">Enter your email and password. We'll then send a one-time code to confirm it's you.</p>
 
 <?php if ($errors): ?>
         <div class="cd-admin-alert cd-admin-alert-error" role="alert">
@@ -77,9 +76,13 @@ require __DIR__ . '/../includes/admin-header.php';
             <input type="email" id="email" name="email" required autofocus
                    autocomplete="username" value="<?= esc($prefillEmail) ?>">
 
-            <button type="submit" class="cd-admin-btn">Send login code</button>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required
+                   autocomplete="current-password">
+
+            <button type="submit" class="cd-admin-btn">Continue</button>
         </form>
     </div>
 </main>
 
-<?php require __DIR__ . '/../includes/admin-footer.php'; ?>
+<?php require __DIR__ . '/includes/layout-footer.php'; ?>

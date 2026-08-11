@@ -7,8 +7,10 @@
 --   * `service_content.region_id` uses 0 (not NULL) for "country-level"
 --     so the UNIQUE key actually enforces one row per service/country/region.
 --     MySQL treats NULLs as distinct, which would silently allow duplicates.
---   * Admin auth is passwordless email OTP -- there is deliberately no
---     password column on admin_users.
+--   * Admin auth is two-factor: email + password, then an emailed OTP.
+--     admin_users.password_hash is nullable only so a row can exist
+--     before a password has been set on it; the login flow treats a
+--     null hash as "this account cannot sign in yet."
 -- =====================================================================
 
 SET NAMES utf8mb4;
@@ -422,11 +424,15 @@ CREATE TABLE `role_permissions` (
   CONSTRAINT `fk_rp_permission` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- No password column: authentication is email OTP only.
+-- Two-factor: password_hash is the first factor, admin_otp_codes the
+-- second. A null password_hash means the account exists (e.g. seeded or
+-- created by another admin) but hasn't had a password set on it yet, and
+-- the login flow rejects it the same way a wrong password would.
 DROP TABLE IF EXISTS `admin_users`;
 CREATE TABLE `admin_users` (
   `id`            INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `email`         VARCHAR(190) NOT NULL,
+  `password_hash` VARCHAR(255) DEFAULT NULL,
   `name`          VARCHAR(150) NOT NULL,
   `role_id`       INT UNSIGNED NOT NULL,
   `is_active`     TINYINT(1)   NOT NULL DEFAULT 1,

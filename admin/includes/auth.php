@@ -1,34 +1,65 @@
 <?php
 /**
- * Admin authentication: passwordless email OTP + a DB-backed session
- * (admin_sessions), separate from the public site's PHP session.
+ * Admin authentication: email + password (first factor), then an emailed
+ * OTP (second factor), then a DB-backed session (admin_sessions) --
+ * separate from the public site's PHP session.
  *
  * A DB-backed session, rather than plain $_SESSION, is what lets a
  * session be individually revoked (logout, or an admin disabling another
  * user) and audited -- that's the whole reason admin_sessions exists as
  * its own table instead of relying on PHP's file-based session store.
- * The short-lived step between "code emailed" and "code entered" is the
- * one place this flow still uses the public $_SESSION, purely to carry
- * the pending user ID across the two requests.
+ * The short-lived step between "password verified, code emailed" and
+ * "code entered" still uses the public $_SESSION, purely to carry the
+ * pending user ID across those two requests.
+ *
+ * Enumeration protection lives entirely in the password step: a wrong
+ * email and a wrong password return the exact same message, and take
+ * about the same time either way (password_verify always runs, against
+ * a dummy hash when no such user exists). Because the OTP step can only
+ * be reached after a correct password, it no longer needs its own
+ * generic-response trick -- reaching it already proves the account
+ * exists.
  */
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/db.php';
-require_once __DIR__ . '/functions.php';
-require_once __DIR__ . '/mailer.php';
+require_once __DIR__ . '/../../includes/db.php';
+require_once __DIR__ . '/../../includes/functions.php';
+require_once __DIR__ . '/../../includes/mailer.php';
 
 const ADMIN_SESSION_COOKIE = 'cd_admin_session';
+
+/** Admin-panel-only config: password policy, OTP and session lifetimes. */
+function admin_cfg(string $path, $default = null)
+{
+    static $config = null;
+    if ($config === null) {
+        $config = require __DIR__ . '/config.php';
+    }
+
+    $node = $config;
+    foreach (explode('.', $path) as $part) {
+        if (!is_array($node) || !array_key_exists($part, $node)) {
+            return $default;
+        }
+        $node = $node[$part];
+    }
+    return $node;
+}
 
 function admin_url(string $path = ''): string
 {
     return url('admin/' . ltrim($path, '/'));
 }
 
+// =====================================================================
+// Session
+// =====================================================================
+
 /**
- * The signed-in admin (id, email, name, role_id, role_slug, role_name),
- * or null. Reads the admin_sessions cookie -- entirely separate from the
- * public CSRF session.
+ * The signed-in admin (id, email, name, role_id, role_slug, role_name,
+ * permissions), or null. Reads the admin_sessions cookie -- entirely
+ * separate from the public CSRF session.
  */
 function admin_current_user(): ?array
 {
@@ -55,6 +86,10 @@ function admin_current_user(): ?array
         [hash('sha256', $token)]
     );
 
+    if ($row !== null) {
+        $row['permissions'] = admin_role_permissions((int) $row['role_id']);
+    }
+
     $cached = $row;
     return $row;
 }
@@ -70,11 +105,37 @@ function require_admin_login(): array
     return $user;
 }
 
+/**
+ * Redirects to the dashboard (with nothing revealed about why) and exits
+ * if the signed-in admin's role lacks $slug. Call after require_admin_login().
+ */
+function require_permission(array $admin, string $slug): void
+{
+    if (!in_array($slug, $admin['permissions'], true)) {
+        header('Location: ' . admin_url('dashboard.php'));
+        exit;
+    }
+}
+
+/** Permission slugs granted to $roleId. */
+function admin_role_permissions(int $roleId): array
+{
+    return array_column(
+        db_all(
+            'SELECT p.slug FROM role_permissions rp
+               JOIN permissions p ON p.id = rp.permission_id
+              WHERE rp.role_id = ?',
+            [$roleId]
+        ),
+        'slug'
+    );
+}
+
 /** Issues a fresh DB-backed session and sets its cookie. */
 function admin_create_session(int $adminUserId): void
 {
     $token = bin2hex(random_bytes(32));
-    $hours = (int) cfg('security.session_hours', 8);
+    $hours = (int) admin_cfg('session.hours', 8);
 
     db_exec(
         'INSERT INTO admin_sessions (admin_user_id, token_hash, ip, user_agent, expires_at)
@@ -123,28 +184,27 @@ function admin_audit(?int $adminUserId, string $action, ?string $entity = null, 
 }
 
 // =====================================================================
-// OTP issuance + verification
+// Step 1: email + password
 // =====================================================================
 
 /**
- * Requests a login code for $email.
- *
- * Always returns the same "ok" shape and message whether or not $email
- * belongs to an active admin -- an attacker submitting a guessed address
- * gets no signal either way. A code is only generated and sent, and the
- * pending-user marker only set, when the account actually exists.
+ * Verifies $email/$password. On success, starts the OTP step (generates
+ * and emails a code, marks the pending session) and returns ['ok' => true].
+ * On failure, returns a generic message that never reveals which of
+ * email/password/account-status was wrong.
  */
-function admin_otp_request(string $email): array
+function admin_login_step1(string $email, string $password): array
 {
     ensure_session();
 
-    $generic = ['ok' => true, 'message' => "If that email has admin access, we've sent a login code."];
+    $generic = ['ok' => false, 'message' => 'Incorrect email or password.'];
 
     $ip         = client_ip_binary();
-    $maxPerHour = (int) cfg('security.otp_max_per_hour', 5);
+    $maxPerHour = (int) admin_cfg('password.max_attempts_per_hour', 10);
     if ($ip !== null) {
         $recent = (int) db_value(
-            'SELECT COUNT(*) FROM admin_otp_codes WHERE request_ip = ? AND created_at > (NOW() - INTERVAL 1 HOUR)',
+            "SELECT COUNT(*) FROM admin_audit_log
+              WHERE action = 'login_failed' AND ip = ? AND created_at > (NOW() - INTERVAL 1 HOUR)",
             [$ip]
         );
         if ($recent >= $maxPerHour) {
@@ -152,20 +212,23 @@ function admin_otp_request(string $email): array
         }
     }
 
-    // The pending email is remembered even when no account matches, so
-    // the next step (admin_otp_verify) can fail with the same "incorrect
-    // code" message a real account with a mistyped code would get,
-    // rather than a distinguishable "no such session" message.
-    $_SESSION['admin_otp_pending_email'] = $email;
-    unset($_SESSION['admin_otp_pending_user_id'], $_SESSION['admin_dev_code']);
-
     $user = db_one('SELECT * FROM admin_users WHERE email = ? AND is_active = 1', [$email]);
-    if ($user === null) {
+
+    // Verify against a real hash when one exists, a well-formed dummy one
+    // otherwise (a malformed string gets rejected by password_verify()
+    // almost instantly, which would defeat the point -- this needs a real
+    // bcrypt hash so the computation actually runs). A wrong email can't
+    // then be told apart from a wrong password by response timing.
+    $hash = $user['password_hash'] ?? '$2y$12$ohR15DosAoG0Xpa/QQVVy.dXE.EIjviKcJ8neKh2D/8dRywZjb/x6';
+    $passwordOk = password_verify($password, $hash);
+
+    if ($user === null || $user['password_hash'] === null || !$passwordOk) {
+        admin_audit(null, 'login_failed', 'admin_users', $user['id'] ?? null, $email);
         return $generic;
     }
 
     $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-    $ttl  = (int) cfg('security.otp_ttl_minutes', 10);
+    $ttl  = (int) admin_cfg('otp.ttl_minutes', 10);
 
     db_exec(
         'INSERT INTO admin_otp_codes (admin_user_id, code_hash, expires_at, request_ip)
@@ -182,36 +245,32 @@ function admin_otp_request(string $email): array
     );
 
     $_SESSION['admin_otp_pending_user_id'] = $user['id'];
+    $_SESSION['admin_otp_pending_email']   = $user['email'];
+    unset($_SESSION['admin_dev_code']);
 
-    $result = $generic;
     // Only reachable when app.debug is true (dev machines only) and the
-    // real send failed -- the default state until config.local.php's
-    // mail.* placeholders are filled in with real SMTP credentials. Lets
-    // the flow be tested end-to-end without them.
+    // real send failed. Lets the flow be tested end-to-end without SMTP
+    // configured; unreachable in production, where app.debug is false.
     if (!$sent && cfg('app.debug', false)) {
-        error_log("[DEV] Admin OTP for {$email}: {$code}");
+        error_log("[DEV] Admin OTP for {$user['email']}: {$code}");
         $_SESSION['admin_dev_code'] = $code;
     }
 
-    return $result;
+    return ['ok' => true, 'message' => ''];
 }
 
-/** Verifies $code against the pending login started by admin_otp_request(). */
+// =====================================================================
+// Step 2: OTP
+// =====================================================================
+
+/** Verifies $code against the pending login started by admin_login_step1(). */
 function admin_otp_verify(string $code): array
 {
     ensure_session();
 
-    $pendingEmail = $_SESSION['admin_otp_pending_email'] ?? null;
-    if ($pendingEmail === null) {
-        return ['ok' => false, 'message' => 'Your login session expired. Please start again.'];
-    }
-
     $userId = $_SESSION['admin_otp_pending_user_id'] ?? null;
     if ($userId === null) {
-        // No account behind this email -- fail exactly like a wrong code
-        // would, so this step can't be used to confirm which emails have
-        // admin access.
-        return ['ok' => false, 'message' => 'That code is incorrect.'];
+        return ['ok' => false, 'message' => 'Your login session expired. Please start again.'];
     }
 
     $otp = db_one(
@@ -225,7 +284,7 @@ function admin_otp_verify(string $code): array
         return ['ok' => false, 'message' => 'That code has expired. Request a new one.'];
     }
 
-    $maxAttempts = (int) cfg('security.otp_max_attempts', 5);
+    $maxAttempts = (int) admin_cfg('otp.max_attempts', 5);
     if ((int) $otp['attempts'] >= $maxAttempts) {
         return ['ok' => false, 'message' => 'Too many incorrect attempts. Request a new code.'];
     }
@@ -260,4 +319,17 @@ function admin_otp_email_html(string $name, string $code, int $ttlMinutes): stri
         <p style="font-size:28px;font-weight:700;letter-spacing:6px;">{$safeCode}</p>
         <p>This code expires in {$ttlMinutes} minutes. If you didn't request this, you can ignore this email.</p>
     HTML;
+}
+
+// =====================================================================
+// Password helpers (used by admin/users.php too)
+// =====================================================================
+
+function admin_validate_password(string $password): ?string
+{
+    $min = (int) admin_cfg('password.min_length', 8);
+    if (mb_strlen($password) < $min) {
+        return "Password must be at least {$min} characters.";
+    }
+    return null;
 }

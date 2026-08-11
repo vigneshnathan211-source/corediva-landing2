@@ -44,6 +44,7 @@ ErrorDocument 404 /404.php
 </FilesMatch>
 
 RedirectMatch 404 ^/includes/
+RedirectMatch 404 ^/admin/includes/
 RedirectMatch 404 ^/database/
 RedirectMatch 404 ^/tools/
 RedirectMatch 404 ^/vendor/

@@ -12,8 +12,13 @@
 
 declare(strict_types=1);
 
+// Every admin page requires includes/db.php before this file, which
+// already sets this -- this is only a defensive fallback, and it must
+// point at the site-wide config (db/app/mail/security), not this
+// directory's own admin/includes/config.php, which is a differently
+// shaped array (password/otp/session policy only).
 if (!isset($GLOBALS['corediva_config'])) {
-    $GLOBALS['corediva_config'] = require __DIR__ . '/config.php';
+    $GLOBALS['corediva_config'] = require __DIR__ . '/../../includes/config.php';
 }
 ?>
 <!DOCTYPE html>
