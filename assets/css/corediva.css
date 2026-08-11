@@ -34,6 +34,11 @@
 
     --cd-gap: 24px;
     --cd-max: 1320px;
+
+    /* Syne is retired sitewide; this repoints every existing
+       var(--font_syne) reference (here and in the theme's own style.css)
+       to Yantramanav without editing the vendor stylesheets. */
+    --font_syne: var(--font_yantramanv);
 }
 
 .cd-container {
@@ -242,7 +247,24 @@
     transform: scale(.94);
 }
 
-.cd-country-select {
+.cd-country-flag {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+}
+
+.cd-country-switch {
+    position: relative;
+}
+
+.cd-country-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     background: rgba(255, 255, 255, .1);
     border: 1px solid rgba(255, 255, 255, .25);
     border-radius: var(--cd-radius-pill);
@@ -252,9 +274,68 @@
     cursor: pointer;
 }
 
-.cd-country-select option {
-    color: var(--cd-ink);
+.cd-country-toggle i {
+    font-size: 12px;
+    color: rgba(255, 255, 255, .7);
+    transition: transform .2s var(--cd-ease-out);
+}
+
+.cd-country-switch.is-open .cd-country-toggle i {
+    transform: rotate(180deg);
+}
+
+.cd-country-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 210;
+    min-width: 180px;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
     background: #fff;
+    border-radius: var(--cd-radius-card);
+    box-shadow: var(--cd-shadow-lift);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity .18s var(--cd-ease-out),
+                transform .18s var(--cd-ease-out),
+                visibility 0s linear .18s;
+}
+
+.cd-country-switch.is-open .cd-country-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition: opacity .18s var(--cd-ease-out),
+                transform .18s var(--cd-ease-out),
+                visibility 0s;
+}
+
+.cd-country-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: var(--cd-ink);
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.cd-country-option .cd-country-code {
+    font-weight: 600;
+}
+
+.cd-country-option .cd-country-name {
+    color: var(--cd-body);
+    font-size: 13px;
+}
+
+.cd-country-option.is-active {
+    background: var(--cd-accent-soft);
+    color: var(--cd-accent);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -264,6 +345,9 @@
     .cd-topbar-social a:hover {
         background: var(--cd-accent);
         border-color: var(--cd-accent);
+    }
+    .cd-country-option:hover {
+        background: var(--cd-accent-soft);
     }
 }
 
@@ -542,7 +626,7 @@ span.cd-nav-pending {
 
 .cd-mega-promo-eyebrow {
     display: block;
-    font-family: var(--font_syne), sans-serif;
+    font-family: var(--font_yantramanv), sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: .12em;
@@ -746,7 +830,7 @@ span.cd-nav-pending {
 }
 
 .cd-hero-title {
-    font-family: var(--font_syne), sans-serif;
+    font-family: var(--font_yantramanv), sans-serif;
     font-size: clamp(32px, 3.7vw, 52px);
     font-weight: 700;
     line-height: 1.16;
@@ -861,7 +945,7 @@ span.cd-nav-pending {
 
 .cd-form-kicker {
     display: block;
-    font-family: var(--font_syne), sans-serif;
+    font-family: var(--font_yantramanv), sans-serif;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: .16em;
@@ -871,7 +955,7 @@ span.cd-nav-pending {
 }
 
 .cd-form-title {
-    font-family: var(--font_syne), sans-serif;
+    font-family: var(--font_yantramanv), sans-serif;
     font-size: 26px;
     font-weight: 700;
     color: var(--cd-ink);
@@ -1026,7 +1110,7 @@ span.cd-nav-pending {
 /* Stat figures are data, not document structure: styled like a heading
    but marked up as text so the outline stays clean for crawlers. */
 .cd-stat-value {
-    font-family: var(--font_syne), sans-serif;
+    font-family: var(--font_yantramanv), sans-serif;
     font-size: 52px;
     font-weight: 700;
     color: var(--cd-accent);
@@ -1189,7 +1273,7 @@ span.cd-nav-pending {
 }
 
 .cd-tab-lead h3 {
-    font-family: var(--font_syne), sans-serif;
+    font-family: var(--font_yantramanv), sans-serif;
     font-size: 21px;
     color: var(--cd-ink);
     margin-bottom: 10px;
@@ -1220,7 +1304,7 @@ span.cd-nav-pending {
 }
 
 .cd-tab-products h4 {
-    font-family: var(--font_syne), sans-serif;
+    font-family: var(--font_yantramanv), sans-serif;
     font-size: 16.5px;
     line-height: 1.35;
     color: var(--cd-ink);
@@ -1267,7 +1351,7 @@ span.cd-nav-pending {
 }
 
 .cd-service-group-title {
-    font-family: var(--font_syne), sans-serif;
+    font-family: var(--font_yantramanv), sans-serif;
     font-size: 13px;
     font-weight: 700;
     letter-spacing: .1em;
@@ -1306,7 +1390,7 @@ span.cd-nav-pending {
 
 .cd-service-grid h4,
 .cd-product-grid h3 {
-    font-family: var(--font_syne), sans-serif;
+    font-family: var(--font_yantramanv), sans-serif;
     font-size: 17px;
     line-height: 1.35;
     margin-bottom: 8px;
@@ -1521,7 +1605,7 @@ span.cd-nav-pending {
 }
 
 .cd-partner-name {
-    font-family: var(--font_syne), sans-serif;
+    font-family: var(--font_yantramanv), sans-serif;
     font-size: 15px;
     font-weight: 600;
     line-height: 1.25;
@@ -1564,7 +1648,7 @@ span.cd-nav-pending {
 }
 
 .cd-accordion .accordion-button {
-    font-family: var(--font_syne), sans-serif;
+    font-family: var(--font_yantramanv), sans-serif;
     font-size: 16.5px;
     color: var(--cd-ink);
     padding: 20px 24px;
@@ -1912,9 +1996,6 @@ span.cd-nav-pending {
 }
 
 @media (max-width: 1099px) {
-    .cd-topbar-address {
-        display: none;
-    }
     .cd-tab-body {
         grid-template-columns: 1fr;
         gap: 30px;
@@ -2088,8 +2169,13 @@ span.cd-nav-pending {
     .cd-follow-label {
         display: none;
     }
-    .cd-country-select {
-        max-width: 190px;
+    .cd-country-menu {
+        right: auto;
+        left: 50%;
+        transform: translate(-50%, -6px);
+    }
+    .cd-country-switch.is-open .cd-country-menu {
+        transform: translate(-50%, 0);
     }
     .cd-stats-grid,
     .cd-service-grid,

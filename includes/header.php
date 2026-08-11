@@ -31,8 +31,11 @@ if (isset($region) && $region) {
 }
 
 $navTree     = get_nav_tree();
-$hqOffice    = get_offices()[0] ?? null;
 $socials     = get_social_links();
+// countries.code is a URL folder ("uk"), not an ISO 3166-1 alpha-2 code --
+// the flag-icons library needs "gb" for the Union Jack. Every other country
+// code in this project already matches its ISO code.
+$flagIso = static fn (string $code): string => $code === 'uk' ? 'gb' : $code;
 // No standalone contact page exists yet for any country, and the SG
 // landing page no longer has a #contact section to fall back to (it was
 // replaced by the Consulting Excellence section). WhatsApp is the site's
@@ -57,10 +60,11 @@ $loginHref   = is_file(doc_root() . '/admin/login.php') ? url('admin/login.php')
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..800;1,9..40,100..600&family=Syne:wght@400;500;600;700;800&family=Yantramanav:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..800;1,9..40,100..600&family=Yantramanav:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css">
     <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
     <link rel="stylesheet" href="<?= esc(asset('css/bootstrap.min.css')) ?>">
     <link rel="stylesheet" href="<?= esc(asset('css/swiper-bundle.min.css')) ?>">
     <link rel="stylesheet" href="<?= esc(asset('css/style.css')) ?>">
@@ -93,12 +97,6 @@ render_schema_localbusiness($country);
                         <i class="las la-envelope" aria-hidden="true"></i>
                         <a href="mailto:<?= esc(setting('email')) ?>"><?= esc(setting('email')) ?></a>
                     </li>
-<?php if ($hqOffice): ?>
-                    <li class="cd-topbar-address">
-                        <i class="las la-map-marker-alt" aria-hidden="true"></i>
-                        <span><?= esc($hqOffice['address']) ?></span>
-                    </li>
-<?php endif; ?>
                 </ul>
 
                 <div class="cd-topbar-right">
@@ -114,16 +112,26 @@ render_schema_localbusiness($country);
 <?php endforeach; ?>
                     </ul>
 
-                    <label for="country-switcher" class="cd-visually-hidden">Choose your country</label>
-                    <select class="cd-country-select" id="country-switcher"
-                            onchange="if(this.value){window.location.href=this.value;}">
+                    <div class="cd-country-switch">
+                        <button type="button" class="cd-country-toggle" id="country-switcher"
+                                aria-haspopup="true" aria-expanded="false" aria-controls="cd-country-menu">
+                            <span class="fi fi-<?= esc($flagIso($country['code'])) ?> cd-country-flag" aria-hidden="true"></span>
+                            <span class="cd-country-code"><?= esc(strtoupper($country['code'])) ?></span>
+                            <i class="las la-angle-down" aria-hidden="true"></i>
+                        </button>
+                        <ul class="cd-country-menu" id="cd-country-menu" role="menu" aria-label="Choose your country">
 <?php foreach (get_countries() as $c): ?>
-                        <option value="<?= esc(country_url($c['code'])) ?>"
-                            <?= $c['code'] === $country['code'] ? 'selected' : '' ?>>
-                            <?= esc(strtoupper($c['code'])) ?> / <?= esc($c['name']) ?>
-                        </option>
+                            <li role="none">
+                                <a role="menuitem" href="<?= esc(country_url($c['code'])) ?>"
+                                   class="cd-country-option<?= $c['code'] === $country['code'] ? ' is-active' : '' ?>">
+                                    <span class="fi fi-<?= esc($flagIso($c['code'])) ?> cd-country-flag" aria-hidden="true"></span>
+                                    <span class="cd-country-code"><?= esc(strtoupper($c['code'])) ?></span>
+                                    <span class="cd-country-name"><?= esc($c['name']) ?></span>
+                                </a>
+                            </li>
 <?php endforeach; ?>
-                    </select>
+                        </ul>
+                    </div>
                 </div>
 
             </div>

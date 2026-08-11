@@ -171,72 +171,6 @@ include __DIR__ . '/../includes/lead-form.php';
         </div>
     </section>
 
-    <!-- How we do: delivery process, on the theme's how-we-do layout -->
-<?php
-/* The theme's serpentine connectors are hand-positioned for exactly three
- * rows of 3 / 2 / 1: fixed 100px gaps, an 80px row rhythm and three separate
- * 181px-tall elbow images. Six active steps is the only arrangement those
- * numbers describe, so anything else falls back to an even grid with the
- * connectors suppressed -- process_steps is admin-editable, and a seventh
- * step must not leave lines pointing into empty space.
- */
-$stepRows = [];
-if (count($processSteps) === 6) {
-    $offset = 0;
-    foreach ([3, 2, 1] as $perRow) {
-        $stepRows[] = array_slice($processSteps, $offset, $perRow);
-        $offset    += $perRow;
-    }
-}
-$isSerpentine = $stepRows !== [];
-if (!$isSerpentine) {
-    $stepRows = array_chunk($processSteps, 3);
-}
-?>
-    <section class="how-we-do-area cd-process<?= $isSerpentine ? '' : ' cd-process-even' ?>" id="how-we-do">
-        <div class="custom-container">
-            <div class="custom-row">
-                <img src="<?= esc(asset('imgs/bg-shape-1.svg')) ?>" alt="" aria-hidden="true"
-                     class="how-we-do-bg" width="360" height="360">
-
-                <div class="how-we-do-left-content">
-                    <div class="top">
-                        <h5 class="section-subtitle">Our Model</h5>
-                        <h2 class="section-title">How we do</h2>
-                        <p>One team from first call to ongoing support.</p>
-                    </div>
-                    <a href="<?= esc(whatsapp_url()) ?>" target="_blank" rel="noopener" class="theme-btn">
-                        Talk to us
-                        <i class="iconoir-arrow-up-right"></i>
-                    </a>
-                </div>
-
-                <div class="how-we-do-right-content">
-<?php foreach ($stepRows as $row): ?>
-                    <div class="how-we-do-items d-flex align-items-center justify-content-center">
-<?php foreach ($row as $step): ?>
-                        <div class="how-we-do-card">
-                            <div class="circle-shape"></div>
-                            <div class="line-shape"></div>
-
-                            <div class="how-we-do-icon">
-                                <img src="<?= esc(asset($step['icon'])) ?>" alt="" aria-hidden="true"
-                                     width="40" height="40" loading="lazy">
-                            </div>
-                            <div class="how-we-do-content">
-                                <h3><?= esc($step['title']) ?></h3>
-                                <p><?= esc($step['subtitle']) ?></p>
-                            </div>
-                        </div>
-<?php endforeach; ?>
-                    </div>
-<?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-    </section>
-
-
     <!-- Stats -->
     <section class="cd-stats">
         <div class="custom-container">
@@ -316,6 +250,71 @@ if (!$isSerpentine) {
                 <div class="cd-about-media">
                     <img src="<?= esc(asset('imgs/about-service-2.png')) ?>"
                          alt="<?= esc(setting('about_image_alt')) ?>" loading="lazy" width="560" height="420">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How we do: delivery process, on the theme's how-we-do layout -->
+<?php
+/* The theme's serpentine connectors are hand-positioned for exactly three
+ * rows of 3 / 2 / 1: fixed 100px gaps, an 80px row rhythm and three separate
+ * 181px-tall elbow images. Six active steps is the only arrangement those
+ * numbers describe, so anything else falls back to an even grid with the
+ * connectors suppressed -- process_steps is admin-editable, and a seventh
+ * step must not leave lines pointing into empty space.
+ */
+$stepRows = [];
+if (count($processSteps) === 6) {
+    $offset = 0;
+    foreach ([3, 2, 1] as $perRow) {
+        $stepRows[] = array_slice($processSteps, $offset, $perRow);
+        $offset    += $perRow;
+    }
+}
+$isSerpentine = $stepRows !== [];
+if (!$isSerpentine) {
+    $stepRows = array_chunk($processSteps, 3);
+}
+?>
+    <section class="how-we-do-area cd-process<?= $isSerpentine ? '' : ' cd-process-even' ?>" id="how-we-do">
+        <div class="custom-container">
+            <div class="custom-row">
+                <img src="<?= esc(asset('imgs/bg-shape-1.svg')) ?>" alt="" aria-hidden="true"
+                     class="how-we-do-bg" width="360" height="360">
+
+                <div class="how-we-do-left-content">
+                    <div class="top">
+                        <h5 class="section-subtitle">Our Model</h5>
+                        <h2 class="section-title">How we do</h2>
+                        <p>One team from first call to ongoing support.</p>
+                    </div>
+                    <a href="<?= esc(whatsapp_url()) ?>" target="_blank" rel="noopener" class="theme-btn">
+                        Talk to us
+                        <i class="iconoir-arrow-up-right"></i>
+                    </a>
+                </div>
+
+                <div class="how-we-do-right-content">
+<?php foreach ($stepRows as $row): ?>
+                    <div class="how-we-do-items d-flex align-items-center justify-content-center">
+<?php foreach ($row as $step): ?>
+                        <div class="how-we-do-card">
+                            <div class="circle-shape"></div>
+                            <div class="line-shape"></div>
+
+                            <div class="how-we-do-icon">
+                                <img src="<?= esc(asset($step['icon'])) ?>" alt="" aria-hidden="true"
+                                     width="40" height="40" loading="lazy">
+                            </div>
+                            <div class="how-we-do-content">
+                                <h3><?= esc($step['title']) ?></h3>
+                                <p><?= esc($step['subtitle']) ?></p>
+                            </div>
+                        </div>
+<?php endforeach; ?>
+                    </div>
+<?php endforeach; ?>
                 </div>
             </div>
         </div>

@@ -149,21 +149,15 @@ INSERT INTO `nav_items` (`id`,`parent_id`,`label`,`url`,`column_group`,`is_mega`
 (1,NULL,'Home','#top',NULL,0,NULL,10,1),
 (2,NULL,'Who We Are','#about',NULL,0,NULL,20,1),
 (3,NULL,'What We Do',NULL,NULL,1,'services',30,1),
-(4,NULL,'Company',NULL,NULL,0,NULL,40,1),
+(4,NULL,'Insights',NULL,NULL,0,NULL,40,1),
 (5,NULL,'Products','#products',NULL,0,NULL,50,1),
 (6,NULL,'Partners','#partners',NULL,0,NULL,60,1),
--- No case studies exist yet (0 rows); activate once content lands.
-(7,NULL,'Case Studies','case-studies',NULL,0,NULL,70,0),
 
--- Company dropdown. Only FAQs resolves today (it is an on-page anchor);
--- the rest show as text until their pages are built.
-(10,4,'How We Work','company/our-process','Our Process',0,NULL,10,1),
-(11,4,'Leadership Team','company/leadership-team','Our Team',0,NULL,20,1),
-(12,4,'Pricing','company/pricing','Investment',0,NULL,30,1),
-(13,4,'FAQs Support','#faq','Knowledge',0,NULL,40,1),
--- Deliberately inactive: the only testimonial in the source DB is flagged
--- "do not publish placeholder testimonials live".
-(14,4,'Client Testimonials','company/testimonials','Evaluation',0,NULL,50,0);
+-- Insights dropdown -- case studies and blog only for now. Neither table
+-- has rows yet, so both render as plain text (see nav_target()) until
+-- case-studies.php / blog.php land, then light up on their own.
+(15,4,'Case Studies','case-studies',NULL,0,NULL,10,1),
+(16,4,'Blog','blog',NULL,0,NULL,20,1);
 
 -- ---------------------------------------------------------------------
 -- Hero

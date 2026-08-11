@@ -106,6 +106,33 @@
         }
     });
 
+    /* ---------------- Country switcher ---------------- */
+
+    var countrySwitch = document.querySelector('.cd-country-switch');
+    var countryToggle = document.getElementById('country-switcher');
+
+    if (countrySwitch && countryToggle) {
+        countryToggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            var open = countrySwitch.classList.toggle('is-open');
+            countryToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!countrySwitch.contains(e.target)) {
+                countrySwitch.classList.remove('is-open');
+                countryToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                countrySwitch.classList.remove('is-open');
+                countryToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
     /* ---------------- In-page anchors ---------------- */
 
     document.querySelectorAll('a[href^="#"]').forEach(function (link) {
