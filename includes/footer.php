@@ -9,18 +9,27 @@ declare(strict_types=1);
 $footerServices = array_slice(get_services(), 0, 6);
 $footerProducts = array_slice(get_products((int) $country['id']), 0, 6);
 $allOffices     = get_offices();
+
+/* Markets previously linked to every country row regardless of whether
+ * that country's page exists -- 404s. nav_target() already guards against
+ * this for the header nav; footer links get the same filesystem check
+ * rather than assuming the URL pattern implies the page is real. */
+$footerCountries = array_map(
+    static fn (array $c) => $c + ['built' => is_file(path_to_file($c['code'], ''))],
+    get_countries()
+);
 ?>
     </div><!-- /#main-content -->
 
     <!-- Footer -->
-    <footer class="footer-area">
+    <footer class="footer-area cd-footer">
         <img src="<?= esc(asset('imgs/bg-shape-4.svg')) ?>" alt="" aria-hidden="true"
              class="animation-slide-right bg-shape" />
 
         <div class="footer-top">
             <div class="custom-container">
-                <div class="custom-row align-items-end justify-content-between">
-                    <div class="left-content">
+                <div class="cd-footer-top-grid">
+                    <div class="cd-footer-brand">
                         <a href="<?= esc(country_url($country['code'])) ?>" class="logo">
                             <img src="<?= esc(asset('imgs/corediva-logo-white.png')) ?>"
                                  alt="<?= esc(setting('site_name')) ?>" width="200" height="25" />
@@ -28,94 +37,95 @@ $allOffices     = get_offices();
                         <p><?= esc(setting('site_tagline')) ?></p>
                     </div>
 
-                    <div class="right-content">
-                        <div class="right-content-inner">
-                            <h2>Let&rsquo;s get started on something great</h2>
-                            <p>Tell us what you're building. We reply to every enquiry within
-                               <?= esc(setting('response_time_hours', '4')) ?> hours on business days.</p>
-                            <a href="<?= esc(whatsapp_url()) ?>" target="_blank" rel="noopener" class="theme-btn">Get a free consultation</a>
-
-                            <div class="footer-experience d-flex align-items-center">
-<?php foreach (get_stats() as $stat): ?>
-                                <div class="footer-experience-item">
-                                    <p class="cd-footer-stat"><?= esc($stat['value']) ?><span><?= esc($stat['suffix']) ?></span></p>
-                                    <p><?= esc($stat['label']) ?></p>
-                                </div>
-<?php endforeach; ?>
-                            </div>
-                        </div>
+                    <div class="cd-footer-cta">
+                        <h2>Talk to an engineer, not a sales queue.</h2>
+                        <p>Tell us what you're building. We reply within
+                           <?= esc(setting('response_time_hours', '4')) ?> hours on business days,
+                           no sales sequence.</p>
+                        <a href="<?= esc(whatsapp_url()) ?>" target="_blank" rel="noopener" class="theme-btn">
+                            Get a free consultation
+                        </a>
                     </div>
+                </div>
+
+                <div class="cd-footer-stats">
+<?php foreach (get_stats() as $stat): ?>
+                    <div class="cd-footer-stat-item">
+                        <p class="cd-footer-stat"><?= esc($stat['value']) ?><span><?= esc($stat['suffix']) ?></span></p>
+                        <p class="cd-footer-stat-label"><?= esc($stat['label']) ?></p>
+                    </div>
+<?php endforeach; ?>
                 </div>
             </div>
         </div>
 
-        <div class="footer-bottom">
+        <div class="footer-bottom cd-footer-bottom">
             <div class="custom-container">
-                <div class="custom-row">
-                    <div class="footer-all-links-wrap justify-content-between d-flex">
+                <div class="cd-footer-columns">
 
-                        <div class="footer-links">
-                            <h3>Services</h3>
-                            <ul>
+                    <div class="footer-links">
+                        <h3>Services</h3>
+                        <ul>
 <?php foreach ($footerServices as $svc): ?>
-                                <li><a href="#services"><?= esc($svc['title']) ?></a></li>
+                            <li><a href="#services"><?= esc($svc['title']) ?></a></li>
 <?php endforeach; ?>
-                            </ul>
-                        </div>
+                        </ul>
+                    </div>
 
-                        <div class="footer-links">
-                            <h3>Products</h3>
-                            <ul>
+                    <div class="footer-links">
+                        <h3>Products</h3>
+                        <ul>
 <?php foreach ($footerProducts as $prod): ?>
-                                <li><a href="#products"><?= esc($prod['display_title']) ?></a></li>
+                            <li><a href="#products"><?= esc($prod['display_title']) ?></a></li>
 <?php endforeach; ?>
-                            </ul>
-                        </div>
+                        </ul>
+                    </div>
 
-                        <div class="footer-links">
-                            <h3>Markets</h3>
-                            <ul>
-<?php foreach (get_countries() as $c): ?>
-                                <li><a href="<?= esc(country_url($c['code'])) ?>"><?= esc($c['name']) ?></a></li>
+                    <div class="footer-links">
+                        <h3>Markets</h3>
+                        <ul>
+<?php foreach ($footerCountries as $c): ?>
+                            <li>
+<?php if ($c['built']): ?>
+                                <a href="<?= esc(country_url($c['code'])) ?>"><?= esc($c['name']) ?></a>
+<?php else: ?>
+                                <span class="cd-footer-pending"><?= esc($c['name']) ?></span>
+<?php endif; ?>
+                            </li>
 <?php endforeach; ?>
-                            </ul>
-                        </div>
+                        </ul>
+                    </div>
 
-                        <div class="footer-links">
-                            <h3>Offices</h3>
-                            <ul>
+                    <div class="footer-links cd-footer-company">
+                        <h3>Company</h3>
+                        <ul class="cd-footer-offices">
 <?php foreach ($allOffices as $office): ?>
-                                <li>
-                                    <strong><?= esc($office['city']) ?></strong><br>
-                                    <small><?= esc($office['badge']) ?></small>
-                                </li>
+                            <li><strong><?= esc($office['city']) ?></strong> &mdash; <?= esc($office['badge']) ?></li>
 <?php endforeach; ?>
-                            </ul>
-                        </div>
-
+                        </ul>
+                        <ul class="cd-footer-contact">
+                            <li>
+                                <i class="las la-phone" aria-hidden="true"></i>
+                                <a href="tel:<?= esc(setting('phone_e164')) ?>"><?= esc(setting('phone_display')) ?></a>
+                            </li>
+                            <li>
+                                <i class="las la-envelope" aria-hidden="true"></i>
+                                <a href="mailto:<?= esc(setting('email')) ?>"><?= esc(setting('email')) ?></a>
+                            </li>
+                            <li>
+                                <i class="lab la-whatsapp" aria-hidden="true"></i>
+                                <a href="<?= esc(whatsapp_url()) ?>" target="_blank" rel="noopener">Message us</a>
+                            </li>
+                        </ul>
                     </div>
 
-                    <div class="footer-contact-info">
-                        <div class="footer-contact-info-item">
-                            <h4>Phone</h4>
-                            <p><a href="tel:<?= esc(setting('phone_e164')) ?>"><?= esc(setting('phone_display')) ?></a></p>
-                        </div>
-                        <div class="footer-contact-info-item">
-                            <h4>Mail</h4>
-                            <p><a href="mailto:<?= esc(setting('email')) ?>"><?= esc(setting('email')) ?></a></p>
-                        </div>
-                        <div class="footer-contact-info-item">
-                            <h4>WhatsApp</h4>
-                            <p><a href="<?= esc(whatsapp_url()) ?>" target="_blank" rel="noopener">Message us</a></p>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
 
         <div class="copyright-area">
             <div class="custom-container">
-                <div class="custom-row d-flex align-items-center justify-content-between">
+                <div class="cd-footer-legal-row">
                     <ul class="social-links d-flex align-items-center">
 <?php foreach (get_social_links() as $social): ?>
                         <li>
@@ -126,8 +136,19 @@ $allOffices     = get_offices();
                         </li>
 <?php endforeach; ?>
                     </ul>
-                    <p>&copy; <?= date('Y') ?> <?= esc(setting('site_name')) ?>.
+
+                    <p class="cd-footer-copyright">&copy; <?= date('Y') ?> <?= esc(setting('site_name')) ?>.
                        All rights reserved. <?= esc(setting('credentials')) ?>.</p>
+
+<?php
+    /* No privacy/terms pages exist yet. Shown as pending labels (same
+     * treatment as the header's unbuilt nav entries) rather than either
+     * a dead link or omitting the legal row outright. */
+?>
+                    <ul class="cd-footer-legal">
+                        <li><span class="cd-footer-pending">Privacy Policy</span></li>
+                        <li><span class="cd-footer-pending">Terms of Service</span></li>
+                    </ul>
                 </div>
             </div>
         </div>

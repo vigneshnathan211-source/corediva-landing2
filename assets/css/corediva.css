@@ -1023,15 +1023,6 @@ span.cd-nav-pending {
     margin: 0;
 }
 
-.footer-experience-item .cd-footer-stat {
-    font-family: var(--font_syne), sans-serif;
-    font-size: 34px;
-    font-weight: 700;
-    line-height: 1;
-    color: #fff;
-    margin-bottom: 6px;
-}
-
 /* ---------- How we do ----------
    Markup reuses the theme's .how-we-do-* classes, so the dark panel, the
    serpentine connectors and every breakpoint in responsive.css come along
@@ -1662,27 +1653,239 @@ span.cd-nav-pending {
     }
 }
 
-/* ---------- Footer ---------- */
+/* ---------- Footer ----------
+   Markup keeps the theme's outer wrappers (.footer-area, .footer-top,
+   .footer-bottom, .copyright-area, .custom-container) so the dark panel,
+   background shape and script includes are untouched, but everything
+   inside is rebuilt: a CSS Grid replaces the old flexbox-plus-fixed-
+   pixel-divider layout, and Offices + the separate Contact block merge
+   into one Company column so the section reads as four clear columns
+   instead of a five-part link farm. */
 
-/* Offices column renders <strong>/<small> directly rather than through an
-   <a> (there's no office page to link to yet), so it never picked up the
-   theme's .footer-links a colour rule and fell back to Bootstrap's
-   near-black default text -- effectively invisible on the near-black
-   footer. It also never picked up the responsive font-size steps that
-   .footer-links ul li a gets at every width below 1700px, so at literally
-   every real screen size its bold 16px/14px ran far larger than the 12px
-   sibling columns beside it -- oversized enough that city names like
-   "United Kingdom" wrapped onto a second line while every other column's
-   entries sat on one. Sized down to match. */
-.footer-links ul li strong {
-    color: #fff;
-    font-size: 13px;
+.cd-footer {
+    padding-top: 100px;
 }
 
-.footer-links ul li small {
-    color: rgba(255, 255, 255, .8);
-    opacity: .7;
+/* ---- Top: brand + CTA, stats as their own strip below ---- */
+
+.cd-footer-top-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr);
+    gap: 64px;
+    padding-bottom: 56px;
+}
+
+.cd-footer-brand .logo {
+    display: inline-block;
+    margin-bottom: 22px;
+}
+
+.cd-footer-brand .logo img {
+    display: block;
+}
+
+.cd-footer-brand p {
+    color: rgba(255, 255, 255, .7);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 32ch;
+    margin: 0;
+}
+
+.cd-footer-cta {
+    /* Border, not the theme's fixed-319px-tall pseudo-element: it grows
+       with whatever height the two columns actually end up at, instead of
+       silently drifting out of sync with them the moment either column's
+       content changes. */
+    border-left: 1px solid rgba(255, 255, 255, .14);
+    padding-left: 64px;
+}
+
+.cd-footer-cta h2 {
+    color: #fff;
+    font-family: var(--font_yantramanv), sans-serif;
+    font-size: 30px;
+    font-weight: 500;
+    letter-spacing: -.5px;
+    line-height: 1.2;
+    margin: 0 0 14px;
+}
+
+.cd-footer-cta p {
+    color: rgba(255, 255, 255, .7);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 48ch;
+    margin: 0 0 26px;
+}
+
+.cd-footer-cta .theme-btn {
+    padding: 13px 26px;
+}
+
+.cd-footer-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 32px;
+    padding-top: 40px;
+    border-top: 1px solid rgba(255, 255, 255, .14);
+}
+
+.cd-footer-stat {
+    font-family: var(--font_syne), sans-serif;
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    margin: 0 0 6px;
+    font-variant-numeric: tabular-nums;
+}
+
+.cd-footer-stat span {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--cd-accent-2);
+}
+
+.cd-footer-stat-label {
+    color: rgba(255, 255, 255, .6);
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* ---- Bottom: four link columns on one grid ---- */
+
+.cd-footer-bottom {
+    padding-top: 64px;
+}
+
+.cd-footer-columns {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, .14);
+    padding-bottom: 56px;
+}
+
+/* Small, quiet label over larger, brighter links -- the theme had this
+   inverted (a 14px near-white heading over 12px dimmer links), which is
+   weak hierarchy: the list items are the part worth reading, so they
+   should read heavier than their own column label. */
+.footer-links h3 {
+    font-family: var(--font_dm), sans-serif;
     font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, .5);
+    margin: 0 0 22px;
+}
+
+.footer-links ul li a {
+    color: rgba(255, 255, 255, .85);
+    font-size: 14.5px;
+    font-weight: 500;
+    transition: color .2s var(--cd-ease-out),
+                transform .2s var(--cd-ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .footer-links ul li a:hover {
+        color: #fff;
+        transform: translateX(3px);
+    }
+}
+
+.cd-footer-offices {
+    margin: 0 0 24px;
+    padding: 0;
+    list-style: none;
+}
+
+.cd-footer-offices li {
+    color: rgba(255, 255, 255, .7);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.cd-footer-offices li + li {
+    margin-top: 6px;
+}
+
+.cd-footer-offices strong {
+    color: #fff;
+    font-weight: 600;
+}
+
+.cd-footer-contact {
+    margin: 0;
+    padding: 20px 0 0;
+    border-top: 1px solid rgba(255, 255, 255, .14);
+    list-style: none;
+}
+
+.cd-footer-contact li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cd-footer-contact li + li {
+    margin-top: 14px;
+}
+
+.cd-footer-contact i {
+    color: var(--cd-accent-2);
+    font-size: 17px;
+    flex: none;
+}
+
+.cd-footer-contact a {
+    color: rgba(255, 255, 255, .85);
+    font-size: 14.5px;
+    font-weight: 500;
+    transition: color .2s var(--cd-ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .cd-footer-contact a:hover {
+        color: #fff;
+    }
+}
+
+/* Countries with no built page yet render as text, matching the header
+   nav's treatment of unbuilt pages instead of linking to a 404. */
+.cd-footer-pending {
+    color: rgba(255, 255, 255, .35);
+    cursor: default;
+}
+
+/* ---- Copyright bar ---- */
+
+.cd-footer-legal-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 30px 0;
+}
+
+.cd-footer-copyright {
+    color: rgba(255, 255, 255, .55);
+    font-size: 13.5px;
+    margin: 0;
+}
+
+.cd-footer-legal {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 13.5px;
 }
 
 /* =====================================================================
@@ -1731,6 +1934,21 @@ span.cd-nav-pending {
     .cd-service-grid,
     .cd-product-grid {
         grid-template-columns: repeat(3, 1fr);
+    }
+    .cd-footer-top-grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
+    }
+    .cd-footer-cta {
+        border-left: 0;
+        padding-left: 0;
+        padding-top: 36px;
+        border-top: 1px solid rgba(255, 255, 255, .14);
+    }
+    .cd-footer-stats,
+    .cd-footer-columns {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        row-gap: 36px;
     }
 }
 
@@ -1921,6 +2139,14 @@ span.cd-nav-pending {
         font-size: 26px;
         left: 16px;
         bottom: 16px;
+    }
+    .cd-footer-stats,
+    .cd-footer-columns {
+        grid-template-columns: 1fr;
+        row-gap: 32px;
+    }
+    .cd-footer-legal-row {
+        justify-content: flex-start;
     }
 }
 
