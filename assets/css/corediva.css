@@ -1388,6 +1388,74 @@ span.cd-nav-pending {
     grid-template-columns: repeat(3, 1fr);
 }
 
+/* Skeleton-loading reveal for the expertise cards. Progressive
+   enhancement: corediva.js adds .cd-loading to the grid the moment it
+   scrolls into view, then removes it ~600ms later. Without that class (JS
+   disabled, or before it runs) none of this applies and the real content
+   just shows -- same as any other card. */
+.cd-expertise-card .cd-skeleton {
+    display: none;
+}
+
+.cd-expertise-card .cd-expertise-content {
+    display: block;
+    opacity: 1;
+    transform: none;
+    transition: opacity .45s var(--cd-ease-out), transform .45s var(--cd-ease-out);
+}
+
+[data-cd-reveal].cd-loading .cd-expertise-card .cd-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    padding: 28px 24px;
+    background: #fff;
+}
+
+[data-cd-reveal].cd-loading .cd-expertise-card .cd-expertise-content {
+    opacity: 0;
+    transform: translateY(6px);
+}
+
+.cd-skeleton-icon,
+.cd-skeleton-line {
+    display: block;
+    border-radius: 6px;
+    background: linear-gradient(90deg, var(--cd-line) 25%, #eef1f8 37%, var(--cd-line) 63%);
+    background-size: 400% 100%;
+    animation: cd-shimmer 1.4s ease-in-out infinite;
+}
+
+.cd-skeleton-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.cd-skeleton-line {
+    height: 12px;
+    width: 100%;
+    margin-top: 6px;
+}
+
+.cd-skeleton-line-title {
+    height: 16px;
+    width: 65%;
+    margin-top: 10px;
+}
+
+.cd-skeleton-line-short {
+    width: 50%;
+}
+
+@keyframes cd-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
 .cd-service-grid .service-card,
 .cd-product-grid .service-card {
     padding: 28px 24px;
@@ -2307,6 +2375,15 @@ span.cd-nav-pending {
     .cd-mega-col a:hover,
     .cd-mega-social a:hover {
         transform: none;
+    }
+
+    .cd-skeleton-icon,
+    .cd-skeleton-line {
+        animation: none;
+    }
+
+    .cd-expertise-content {
+        transition-duration: .01ms !important;
     }
 
     .cd-partner,
