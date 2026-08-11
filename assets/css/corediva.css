@@ -434,6 +434,26 @@ span.cd-nav-pending {
     cursor: default;
 }
 
+/* Mega items with a real overview page (What We Do) split into a label
+   link plus a separate icon-only toggle, so clicking the label navigates
+   while the chevron still opens the panel. The toggle stays the .cd-mega
+   panel's immediate sibling so the existing
+   .cd-panel-toggle[aria-expanded="true"] + .cd-mega selector keeps
+   working unchanged. */
+.cd-nav-link-mega {
+    padding-right: 6px;
+}
+
+button.cd-panel-toggle:not(.cd-nav-link) {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 16px 12px 4px;
+    background: none;
+    border: 0;
+    color: var(--cd-ink);
+    cursor: pointer;
+}
+
 .cd-nav-actions {
     display: flex;
     align-items: center;
@@ -2063,6 +2083,9 @@ span.cd-nav-pending {
     }
 
     .cd-nav-item {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
         border-bottom: 1px solid var(--cd-line);
     }
 
@@ -2070,6 +2093,19 @@ span.cd-nav-pending {
         width: 100%;
         justify-content: space-between;
         padding: 15px 0;
+    }
+
+    /* The split label-link + toggle-button pair (mega items with a real
+       overview page) shares the row instead of each claiming full width;
+       the panel forces itself onto its own row below via flex-basis. */
+    .cd-nav-link-mega {
+        width: auto;
+        flex: 1;
+    }
+
+    .cd-mega,
+    .cd-dropdown {
+        flex-basis: 100%;
     }
 
     /* Panels become accordions: no hover on touch. */

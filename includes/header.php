@@ -163,10 +163,18 @@ render_schema_localbusiness($country);
 ?>
 <?php if ($isMegaServices): ?>
                         <li class="cd-nav-item cd-has-panel cd-has-mega">
+<?php if ($href): ?>
+                            <a href="<?= esc($href) ?>" class="cd-nav-link cd-nav-link-mega"><?= esc($item['label']) ?></a>
+                            <button type="button" class="cd-panel-toggle" aria-expanded="false"
+                                    aria-label="Show <?= esc($item['label']) ?> menu">
+                                <i class="las la-angle-down" aria-hidden="true"></i>
+                            </button>
+<?php else: ?>
                             <button type="button" class="cd-nav-link cd-panel-toggle" aria-expanded="false">
                                 <?= esc($item['label']) ?>
                                 <i class="las la-angle-down" aria-hidden="true"></i>
                             </button>
+<?php endif; ?>
 <?php
     /* Panel laid out like the theme's mega menu: a wide left column of link
        groups sitting above a social + hiring footer, and a tinted right rail
