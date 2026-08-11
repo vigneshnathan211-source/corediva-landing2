@@ -27,9 +27,13 @@ $allOffices     = get_offices();
                         </a>
                         <p><?= esc(setting('site_tagline')) ?></p>
 
-                        <div class="footer-clients d-flex align-items-center">
+                        <div class="footer-clients d-flex align-items-center flex-wrap">
 <?php foreach (get_partners() as $partner): ?>
-                            <div class="footer-client-img" title="<?= esc($partner['description']) ?>">
+                            <div class="footer-client-img" title="<?= esc($partner['name'] . ': ' . $partner['description']) ?>">
+<?php if ($partner['logo']): ?>
+                                <img class="footer-client-mark" src="<?= esc(asset($partner['logo'])) ?>"
+                                     alt="" aria-hidden="true" width="18" height="18">
+<?php endif; ?>
                                 <span><?= esc($partner['name']) ?></span>
                             </div>
 <?php endforeach; ?>
