@@ -51,6 +51,18 @@
     white-space: nowrap; border: 0;
 }
 
+/* The theme's .section-header p carries a 655px max-width but no auto
+   margins, so on a centred header the paragraph's own box sits flush left
+   -- text-align:center then only centres the text within that off-centre
+   box, not the box itself. Wrapped copy reads as skewed left rather than
+   centred (Products, FAQ intros). Scoped to .text-center so the Services
+   header, which is intentionally left-aligned in a split layout, is
+   untouched. */
+.section-header.text-center p {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .cd-skip-link {
     position: absolute;
     left: -9999px;
