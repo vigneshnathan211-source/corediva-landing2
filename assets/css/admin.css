@@ -1,0 +1,287 @@
+/* =====================================================================
+   Admin panel styles.
+
+   Deliberately standalone -- the admin panel doesn't load style.css or
+   corediva.css (no Swiper, no mega-menu, no marketing theme bundle for
+   a handful of internal screens), but reuses the exact same palette and
+   type scale as the public site so the two feel like one product.
+   ===================================================================== */
+
+:root {
+    --cda-accent:      #1351D8;
+    --cda-accent-dark: #0f3fa8;
+    --cda-ink:         #1C1C1C;
+    --cda-body:        #454545;
+    --cda-line:        #D9D9D9;
+    --cda-surface:     #FFFFFF;
+    --cda-surface-soft:#F9F9F9;
+    --cda-error:       #B3261E;
+    --cda-error-soft:  #FCEEEE;
+    --cda-dev:         #92620A;
+    --cda-dev-soft:    #FDF3E0;
+
+    --cda-radius: 10px;
+    --cda-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body.cd-admin {
+    margin: 0;
+    background: var(--cda-surface-soft);
+    color: var(--cda-ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.cd-admin-lede {
+    color: var(--cda-body);
+    line-height: 1.6;
+}
+
+a {
+    color: var(--cda-accent);
+}
+
+/* ---------- Auth screens (login, verify) ---------- */
+
+.cd-admin-auth {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.cd-admin-card {
+    width: 100%;
+    max-width: 400px;
+    background: var(--cda-surface);
+    border: 1px solid var(--cda-line);
+    border-radius: var(--cda-radius);
+    box-shadow: 0 4px 20px 5px rgba(0, 0, 0, .03);
+    padding: 40px 36px;
+}
+
+.cd-admin-logo {
+    display: block;
+    margin-bottom: 28px;
+}
+
+.cd-admin-card h1 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -.3px;
+    margin: 0 0 10px;
+}
+
+.cd-admin-card .cd-admin-lede {
+    font-size: 14.5px;
+    margin: 0 0 22px;
+}
+
+.cd-admin-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.cd-admin-card label {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--cda-ink);
+}
+
+.cd-admin-card input[type="email"],
+.cd-admin-card input[type="text"] {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--cda-line);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--cda-ink);
+    background: var(--cda-surface);
+    transition: border-color .2s var(--cda-ease-out),
+                box-shadow .2s var(--cda-ease-out);
+}
+
+.cd-admin-card input:focus-visible {
+    outline: none;
+    border-color: var(--cda-accent);
+    box-shadow: 0 0 0 3px rgba(19, 81, 216, .15);
+}
+
+.cd-admin-otp-input {
+    font-size: 22px !important;
+    font-weight: 600;
+    letter-spacing: .5em;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.cd-admin-btn {
+    margin-top: 10px;
+    padding: 12px 20px;
+    background: var(--cda-accent);
+    color: #fff;
+    border: 0;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color .2s var(--cda-ease-out),
+                transform .12s var(--cda-ease-out);
+}
+
+.cd-admin-btn:hover {
+    background: var(--cda-accent-dark);
+}
+
+.cd-admin-btn:active {
+    transform: scale(.97);
+}
+
+.cd-admin-btn:focus-visible {
+    outline: 2px solid var(--cda-accent);
+    outline-offset: 2px;
+}
+
+.cd-admin-resend {
+    display: block;
+    margin-top: 20px;
+    font-size: 13.5px;
+    font-weight: 500;
+    text-align: center;
+    text-decoration: none;
+}
+
+.cd-admin-resend:hover {
+    text-decoration: underline;
+}
+
+/* Off-screen, not display:none -- a bot reading raw HTML still fills it
+   in, a sighted user never sees or tabs into it. */
+.cd-admin-hp {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.cd-admin-alert {
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.cd-admin-alert p {
+    margin: 0;
+}
+
+.cd-admin-alert p + p {
+    margin-top: 4px;
+}
+
+.cd-admin-alert-error {
+    background: var(--cda-error-soft);
+    color: var(--cda-error);
+}
+
+.cd-admin-alert-dev {
+    background: var(--cda-dev-soft);
+    color: var(--cda-dev);
+}
+
+/* ---------- Dashboard shell ---------- */
+
+.cd-admin-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 16px 32px;
+    background: var(--cda-surface);
+    border-bottom: 1px solid var(--cda-line);
+}
+
+.cd-admin-topbar-logo {
+    display: block;
+    line-height: 0;
+}
+
+.cd-admin-topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 14px;
+}
+
+.cd-admin-topbar-name {
+    font-weight: 600;
+    color: var(--cda-ink);
+}
+
+.cd-admin-topbar-role {
+    color: var(--cda-body);
+    padding: 3px 10px;
+    background: var(--cda-surface-soft);
+    border-radius: 30px;
+    font-size: 12.5px;
+}
+
+.cd-admin-logout {
+    background: none;
+    border: 1px solid var(--cda-line);
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--cda-ink);
+    cursor: pointer;
+    transition: border-color .2s var(--cda-ease-out),
+                color .2s var(--cda-ease-out);
+}
+
+.cd-admin-logout:hover {
+    border-color: var(--cda-accent);
+    color: var(--cda-accent);
+}
+
+.cd-admin-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 32px;
+}
+
+.cd-admin-main h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -.3px;
+    margin: 0 0 10px;
+}
+
+@media (max-width: 575px) {
+    .cd-admin-card {
+        padding: 32px 24px;
+    }
+    .cd-admin-topbar {
+        flex-wrap: wrap;
+        padding: 14px 20px;
+    }
+    .cd-admin-main {
+        padding: 32px 20px;
+    }
+}
