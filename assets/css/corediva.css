@@ -1664,48 +1664,25 @@ span.cd-nav-pending {
 
 /* ---------- Footer ---------- */
 
-/* Theme's own gap (60px) is tuned for bare logo images spaced across a
-   full-width row. Our chips carry their own padding and, with real names
-   instead of logo-only marks, run long enough ("Razorpay International",
-   "Bank of Baroda") that a 60px gap forced the row wider than the column
-   and each chip's *text* to wrap internally instead. Wrapping the row onto
-   a second line (flex-wrap, on the div in footer.php) and tightening the
-   gap keeps every chip a single line regardless of name length. */
-.footer-clients {
-    gap: 10px;
-    row-gap: 10px;
-}
-
-.footer-clients .footer-client-img {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background: rgba(255, 255, 255, .08);
-    border-radius: var(--cd-radius-pill);
-    color: #fff;
-    font-size: 14px;
-    white-space: nowrap;
-}
-
-.footer-client-mark {
-    width: 18px;
-    height: 18px;
-    flex: none;
-    object-fit: contain;
-}
-
 /* Offices column renders <strong>/<small> directly rather than through an
-   <a> (there's no page to link to yet), so it never picked up the theme's
-   .footer-links a colour rule and fell back to Bootstrap's near-black
-   default text -- effectively invisible on the near-black footer. */
+   <a> (there's no office page to link to yet), so it never picked up the
+   theme's .footer-links a colour rule and fell back to Bootstrap's
+   near-black default text -- effectively invisible on the near-black
+   footer. It also never picked up the responsive font-size steps that
+   .footer-links ul li a gets at every width below 1700px, so at literally
+   every real screen size its bold 16px/14px ran far larger than the 12px
+   sibling columns beside it -- oversized enough that city names like
+   "United Kingdom" wrapped onto a second line while every other column's
+   entries sat on one. Sized down to match. */
 .footer-links ul li strong {
     color: #fff;
+    font-size: 13px;
 }
 
 .footer-links ul li small {
     color: rgba(255, 255, 255, .8);
     opacity: .7;
+    font-size: 12px;
 }
 
 /* =====================================================================
