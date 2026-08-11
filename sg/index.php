@@ -351,18 +351,11 @@ if (!$isSerpentine) {
                          role="tabpanel" aria-labelledby="ptab-<?= $i ?>" tabindex="0">
                         <div class="cd-tab-body">
 
-<?php
-    /* A sidebar card here (as the theme's case-studio panel uses) has to
-     * match the height of whatever sits beside it. Two products sit in one
-     * row and look fine next to it; four sit in two rows and leave the card
-     * stranded above a slab of empty background. A slim strip above the
-     * grid carries the same information without depending on how many rows
-     * the group happens to have. */
-?>
                             <div class="cd-tab-lead">
-                                <p><strong><?= count($productGroups[$group]) ?> of our twelve platforms</strong>
-                                   sit in this group. Each ships as a working product and can be extended to
-                                   match how your business already operates.</p>
+                                <h3><?= esc($group) ?></h3>
+                                <p><?= count($productGroups[$group]) ?> of our twelve platforms sit in this
+                                   group. Each ships as a working product and can be extended to match how
+                                   your business already operates.</p>
                                 <a href="<?= esc(whatsapp_url()) ?>" target="_blank" rel="noopener" class="theme-btn2">
                                     Ask about <?= esc($group) ?> <i class="iconoir-arrow-up-right"></i>
                                 </a>

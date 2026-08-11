@@ -1148,41 +1148,35 @@ span.cd-nav-pending {
 }
 
 .cd-tab-body {
-    display: flex;
-    flex-direction: column;
-    gap: 26px;
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 2.2fr);
+    gap: 28px;
+    align-items: start;
 }
 
-/* An intro row, not a card: a tinted panel here (as the theme's sidebar
-   card would be) reads as a second, competing surface against the white
-   product cards a few pixels away. A bottom rule does the same job of
-   separating "about this group" from "the group" without adding a colour
-   this section doesn't otherwise use. */
+/* White + a hairline border, not the theme's tinted var(--accent-soft):
+   that tint read as a stray lavender panel against the grey section
+   background and the grid's white cards a few pixels away. */
 .cd-tab-lead {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 20px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--cd-line);
+    background: #fff;
+    border: 1px solid var(--cd-line);
+    border-radius: var(--cd-radius-card);
+    padding: 28px 26px;
+    text-align: center;
+}
+
+.cd-tab-lead h3 {
+    font-family: var(--font_syne), sans-serif;
+    font-size: 21px;
+    color: var(--cd-ink);
+    margin-bottom: 10px;
 }
 
 .cd-tab-lead p {
-    font-size: 15px;
-    line-height: 1.6;
+    font-size: 14.5px;
+    line-height: 1.65;
     color: var(--cd-body);
-    max-width: 62ch;
-    margin: 0;
-}
-
-.cd-tab-lead strong {
-    color: var(--cd-ink);
-    font-weight: 600;
-}
-
-.cd-tab-lead .theme-btn2 {
-    flex-shrink: 0;
+    margin-bottom: 20px;
 }
 
 .cd-tab-products {
@@ -1701,6 +1695,10 @@ span.cd-nav-pending {
 @media (max-width: 1099px) {
     .cd-topbar-address {
         display: none;
+    }
+    .cd-tab-body {
+        grid-template-columns: 1fr;
+        gap: 30px;
     }
     .cd-hero-grid {
         grid-template-columns: 1fr;
