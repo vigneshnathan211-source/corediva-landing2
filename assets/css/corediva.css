@@ -863,7 +863,6 @@ span.cd-nav-pending {
 
 .cd-stats {
     padding: 70px 0;
-    background: var(--cd-surface-soft);
 }
 
 .cd-stats-grid {
@@ -905,7 +904,245 @@ span.cd-nav-pending {
     margin-bottom: 6px;
 }
 
+/* ---------- How we do ---------- */
+
+.cd-process {
+    padding: 90px 0;
+    background: var(--cd-surface-soft);
+}
+
+.cd-process-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 2fr);
+    gap: 56px;
+    align-items: start;
+}
+
+.cd-process-intro p {
+    color: var(--cd-body);
+    line-height: 1.75;
+    margin: 14px 0 26px;
+}
+
+.cd-process-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+}
+
+.cd-process-card {
+    position: relative;
+    background: #fff;
+    border: 1px solid var(--cd-line);
+    border-radius: var(--cd-radius-card);
+    padding: 26px 22px 24px;
+    transition: transform .25s var(--cd-ease-out),
+                box-shadow .25s var(--cd-ease-out),
+                border-color .25s var(--cd-ease-out);
+}
+
+.cd-process-num {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    font-family: var(--font_syne), sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cd-accent);
+    opacity: .35;
+}
+
+.cd-process-icon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    margin-bottom: 16px;
+}
+
+.cd-process-card h3 {
+    font-family: var(--font_syne), sans-serif;
+    font-size: 17px;
+    color: var(--cd-ink);
+    margin-bottom: 2px;
+}
+
+.cd-process-sub {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--cd-accent);
+    margin-bottom: 10px;
+}
+
+.cd-process-summary {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--cd-body);
+    margin: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .cd-process-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--cd-accent-2);
+        box-shadow: var(--cd-shadow-lift);
+    }
+}
+
+/* ---------- Product tabs ---------- */
+
+.cd-tabs {
+    margin-top: 44px;
+}
+
+.cd-tab-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 34px;
+    padding: 0;
+    border: 0;
+}
+
+.cd-tab-nav .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    background: #fff;
+    border: 1px solid var(--cd-line);
+    border-radius: var(--cd-radius-pill);
+    font-family: var(--font_dm), sans-serif;
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--cd-body);
+    transition: color .2s var(--cd-ease-out),
+                background-color .2s var(--cd-ease-out),
+                border-color .2s var(--cd-ease-out),
+                transform .16s var(--cd-ease-out);
+}
+
+.cd-tab-nav .nav-link:active {
+    transform: scale(.97);
+}
+
+.cd-tab-nav .nav-link.active {
+    background: var(--cd-accent);
+    border-color: var(--cd-accent);
+    color: #fff;
+}
+
+.cd-tab-count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: var(--cd-radius-pill);
+    background: var(--cd-accent-ghost);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--cd-accent);
+}
+
+.cd-tab-nav .nav-link.active .cd-tab-count {
+    background: rgba(255, 255, 255, .22);
+    color: #fff;
+}
+
+.cd-tab-body {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 2.2fr);
+    gap: 28px;
+    align-items: start;
+}
+
+.cd-tab-lead {
+    background: var(--cd-accent-soft);
+    border: 1px solid var(--cd-accent-ghost);
+    border-radius: var(--cd-radius-card);
+    padding: 28px 26px;
+}
+
+.cd-tab-lead h3 {
+    font-family: var(--font_syne), sans-serif;
+    font-size: 21px;
+    color: var(--cd-ink);
+    margin-bottom: 10px;
+}
+
+.cd-tab-lead p {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--cd-body);
+    margin-bottom: 20px;
+}
+
+.cd-tab-products {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.cd-tab-products .service-card {
+    background: #fff;
+    border: 1px solid var(--cd-line);
+    border-radius: var(--cd-radius-card);
+    padding: 24px 22px;
+    position: relative;
+    transition: transform .25s var(--cd-ease-out),
+                box-shadow .25s var(--cd-ease-out),
+                border-color .25s var(--cd-ease-out);
+}
+
+.cd-tab-products h4 {
+    font-family: var(--font_syne), sans-serif;
+    font-size: 16.5px;
+    line-height: 1.35;
+    color: var(--cd-ink);
+    margin-bottom: 6px;
+}
+
+.cd-tab-products p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--cd-body);
+    margin: 0;
+}
+
+.cd-tab-products .service-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .cd-tab-nav .nav-link:hover {
+        color: var(--cd-accent);
+        border-color: var(--cd-accent-2);
+    }
+    .cd-tab-nav .nav-link.active:hover {
+        color: #fff;
+    }
+    .cd-tab-products .service-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--cd-accent-2);
+        box-shadow: var(--cd-shadow-lift);
+    }
+}
+
 /* ---------- Services ---------- */
+
+.service-area {
+    padding: 90px 0;
+    background: var(--cd-surface-soft);
+}
 
 .cd-service-group {
     margin-top: 44px;
@@ -999,7 +1236,6 @@ span.cd-nav-pending {
 
 .about-area {
     padding: 90px 0;
-    background: var(--cd-surface-soft);
 }
 
 .cd-about-grid {
@@ -1045,6 +1281,7 @@ span.cd-nav-pending {
 
 .project-area {
     padding: 90px 0;
+    background: var(--cd-surface-soft);
 }
 
 /* Sits directly beneath the hero, so it is a band rather than a section:
@@ -1066,13 +1303,44 @@ span.cd-nav-pending {
     margin: 0 0 20px;
 }
 
-.cd-partner-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
+/* ---------- Running marquee ----------
+   The track holds the partner set twice and slides exactly -50%, so the
+   second copy lands where the first began and the wrap is invisible. Edges
+   are faded with a mask so items enter and leave rather than popping. */
+.cd-marquee {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.cd-marquee-track {
+    display: flex;
+    align-items: center;
     gap: 14px;
+    width: max-content;
     margin: 0;
     padding: 0;
     list-style: none;
+    animation: cd-marquee 34s linear infinite;
+}
+
+@keyframes cd-marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+.cd-marquee:hover .cd-marquee-track {
+    animation-play-state: paused;
+}
+
+/* Never scroll a marquee out from under someone reading it. */
+.cd-marquee:focus-within .cd-marquee-track {
+    animation-play-state: paused;
+}
+
+.cd-marquee .cd-partner {
+    flex: 0 0 auto;
+    min-width: 210px;
 }
 
 .cd-partner {
@@ -1128,9 +1396,11 @@ span.cd-nav-pending {
 
 /* ---------- FAQ ---------- */
 
+/* Explicit white: the theme's own .faq-area paints #F3F6FD, which would add
+   a third background tone to a page that alternates between just two. */
 .cd-faq {
     padding: 90px 0;
-    background: var(--cd-surface-soft);
+    background: #fff;
 }
 
 .cd-accordion {
@@ -1174,6 +1444,7 @@ span.cd-nav-pending {
 
 .contact-area {
     padding: 90px 0;
+    background: var(--cd-surface-soft);
 }
 
 .cd-contact-grid {
@@ -1291,6 +1562,14 @@ span.cd-nav-pending {
 @media (max-width: 1099px) {
     .cd-topbar-address {
         display: none;
+    }
+    .cd-process-grid,
+    .cd-tab-body {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    .cd-process-steps {
+        grid-template-columns: repeat(2, 1fr);
     }
     .cd-hero-grid {
         grid-template-columns: 1fr;
@@ -1427,8 +1706,7 @@ span.cd-nav-pending {
     }
     .cd-stats-grid,
     .cd-service-grid,
-    .cd-product-grid,
-    .cd-partner-grid {
+    .cd-product-grid {
         grid-template-columns: repeat(2, 1fr);
     }
     .cd-about-grid,
@@ -1445,8 +1723,12 @@ span.cd-nav-pending {
     .cd-stats-grid,
     .cd-service-grid,
     .cd-product-grid,
-    .cd-partner-grid {
+    .cd-process-steps,
+    .cd-tab-products {
         grid-template-columns: 1fr;
+    }
+    .cd-marquee .cd-partner {
+        min-width: 170px;
     }
     .cd-hero-form {
         padding: 26px 20px 22px;
@@ -1520,6 +1802,25 @@ span.cd-nav-pending {
 
     /* Colour still conveys the hover, movement does not. */
     .cd-partner:hover {
+        transform: none;
+    }
+
+    /* An endlessly scrolling strip is exactly the motion this setting is
+       asking us to stop, so park it rather than merely slowing it. */
+    .cd-marquee-track {
+        animation: none;
+        transform: none;
+    }
+
+    .cd-process-card,
+    .cd-tab-products .service-card,
+    .cd-tab-nav .nav-link {
+        transition-duration: .01ms !important;
+    }
+
+    .cd-process-card:hover,
+    .cd-tab-products .service-card:hover,
+    .cd-tab-nav .nav-link:active {
         transform: none;
     }
 

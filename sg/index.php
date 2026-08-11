@@ -33,6 +33,9 @@ $products = get_products($countryId);
 $partners = get_partners();
 $faqs     = get_faqs('home', null, $countryId);
 
+$processSteps  = get_process_steps();
+$productGroups = get_products_by_group($countryId);
+
 // Group services by category for a readable IA rather than a flat 16-card wall.
 $servicesByCategory = [];
 foreach ($services as $svc) {
@@ -121,29 +124,74 @@ include __DIR__ . '/../includes/lead-form.php';
         <div class="cd-container">
             <p class="cd-partner-lead">Payments, cloud and banking partners we build on</p>
 
-            <?php /* Mark + name lockup rather than a bare logo wall. The
-                     available marks are glyph-only monograms (PayPal's "P",
-                     Payoneer's swoosh), which identify nobody on their own,
-                     so the name carries the recognition and the mark carries
-                     the brand. Partners with no artwork yet show the name
-                     alone and the row still reads as one set.
-                     Deliberately no category label under each: that turns a
-                     logo row into a caption grid and tells the reader
-                     nothing they can't infer. */ ?>
-            <ul class="cd-partner-grid">
+            <?php
+            /* Running marquee, as on the theme's client strip.
+             *
+             * Built in CSS rather than reusing the theme's client-marquee.js:
+             * that script drives the loop from a window scroll listener, which
+             * fires on every scroll frame, and it has no reduced-motion path.
+             * A CSS keyframe translation runs off the main thread, pauses on
+             * hover, and stops outright for prefers-reduced-motion.
+             *
+             * Five partners do not fill the viewport, so the set is rendered
+             * twice and translated by exactly -50% for a seamless wrap. The
+             * duplicate is aria-hidden so a screen reader hears each partner
+             * once.
+             *
+             * Mark + name lockup rather than bare marks: the available icons
+             * are glyph-only monograms (PayPal's "P", Payoneer's swoosh) that
+             * identify nobody on their own. No category caption under each,
+             * which would turn a logo row into a caption grid.
+             */
+            ?>
+            <div class="cd-marquee">
+                <ul class="cd-marquee-track">
+<?php for ($pass = 0; $pass < 2; $pass++): ?>
 <?php foreach ($partners as $partner): ?>
-                <li class="cd-partner">
-                    <a href="<?= esc($partner['url'] ?: '#') ?>" target="_blank" rel="noopener"
-                       title="<?= esc($partner['name'] . ': ' . $partner['description']) ?>">
+                    <li class="cd-partner"<?= $pass ? ' aria-hidden="true"' : '' ?>>
+                        <a href="<?= esc($partner['url'] ?: '#') ?>" target="_blank" rel="noopener"
+                           <?= $pass ? 'tabindex="-1" ' : '' ?>title="<?= esc($partner['name'] . ': ' . $partner['description']) ?>">
 <?php if ($partner['logo']): ?>
-                        <img class="cd-partner-mark" src="<?= esc(asset($partner['logo'])) ?>"
-                             alt="" aria-hidden="true" width="30" height="30">
+                            <img class="cd-partner-mark" src="<?= esc(asset($partner['logo'])) ?>"
+                                 alt="" aria-hidden="true" width="30" height="30">
 <?php endif; ?>
-                        <span class="cd-partner-name"><?= esc($partner['name']) ?></span>
-                    </a>
-                </li>
+                            <span class="cd-partner-name"><?= esc($partner['name']) ?></span>
+                        </a>
+                    </li>
 <?php endforeach; ?>
-            </ul>
+<?php endfor; ?>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- How we do: delivery process -->
+    <section class="cd-process" id="how-we-do">
+        <div class="cd-container">
+            <div class="cd-process-grid">
+                <div class="cd-process-intro">
+                    <h5 class="section-subtitle">Our Model</h5>
+                    <h2 class="section-title">How we do</h2>
+                    <p>One team from first call to ongoing support, so scope, architecture
+                       and delivery never get handed between vendors.</p>
+                    <a href="#contact" class="theme-btn">
+                        Talk through your project <i class="iconoir-arrow-up-right"></i>
+                    </a>
+                </div>
+
+                <ol class="cd-process-steps">
+<?php foreach ($processSteps as $i => $step): ?>
+                    <li class="cd-process-card">
+                        <span class="cd-process-num"><?= str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT) ?></span>
+                        <img class="cd-process-icon" src="<?= esc(asset($step['icon'])) ?>"
+                             alt="" aria-hidden="true" width="40" height="40" loading="lazy">
+                        <h3><?= esc($step['title']) ?></h3>
+                        <p class="cd-process-sub"><?= esc($step['subtitle']) ?></p>
+                        <p class="cd-process-summary"><?= esc($step['summary']) ?></p>
+                    </li>
+<?php endforeach; ?>
+                </ol>
+            </div>
         </div>
     </section>
 
@@ -222,28 +270,74 @@ include __DIR__ . '/../includes/lead-form.php';
         </div>
     </section>
 
-    <!-- Products -->
+    <!-- Products: tabbed detailing, following the theme's case-studio pattern -->
     <section class="project-area" id="products">
         <div class="custom-container">
             <div class="section-header text-center">
                 <h5 class="section-subtitle">PRODUCTS</h5>
-                <h2 class="section-title">Ready-to-deploy platforms</h2>
-                <p>Twelve products already running in production. Deploy as-is, or use one as the
+                <h2 class="section-title">Detailing of our products</h2>
+                <p>Twelve platforms already running in production. Deploy as-is, or use one as the
                    foundation for something built to your process.</p>
             </div>
 
-            <div class="cd-product-grid">
-<?php foreach ($products as $product): ?>
-                <article class="service-card simple-shadow<?= $product['is_featured'] ? ' cd-featured' : '' ?>">
-<?php if ($product['is_featured']): ?>
-                    <span class="service-badge">Popular</span>
-<?php endif; ?>
-                    <i class="<?= esc($product['icon']) ?> cd-service-icon" aria-hidden="true"></i>
-                    <h3><?= esc($product['display_title']) ?></h3>
-                    <p class="cd-product-category"><?= esc($product['category']) ?></p>
-                    <p><?= esc($product['short_description']) ?></p>
-                </article>
+            <?php
+            /* The theme's case-studio tabs pair each panel with two product
+             * screenshots. We have none: the source export used generic stock
+             * photography for all twelve, so any image here would be a stand-in
+             * pretending to be the product. The panel leads with a summary card
+             * instead, and the products in that group sit beside it.
+             */
+            $groupKeys = array_keys($productGroups);
+            ?>
+            <div class="cd-tabs">
+                <ul class="nav nav-pills cd-tab-nav" id="productTabs" role="tablist">
+<?php foreach ($groupKeys as $i => $group): ?>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link<?= $i === 0 ? ' active' : '' ?>" type="button"
+                                id="ptab-<?= $i ?>" data-bs-toggle="tab" data-bs-target="#ppane-<?= $i ?>"
+                                role="tab" aria-controls="ppane-<?= $i ?>"
+                                aria-selected="<?= $i === 0 ? 'true' : 'false' ?>">
+                            <?= esc($group) ?>
+                            <span class="cd-tab-count"><?= count($productGroups[$group]) ?></span>
+                        </button>
+                    </li>
 <?php endforeach; ?>
+                </ul>
+
+                <div class="tab-content cd-tab-content">
+<?php foreach ($groupKeys as $i => $group): ?>
+                    <div class="tab-pane fade<?= $i === 0 ? ' show active' : '' ?>" id="ppane-<?= $i ?>"
+                         role="tabpanel" aria-labelledby="ptab-<?= $i ?>" tabindex="0">
+                        <div class="cd-tab-body">
+
+                            <div class="cd-tab-lead">
+                                <h3><?= esc($group) ?></h3>
+                                <p><?= count($productGroups[$group]) ?> of our twelve platforms sit in this
+                                   group. Each ships as a working product and can be extended to match how
+                                   your business already operates.</p>
+                                <a href="#contact" class="theme-btn2">
+                                    Ask about <?= esc($group) ?> <i class="iconoir-arrow-up-right"></i>
+                                </a>
+                            </div>
+
+                            <div class="cd-tab-products">
+<?php foreach ($productGroups[$group] as $product): ?>
+                                <article class="service-card<?= $product['is_featured'] ? ' cd-featured' : '' ?>">
+<?php if ($product['is_featured']): ?>
+                                    <span class="service-badge">Popular</span>
+<?php endif; ?>
+                                    <i class="<?= esc($product['icon']) ?> cd-service-icon" aria-hidden="true"></i>
+                                    <h4><?= esc($product['display_title']) ?></h4>
+                                    <p class="cd-product-category"><?= esc($product['category']) ?></p>
+                                    <p><?= esc($product['short_description']) ?></p>
+                                </article>
+<?php endforeach; ?>
+                            </div>
+
+                        </div>
+                    </div>
+<?php endforeach; ?>
+                </div>
             </div>
         </div>
     </section>

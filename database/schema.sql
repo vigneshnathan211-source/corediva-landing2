@@ -149,6 +149,19 @@ CREATE TABLE `nav_items` (
   CONSTRAINT `fk_nav_parent` FOREIGN KEY (`parent_id`) REFERENCES `nav_items` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+DROP TABLE IF EXISTS `process_steps`;
+CREATE TABLE `process_steps` (
+  `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title`      VARCHAR(120) NOT NULL,
+  `subtitle`   VARCHAR(120) DEFAULT NULL,
+  `summary`    VARCHAR(255) DEFAULT NULL,
+  `icon`       VARCHAR(255) NOT NULL DEFAULT 'imgs/hwd-icon-1.svg',
+  `sort_order` INT          NOT NULL DEFAULT 0,
+  `is_active`  TINYINT(1)   NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`),
+  KEY `idx_process_active` (`is_active`, `sort_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 -- ---------------------------------------------------------------------
 -- Hero
 -- ---------------------------------------------------------------------
@@ -247,6 +260,7 @@ CREATE TABLE `products` (
   `short_description` VARCHAR(500) DEFAULT NULL,
   `icon`              VARCHAR(50)  NOT NULL DEFAULT 'box',
   `category`          VARCHAR(80)  DEFAULT NULL,
+  `group_label`       VARCHAR(80)  DEFAULT NULL COMMENT 'tab grouping on the products section; broader than category',
   `core_description`  MEDIUMTEXT,
   `is_featured`       TINYINT(1)   NOT NULL DEFAULT 0,
   `sort_order`        INT          NOT NULL DEFAULT 0,

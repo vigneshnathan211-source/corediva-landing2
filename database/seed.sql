@@ -25,6 +25,7 @@ TRUNCATE TABLE `service_content`;
 TRUNCATE TABLE `services`;
 TRUNCATE TABLE `hero_slides`;
 TRUNCATE TABLE `hero_feature_rows`;
+TRUNCATE TABLE `process_steps`;
 TRUNCATE TABLE `nav_items`;
 TRUNCATE TABLE `social_links`;
 TRUNCATE TABLE `partners`;
@@ -116,6 +117,22 @@ INSERT INTO `social_links` (`platform`,`url`,`icon`,`sort_order`,`is_active`) VA
 ('Instagram','https://instagram.com/corediva365','lab la-instagram',40,1);
 
 -- ---------------------------------------------------------------------
+-- Delivery process ("How we do").
+--
+-- DRAFT COPY. Corediva's actual delivery process is not documented in the
+-- source export, so these six steps are a plausible enterprise-IT sequence
+-- written to make the section reviewable, not a description of how the team
+-- genuinely works. Replace before launch.
+-- ---------------------------------------------------------------------
+INSERT INTO `process_steps` (`title`,`subtitle`,`summary`,`icon`,`sort_order`,`is_active`) VALUES
+('Discovery','Scope & requirements','We map the problem, the systems already in place, and what success has to look like.','imgs/hwd-icon-1.svg',10,1),
+('Architecture','Solution design','Data model, integrations and infrastructure decided up front, so nothing is retrofitted later.','imgs/hwd-icon-2.svg',20,1),
+('Build','Development sprints','Short sprints with working software at the end of each, reviewed against the original scope.','imgs/hwd-icon-3.svg',30,1),
+('Integrate','APIs & migration','Existing CRM, accounting and payment systems connected, with historic data migrated and reconciled.','imgs/hwd-icon-4.svg',40,1),
+('Deploy','Cloud & go-live','Release onto AWS or Azure with monitoring, backups and rollback in place before switchover.','imgs/hwd-icon-5.svg',50,1),
+('Support','AMC & monitoring','Ongoing maintenance, security patching and support once the system is carrying real work.','imgs/hwd-icon-6.svg',60,1);
+
+-- ---------------------------------------------------------------------
 -- Navigation. Mirrors the live corediva365.com menu.
 --
 -- "What We Do" uses mega_type='services', so its panel is built from the
@@ -205,19 +222,19 @@ INSERT INTO `services` (`id`,`slug`,`title`,`short_description`,`icon`,`category
 -- Products (12). `invoice` is deliberately generic at base level -- each
 -- country renames it via product_content.title (Invoice Singapore, etc).
 -- ---------------------------------------------------------------------
-INSERT INTO `products` (`id`,`slug`,`title`,`short_description`,`icon`,`category`,`is_featured`,`sort_order`,`is_active`) VALUES
-(1,'instant-appointments','Instant Appointments','Real-time appointment booking with automated reminders, so clients self-schedule without a single phone call.','las la-calendar-plus','Scheduling',1,10,1),
-(2,'invoice','Invoice','Tax-compliant invoicing built for local businesses — quotes, recurring billing, and payment tracking in one place.','las la-file-invoice-dollar','Finance',1,20,1),
-(3,'scheduler','Scheduler','Team and resource scheduling with conflict detection, shift planning, and calendar sync across your organization.','las la-clock','Scheduling',0,30,1),
-(4,'e-marketing','E-Marketing','Email and SMS campaign automation with segmentation, drip sequences, and performance analytics built in.','las la-bullhorn','Marketing',0,40,1),
-(5,'crm-leads','CRM Leads','Lead capture, scoring, and pipeline tracking designed to plug straight into your existing sales workflow.','las la-funnel-dollar','CRM',1,50,1),
-(6,'connect-erp','Connect ERP','A modular ERP core covering inventory, finance, procurement, and HR — ready to deploy in weeks, not months.','las la-network-wired','ERP',1,60,1),
-(7,'hrm','Corediva HRM','Employee records, leave management, performance reviews, and onboarding workflows in a single HR system.','las la-users','HRM',0,70,1),
-(8,'whatsapp-automation','Web Automate (WhatsApp)','WhatsApp business automation that greets, qualifies, and routes every enquiry the moment it lands.','lab la-whatsapp','AI Automation',1,80,1),
-(9,'web-integrations','Integrations on Web (IoW)','Connect your website to the third-party tools and APIs your business already runs on — payments, CRMs, logistics, and more.','las la-plug','Integration',0,90,1),
-(10,'attendance-payroll','Attendance and Payroll Manager','Biometric-ready attendance tracking with automated payroll calculation, tax deductions, and payslip generation.','las la-fingerprint','HRM',0,100,1),
-(11,'payauth','Payauth','Secure payment authorization and gateway orchestration layer for businesses processing payments across multiple regions.','las la-credit-card','Fintech',0,110,1),
-(12,'school-erp','School Management ERP — ScubaSchool','End-to-end school administration: admissions, fee management, timetables, attendance, and parent communication.','las la-school','Education ERP',1,120,1);
+INSERT INTO `products` (`id`,`slug`,`title`,`short_description`,`icon`,`category`,`group_label`,`is_featured`,`sort_order`,`is_active`) VALUES
+(1,'instant-appointments','Instant Appointments','Real-time appointment booking with automated reminders, so clients self-schedule without a single phone call.','las la-calendar-plus','Scheduling','Scheduling',1,10,1),
+(2,'invoice','Invoice','Tax-compliant invoicing built for local businesses — quotes, recurring billing, and payment tracking in one place.','las la-file-invoice-dollar','Finance','Finance & Payments',1,20,1),
+(3,'scheduler','Scheduler','Team and resource scheduling with conflict detection, shift planning, and calendar sync across your organization.','las la-clock','Scheduling','Scheduling',0,30,1),
+(4,'e-marketing','E-Marketing','Email and SMS campaign automation with segmentation, drip sequences, and performance analytics built in.','las la-bullhorn','Marketing','CRM & Marketing',0,40,1),
+(5,'crm-leads','CRM Leads','Lead capture, scoring, and pipeline tracking designed to plug straight into your existing sales workflow.','las la-funnel-dollar','CRM','CRM & Marketing',1,50,1),
+(6,'connect-erp','Connect ERP','A modular ERP core covering inventory, finance, procurement, and HR — ready to deploy in weeks, not months.','las la-network-wired','ERP','ERP & HR',1,60,1),
+(7,'hrm','Corediva HRM','Employee records, leave management, performance reviews, and onboarding workflows in a single HR system.','las la-users','HRM','ERP & HR',0,70,1),
+(8,'whatsapp-automation','Web Automate (WhatsApp)','WhatsApp business automation that greets, qualifies, and routes every enquiry the moment it lands.','lab la-whatsapp','AI Automation','Automation & Integration',1,80,1),
+(9,'web-integrations','Integrations on Web (IoW)','Connect your website to the third-party tools and APIs your business already runs on — payments, CRMs, logistics, and more.','las la-plug','Integration','Automation & Integration',0,90,1),
+(10,'attendance-payroll','Attendance and Payroll Manager','Biometric-ready attendance tracking with automated payroll calculation, tax deductions, and payslip generation.','las la-fingerprint','HRM','ERP & HR',0,100,1),
+(11,'payauth','Payauth','Secure payment authorization and gateway orchestration layer for businesses processing payments across multiple regions.','las la-credit-card','Fintech','Finance & Payments',0,110,1),
+(12,'school-erp','School Management ERP — ScubaSchool','End-to-end school administration: admissions, fee management, timetables, attendance, and parent communication.','las la-school','Education ERP','ERP & HR',1,120,1);
 
 -- Per-country naming for the Invoice product. Marketing copy left blank.
 INSERT INTO `product_content` (`product_id`,`country_id`,`title`,`h1`,`is_published`) VALUES

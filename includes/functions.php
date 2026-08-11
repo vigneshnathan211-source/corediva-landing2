@@ -15,10 +15,17 @@ require_once __DIR__ . '/db.php';
 // Basics
 // =====================================================================
 
-/** Escape for HTML output. Use on every short/plain-text field. */
-function esc(?string $value): string
+/**
+ * Escape for HTML output. Use on every short/plain-text field.
+ *
+ * Accepts any scalar, not just string: templates routinely interpolate
+ * counts and IDs, and under strict_types a bare `?string` hint turns
+ * esc(count($x)) into a fatal TypeError that takes the rest of the page
+ * with it. Widening here is safer than relying on every call site to cast.
+ */
+function esc(string|int|float|bool|null $value): string
 {
-    return htmlspecialchars($value ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    return htmlspecialchars((string) ($value ?? ''), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
 /** Read a config value by dot path: cfg('app.base_url'). */
@@ -174,6 +181,27 @@ function get_services_by_category(): array
     $grouped = [];
     foreach (get_services() as $service) {
         $grouped[$service['category'] ?: 'Other'][] = $service;
+    }
+    return $grouped;
+}
+
+/** Delivery process steps for the "How we do" section. */
+function get_process_steps(): array
+{
+    return db_all('SELECT * FROM process_steps WHERE is_active = 1 ORDER BY sort_order');
+}
+
+/**
+ * Products bucketed by `group_label` for the tabbed products section.
+ *
+ * The ten `category` values are too granular to use as tabs, so a smaller
+ * set of groups sits above them; `category` still labels each card.
+ */
+function get_products_by_group(int $country_id): array
+{
+    $grouped = [];
+    foreach (get_products($country_id) as $product) {
+        $grouped[$product['group_label'] ?: 'Other'][] = $product;
     }
     return $grouped;
 }
