@@ -1666,13 +1666,17 @@ span.cd-nav-pending {
     padding-top: 100px;
 }
 
-/* ---- Top: brand + CTA, stats as their own strip below ---- */
+/* ---- Top: brand + CTA ----
+   Stats already appear once, in the dedicated stats section higher up the
+   page -- repeating the same four figures here was redundant, not a
+   second data point. */
 
 .cd-footer-top-grid {
     display: grid;
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr);
     gap: 64px;
     padding-bottom: 56px;
+    border-bottom: 1px solid rgba(255, 255, 255, .14);
 }
 
 .cd-footer-brand .logo {
@@ -1721,37 +1725,6 @@ span.cd-nav-pending {
 
 .cd-footer-cta .theme-btn {
     padding: 13px 26px;
-}
-
-.cd-footer-stats {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 32px;
-    padding-top: 40px;
-    border-top: 1px solid rgba(255, 255, 255, .14);
-}
-
-.cd-footer-stat {
-    font-family: var(--font_syne), sans-serif;
-    font-size: 34px;
-    font-weight: 700;
-    line-height: 1;
-    color: #fff;
-    margin: 0 0 6px;
-    font-variant-numeric: tabular-nums;
-}
-
-.cd-footer-stat span {
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--cd-accent-2);
-}
-
-.cd-footer-stat-label {
-    color: rgba(255, 255, 255, .6);
-    font-size: 14px;
-    line-height: 1.5;
-    margin: 0;
 }
 
 /* ---- Bottom: four link columns on one grid ---- */
@@ -1945,7 +1918,6 @@ span.cd-nav-pending {
         padding-top: 36px;
         border-top: 1px solid rgba(255, 255, 255, .14);
     }
-    .cd-footer-stats,
     .cd-footer-columns {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         row-gap: 36px;
@@ -2140,7 +2112,6 @@ span.cd-nav-pending {
         left: 16px;
         bottom: 16px;
     }
-    .cd-footer-stats,
     .cd-footer-columns {
         grid-template-columns: 1fr;
         row-gap: 32px;

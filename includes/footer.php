@@ -47,15 +47,6 @@ $footerCountries = array_map(
                         </a>
                     </div>
                 </div>
-
-                <div class="cd-footer-stats">
-<?php foreach (get_stats() as $stat): ?>
-                    <div class="cd-footer-stat-item">
-                        <p class="cd-footer-stat"><?= esc($stat['value']) ?><span><?= esc($stat['suffix']) ?></span></p>
-                        <p class="cd-footer-stat-label"><?= esc($stat['label']) ?></p>
-                    </div>
-<?php endforeach; ?>
-                </div>
             </div>
         </div>
 
