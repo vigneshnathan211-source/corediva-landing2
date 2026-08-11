@@ -1,0 +1,519 @@
+/* =====================================================================
+   Corediva overrides + landing-page sections.
+   Loaded after style.css / responsive.css so it wins on conflicts.
+   All `cd-` prefixed to stay clearly separate from the Synck theme.
+   ===================================================================== */
+
+:root {
+    --cd-radius: 16px;
+    --cd-gap: 24px;
+}
+
+/* ---------- Hero ---------- */
+
+.cd-hero {
+    padding: 60px 0 40px;
+}
+
+.cd-hero-swiper {
+    padding-bottom: 50px;
+}
+
+.cd-hero-slide {
+    max-width: 860px;
+}
+
+.cd-hero-slide .section-title {
+    margin-bottom: 20px;
+}
+
+.cd-hero-slide .section-title span {
+    color: var(--primary_color);
+}
+
+.cd-hero-sub {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--dark2);
+    margin-bottom: 30px;
+    max-width: 720px;
+}
+
+.cd-hero-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 32px;
+    padding: 14px 20px;
+    background: var(--primary_light);
+    border-radius: var(--cd-radius);
+    width: fit-content;
+    max-width: 100%;
+}
+
+.cd-hero-feature i {
+    font-size: 26px;
+    color: var(--primary_color);
+    flex-shrink: 0;
+}
+
+.cd-hero-feature strong {
+    display: block;
+    font-family: var(--font_syne);
+    color: var(--dark1);
+}
+
+.cd-hero-feature span {
+    font-size: 15px;
+    color: var(--dark2);
+}
+
+.cd-hero-pagination {
+    text-align: left;
+}
+
+.cd-hero-pagination .swiper-pagination-bullet-active {
+    background: var(--primary_color);
+}
+
+/* ---------- Capability strip ---------- */
+
+.cd-strip {
+    padding: 40px 0;
+    border-top: 1px solid var(--gray);
+    border-bottom: 1px solid var(--gray);
+    background: var(--light_white);
+}
+
+.cd-strip-grid,
+.cd-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--cd-gap);
+}
+
+.cd-strip-item i {
+    font-size: 30px;
+    color: var(--primary_color);
+    display: block;
+    margin-bottom: 10px;
+}
+
+.cd-strip-item h4 {
+    font-family: var(--font_syne);
+    font-size: 18px;
+    margin-bottom: 6px;
+    color: var(--dark1);
+}
+
+.cd-strip-item p {
+    font-size: 15px;
+    color: var(--dark2);
+    margin: 0;
+}
+
+/* ---------- Stats ---------- */
+
+.cd-stats {
+    padding: 70px 0;
+}
+
+.cd-stat {
+    text-align: center;
+}
+
+/* Stat figures are data, not document structure -- styled like a heading
+   but marked up as text so the outline stays clean for crawlers. */
+.cd-stat-value {
+    font-family: var(--font_syne);
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--primary_color);
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.cd-stat-value span {
+    color: var(--primary_color2);
+}
+
+.footer-experience-item .cd-footer-stat {
+    font-family: var(--font_syne);
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    margin-bottom: 6px;
+}
+
+.cd-stat p {
+    color: var(--dark2);
+    margin: 0;
+}
+
+/* ---------- Services ---------- */
+
+.cd-service-group {
+    margin-top: 46px;
+}
+
+.cd-service-group-title {
+    font-family: var(--font_syne);
+    font-size: 20px;
+    color: var(--dark1);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--gray);
+}
+
+.cd-service-grid,
+.cd-product-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--cd-gap);
+}
+
+.cd-service-grid .service-card,
+.cd-product-grid .service-card {
+    padding: 28px 24px;
+    background: #fff;
+    border-radius: var(--cd-radius);
+    position: relative;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.cd-service-grid .service-card:hover,
+.cd-product-grid .service-card:hover {
+    transform: translateY(-4px);
+}
+
+.cd-service-icon {
+    font-size: 34px;
+    color: var(--primary_color);
+    display: block;
+    margin-bottom: 14px;
+}
+
+.cd-service-grid h3,
+.cd-product-grid h3 {
+    font-family: var(--font_syne);
+    font-size: 18px;
+    line-height: 1.35;
+    margin-bottom: 8px;
+    color: var(--dark1);
+}
+
+.cd-service-grid p,
+.cd-product-grid p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--dark2);
+    margin: 0;
+}
+
+.cd-product-category {
+    font-size: 13px !important;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--primary_color) !important;
+    margin-bottom: 8px !important;
+}
+
+.cd-product-grid .cd-featured {
+    border: 1px solid var(--primary_color2);
+}
+
+/* ---------- About ---------- */
+
+.cd-about-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.cd-about-copy p {
+    color: var(--dark2);
+    line-height: 1.75;
+    margin-bottom: 18px;
+}
+
+.cd-about-points {
+    margin: 26px 0 30px;
+}
+
+.cd-about-points li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 12px;
+    color: var(--dark1);
+}
+
+.cd-about-points i {
+    color: var(--primary_color);
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.cd-about-media img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--cd-radius);
+}
+
+/* ---------- Partners ---------- */
+
+.cd-partners {
+    padding: 80px 0;
+    background: var(--light_white);
+}
+
+.cd-partner-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--cd-gap);
+    margin-top: 40px;
+}
+
+.cd-partner {
+    background: #fff;
+    border-radius: var(--cd-radius);
+    padding: 24px 20px;
+    text-align: center;
+}
+
+.cd-partner strong {
+    display: block;
+    font-family: var(--font_syne);
+    color: var(--dark1);
+    margin-bottom: 6px;
+}
+
+.cd-partner span {
+    font-size: 14px;
+    color: var(--dark2);
+}
+
+/* ---------- FAQ ---------- */
+
+.cd-faq {
+    padding: 90px 0;
+}
+
+.cd-accordion {
+    max-width: 860px;
+    margin: 40px auto 0;
+}
+
+.cd-accordion .accordion-item {
+    border: 1px solid var(--gray);
+    border-radius: var(--cd-radius) !important;
+    margin-bottom: 14px;
+    overflow: hidden;
+}
+
+.cd-accordion .accordion-button {
+    font-family: var(--font_syne);
+    font-size: 17px;
+    color: var(--dark1);
+    padding: 20px 24px;
+}
+
+.cd-accordion .accordion-button:not(.collapsed) {
+    background: var(--primary_light);
+    color: var(--primary_color);
+    box-shadow: none;
+}
+
+.cd-accordion .accordion-button:focus {
+    box-shadow: 0 0 0 3px var(--primary_light2);
+}
+
+.cd-accordion .accordion-body {
+    color: var(--dark2);
+    line-height: 1.75;
+    padding: 4px 24px 22px;
+}
+
+/* ---------- Contact / lead form ---------- */
+
+.contact-area {
+    padding: 90px 0;
+    background: var(--light_white);
+}
+
+.cd-contact-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 60px;
+    align-items: start;
+}
+
+.cd-contact-copy p {
+    color: var(--dark2);
+    line-height: 1.75;
+}
+
+.cd-contact-list {
+    margin-top: 30px;
+}
+
+.cd-contact-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.cd-contact-list i {
+    font-size: 22px;
+    color: var(--primary_color);
+}
+
+.cd-contact-list a {
+    color: var(--dark1);
+}
+
+.cd-contact-list a:hover {
+    color: var(--primary_color);
+}
+
+.cd-contact-form {
+    background: #fff;
+    padding: 36px;
+    border-radius: var(--cd-radius);
+}
+
+.contact-form .input-row {
+    gap: 20px;
+    margin-bottom: 18px;
+}
+
+.contact-form .input-group {
+    display: block;
+    width: 100%;
+}
+
+.contact-form label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--dark1);
+    margin-bottom: 6px;
+}
+
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1px solid var(--gray);
+    border-radius: 10px;
+    font-family: var(--font_dm);
+    font-size: 15px;
+    color: var(--dark1);
+    background: #fff;
+}
+
+.contact-form input:focus,
+.contact-form select:focus,
+.contact-form textarea:focus {
+    border-color: var(--primary_color);
+    box-shadow: 0 0 0 3px var(--primary_light2);
+}
+
+.contact-form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.contact-form .theme-btn {
+    border: none;
+    cursor: pointer;
+}
+
+.form-note {
+    margin-top: 14px;
+    color: var(--dark2);
+}
+
+.lead-form-wrap .alert {
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+}
+
+.lead-form-wrap .alert-success {
+    background: #e7f6ec;
+    color: #14532d;
+}
+
+.lead-form-wrap .alert-danger {
+    background: #fdecec;
+    color: #7f1d1d;
+}
+
+.lead-form-wrap .alert ul {
+    padding-left: 18px;
+    list-style: disc;
+}
+
+/* ---------- Footer tweaks ---------- */
+
+.footer-clients .footer-client-img {
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, .08);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+}
+
+.footer-links ul li small {
+    opacity: .7;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1199px) {
+    .cd-service-grid,
+    .cd-product-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .cd-partner-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 991px) {
+    .cd-strip-grid,
+    .cd-stats-grid,
+    .cd-service-grid,
+    .cd-product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .cd-about-grid,
+    .cd-contact-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    .cd-stat h2 {
+        font-size: 42px;
+    }
+}
+
+@media (max-width: 575px) {
+    .cd-strip-grid,
+    .cd-stats-grid,
+    .cd-service-grid,
+    .cd-product-grid,
+    .cd-partner-grid {
+        grid-template-columns: 1fr;
+    }
+    .cd-contact-form {
+        padding: 24px;
+    }
+    .contact-form .input-row.d-flex {
+        flex-direction: column;
+    }
+}

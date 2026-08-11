@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin/
+Disallow: /includes/
+Disallow: /database/
+Disallow: /tools/
+Disallow: /vendor/
+
+Sitemap: https://www.corediva365.com/sitemap.xml

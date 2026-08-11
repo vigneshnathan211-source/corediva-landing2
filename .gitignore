@@ -1,0 +1,29 @@
+# ---- Secrets: never commit ----
+includes/config.local.php
+*.env
+.env
+
+# ---- Not production: internal planning & source material ----
+Docs/
+synck/
+landing/
+.vscode/
+
+# ---- Not production: original theme source (design reference only) ----
+/*.html
+
+# ---- OS / editor noise ----
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+*~
+
+# ---- Runtime ----
+/uploads/tmp/
+*.log
+
+# ---- Local QA artefacts ----
+.playwright-mcp/
+/sg-*.png
+/page-*.png

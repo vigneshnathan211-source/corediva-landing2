@@ -1,0 +1,72 @@
+# =====================================================================
+# Corediva Tech Solutions
+# Rewrite ordering matters -- the blog/case-study rules MUST come before
+# the generic extensionless rule, or /sg/blog/some-slug/ would try to
+# resolve to a nonexistent some-slug.php.
+# =====================================================================
+
+Options -Indexes
+DirectoryIndex index.php index.html
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # ---- Sitemap ----
+    RewriteRule ^sitemap\.xml$ /sitemap.xml.php [L]
+
+    # ---- Clean URLs for blog posts and case studies ----
+    RewriteRule ^(sg|ae|us|uk|au|in|my)/blog/([a-z0-9-]+)/?$ \
+        /$1/blog/post.php?slug=$2 [L,QSA]
+
+    RewriteRule ^(sg|ae|us|uk|au|in|my)/case-studies/([a-z0-9-]+)/?$ \
+        /$1/case-studies/view.php?slug=$2 [L,QSA]
+
+    # ---- Extensionless pages: /sg/services/web-development-singapore/ ----
+    # Files stay flat on disk (web-development-singapore.php); only the URL
+    # is clean. Skips anything that already resolves to a real file or dir.
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}/$1.php -f
+    RewriteRule ^(.+?)/?$ /$1.php [L]
+
+    # ---- Redirect .php URLs to their clean form (canonical consolidation) ----
+    RewriteCond %{THE_REQUEST} \s/(.+?)\.php[\s?] [NC]
+    RewriteCond %{REQUEST_URI} !^/admin/
+    RewriteCond %{REQUEST_URI} !^/index\.php
+    RewriteRule ^ /%1/ [R=301,L]
+</IfModule>
+
+ErrorDocument 404 /404.php
+
+# ---- Block direct access to config, includes and tooling ----
+<FilesMatch "^(config.*\.php|db\.php|functions\.php)$">
+    Require all denied
+</FilesMatch>
+
+RedirectMatch 404 ^/includes/
+RedirectMatch 404 ^/database/
+RedirectMatch 404 ^/tools/
+RedirectMatch 404 ^/vendor/
+
+# ---- Security headers ----
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# ---- Compression + caching for static assets ----
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript \
+        application/javascript application/json image/svg+xml
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css                "access plus 1 year"
+    ExpiresByType application/javascript  "access plus 1 year"
+    ExpiresByType image/svg+xml           "access plus 1 year"
+    ExpiresByType image/png               "access plus 1 year"
+    ExpiresByType image/jpeg              "access plus 1 year"
+    ExpiresByType image/webp              "access plus 1 year"
+</IfModule>

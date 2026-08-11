@@ -1,0 +1,14 @@
+{
+    "name": "corediva/corediva-landing",
+    "description": "Corediva Tech Solutions - multi-country landing site (plain PHP + MySQL)",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.0",
+        "phpmailer/phpmailer": "^6.9"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}
