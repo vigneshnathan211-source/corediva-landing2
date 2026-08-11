@@ -97,11 +97,13 @@ include __DIR__ . '/../includes/header.php';
          badge by height rather than width, since the source marks are
          wildly different aspect ratios (IEC is a wide banner, the others
          are closer to square) and matching height is what actually reads
-         as "one consistent row" the way the theme's own logo strips do. -->
+         as "one consistent row" the way the theme's own logo strips do.
+         No eyebrow -- Our Company two sections down already uses this
+         page's second and last eyebrow budget slot; the headline alone
+         carries the section fine. -->
     <section class="about-area" id="certifications">
         <div class="custom-container">
             <div class="section-header text-center">
-                <h5 class="section-subtitle">Global Trust &amp; Verification</h5>
                 <h2 class="section-title">Fully Compliant &amp; Certified Operations</h2>
             </div>
 
@@ -184,12 +186,13 @@ include __DIR__ . '/../includes/header.php';
          .cd-expertise-grid just pins it to 3 columns instead of 4 so a
          3-item row doesn't leave a gap. Each card carries a skeleton
          placeholder that shimmers until cd-reveal.js swaps it for the real
-         content once the grid scrolls into view (see corediva.js). -->
+         content once the grid scrolls into view (see corediva.js). No
+         eyebrow, same reasoning as Certifications above -- the three
+         labeled cards make the topic obvious without one. -->
     <section class="about-area" id="expertise">
         <div class="custom-container">
             <div class="section-header d-flex align-items-end justify-content-between">
                 <div class="left">
-                    <h5 class="section-subtitle">OUR EXPERTISE</h5>
                     <h2 class="section-title">Three disciplines.<br>One accountable team.</h2>
                 </div>
                 <p>We don't split your project across three vendors. The same team that
