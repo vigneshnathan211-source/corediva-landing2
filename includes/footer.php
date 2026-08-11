@@ -143,6 +143,11 @@ $allOffices     = get_offices();
 
 </main>
 
+<a href="<?= esc(whatsapp_url()) ?>" class="cd-whatsapp-float" target="_blank" rel="noopener"
+   aria-label="Chat with us on WhatsApp">
+    <i class="lab la-whatsapp" aria-hidden="true"></i>
+</a>
+
 <script src="<?= esc(asset('js/jquery-3.7.0.min.js')) ?>"></script>
 <script src="<?= esc(asset('js/bootstrap.bundle.min.js')) ?>"></script>
 <script src="<?= esc(asset('js/gsap.min.js')) ?>"></script>

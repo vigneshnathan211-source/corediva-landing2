@@ -1,6 +1,6 @@
 <?php
 /**
- * Shared page head + site header.
+ * Shared page head, top bar and site header.
  *
  * Expects these to already be in scope when included:
  *   $country  array   row from `countries`
@@ -29,6 +29,12 @@ $seo = $seo ?? [];
 if (isset($region) && $region) {
     unset($seo['hreflang_pattern']);
 }
+
+$navTree     = get_nav_tree();
+$hqOffice    = get_offices()[0] ?? null;
+$socials     = get_social_links();
+$contactHref = nav_target('contact', $country) ?? '#contact';
+$loginHref   = is_file(doc_root() . '/admin/login.php') ? url('admin/login.php') : null;
 ?>
 <!DOCTYPE html>
 <html lang="<?= esc($country['hreflang']) ?>">
@@ -37,7 +43,7 @@ if (isset($region) && $region) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="<?= esc(setting('theme_color', '#2563eb')) ?>">
+    <meta name="theme-color" content="<?= esc(setting('theme_color', '#0D1155')) ?>">
 
 <?php render_seo_tags($seo); ?>
 
@@ -63,17 +69,47 @@ render_schema_localbusiness($country);
 
 <body>
 
-<a class="visually-hidden-focusable" href="#main-content">Skip to content</a>
+<a class="cd-skip-link" href="#main-content">Skip to content</a>
 
-<main class="main-page homepage" id="top">
+<main class="main-page" id="top">
 
-    <!-- Header Bar -->
-    <div class="header-bar">
-        <div class="custom-container">
-            <div class="header-bar-body d-flex align-items-center justify-content-between">
-                <div class="left">
-                    <label for="country-switcher" class="visually-hidden">Choose your country</label>
-                    <select class="country-select" id="country-switcher"
+    <!-- ============ Top bar ============ -->
+    <div class="cd-topbar">
+        <div class="cd-container">
+            <div class="cd-topbar-inner">
+
+                <ul class="cd-topbar-contact">
+                    <li>
+                        <i class="las la-phone" aria-hidden="true"></i>
+                        <a href="tel:<?= esc(setting('phone_e164')) ?>"><?= esc(setting('phone_display')) ?></a>
+                    </li>
+                    <li>
+                        <i class="las la-envelope" aria-hidden="true"></i>
+                        <a href="mailto:<?= esc(setting('email')) ?>"><?= esc(setting('email')) ?></a>
+                    </li>
+<?php if ($hqOffice): ?>
+                    <li class="cd-topbar-address">
+                        <i class="las la-map-marker-alt" aria-hidden="true"></i>
+                        <span><?= esc($hqOffice['address']) ?></span>
+                    </li>
+<?php endif; ?>
+                </ul>
+
+                <div class="cd-topbar-right">
+                    <span class="cd-follow-label">Follow:</span>
+                    <ul class="cd-topbar-social">
+<?php foreach ($socials as $social): ?>
+                        <li>
+                            <a href="<?= esc($social['url']) ?>" target="_blank" rel="noopener"
+                               aria-label="<?= esc($social['platform']) ?>">
+                                <i class="<?= esc($social['icon']) ?>" aria-hidden="true"></i>
+                            </a>
+                        </li>
+<?php endforeach; ?>
+                    </ul>
+
+                    <label for="country-switcher" class="cd-visually-hidden">Choose your country</label>
+                    <select class="cd-country-select" id="country-switcher"
                             onchange="if(this.value){window.location.href=this.value;}">
 <?php foreach (get_countries() as $c): ?>
                         <option value="<?= esc(country_url($c['code'])) ?>"
@@ -83,53 +119,114 @@ render_schema_localbusiness($country);
 <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="right">
-                    <p>
-                        <?= esc(setting('site_tagline')) ?>
-                        <a href="<?= esc(whatsapp_url()) ?>" rel="noopener" target="_blank"
-                           data-word="WhatsApp us" id="dataWord">WhatsApp us</a>
-                    </p>
-                </div>
+
             </div>
         </div>
     </div>
 
-    <!-- Header -->
-    <header class="header-area">
-        <div class="custom-container">
-            <div class="custom-row align-items-center justify-content-between">
-                <div class="header-left d-flex align-items-center">
-                    <a href="<?= esc(country_url($country['code'])) ?>" class="logo">
-                        <img src="<?= esc(asset('imgs/corediva-logo.png')) ?>"
-                             alt="<?= esc(setting('site_name')) ?>" width="200" height="25" />
-                    </a>
+    <!-- ============ Header / navigation ============ -->
+    <header class="cd-header">
+        <div class="cd-container">
+            <div class="cd-header-inner">
 
-                    <div class="header-left-right">
-                        <a href="#contact" class="theme-btn">Contact Us</a>
-                        <span class="menu-bar"><i class="las la-bars"></i></span>
-                    </div>
+                <a href="<?= esc(country_url($country['code'])) ?>" class="cd-logo">
+                    <img src="<?= esc(asset('imgs/corediva-logo.png')) ?>"
+                         alt="<?= esc(setting('site_name')) ?>" width="200" height="25">
+                </a>
 
-                    <nav class="navbar-wrapper" aria-label="Primary">
-                        <span class="close-menu-bar"><i class="las la-times"></i></span>
-                        <ul>
-<?php foreach (get_nav_items() as $item): ?>
-                            <li><a href="<?= esc($item['url'] ?? '#') ?>"><?= esc($item['label']) ?></a></li>
+                <button class="cd-menu-toggle" type="button"
+                        aria-expanded="false" aria-controls="cd-primary-nav" aria-label="Open menu">
+                    <span></span><span></span><span></span>
+                </button>
+
+                <nav class="cd-nav" id="cd-primary-nav" aria-label="Primary">
+                    <ul class="cd-nav-list">
+<?php foreach ($navTree as $item): ?>
+<?php
+    $isMegaServices = $item['mega_type'] === 'services';
+    $hasChildren    = !empty($item['children']);
+    $href           = nav_target($item['url'], $country);
+?>
+<?php if ($isMegaServices): ?>
+                        <li class="cd-nav-item cd-has-panel cd-has-mega">
+                            <button type="button" class="cd-nav-link cd-panel-toggle" aria-expanded="false">
+                                <?= esc($item['label']) ?>
+                                <i class="las la-angle-down" aria-hidden="true"></i>
+                            </button>
+                            <div class="cd-mega">
+                                <div class="cd-container">
+                                    <div class="cd-mega-grid">
+<?php foreach (get_services_by_category() as $category => $services): ?>
+                                        <div class="cd-mega-col">
+                                            <h3 class="cd-mega-heading"><?= esc($category) ?></h3>
+                                            <ul>
+<?php foreach ($services as $service): ?>
+<?php $svcHref = nav_target('services/' . $service['slug'] . '-{suffix}', $country); ?>
+                                                <li>
+<?php if ($svcHref): ?>
+                                                    <a href="<?= esc($svcHref) ?>"><?= esc($service['title']) ?></a>
+<?php else: ?>
+                                                    <span class="cd-nav-pending"><?= esc($service['title']) ?></span>
+<?php endif; ?>
+                                                </li>
 <?php endforeach; ?>
-                        </ul>
-                    </nav>
-                </div>
+                                            </ul>
+                                        </div>
+<?php endforeach; ?>
+                                    </div>
+                                    <div class="cd-mega-footer">
+                                        <span>Not sure which service fits? Tell us the problem and we'll scope it.</span>
+                                        <a href="#contact" class="cd-mega-cta">
+                                            Get a free consultation <i class="iconoir-arrow-up-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
 
-                <div class="header-right">
-                    <div class="header-contact-info d-flex align-items-center">
-                        <div class="phone-number">
-                            <a href="tel:<?= esc(setting('phone_e164')) ?>">
-                                Call Us <i class="iconoir-arrow-up-right"></i>
-                            </a>
-                            <?= esc(setting('phone_display')) ?>
-                        </div>
-                        <a href="#contact" class="theme-btn">Get a Free Consultation</a>
+<?php elseif ($hasChildren): ?>
+                        <li class="cd-nav-item cd-has-panel cd-has-dropdown">
+                            <button type="button" class="cd-nav-link cd-panel-toggle" aria-expanded="false">
+                                <?= esc($item['label']) ?>
+                                <i class="las la-angle-down" aria-hidden="true"></i>
+                            </button>
+                            <ul class="cd-dropdown">
+<?php foreach ($item['children'] as $child): ?>
+<?php $childHref = nav_target($child['url'], $country); ?>
+                                <li>
+<?php if ($child['column_group']): ?>
+                                    <span class="cd-dropdown-kicker"><?= esc($child['column_group']) ?></span>
+<?php endif; ?>
+<?php if ($childHref): ?>
+                                    <a href="<?= esc($childHref) ?>"><?= esc($child['label']) ?></a>
+<?php else: ?>
+                                    <span class="cd-nav-pending"><?= esc($child['label']) ?></span>
+<?php endif; ?>
+                                </li>
+<?php endforeach; ?>
+                            </ul>
+                        </li>
+
+<?php else: ?>
+                        <li class="cd-nav-item">
+<?php if ($href): ?>
+                            <a class="cd-nav-link" href="<?= esc($href) ?>"><?= esc($item['label']) ?></a>
+<?php else: ?>
+                            <span class="cd-nav-link cd-nav-pending"><?= esc($item['label']) ?></span>
+<?php endif; ?>
+                        </li>
+<?php endif; ?>
+<?php endforeach; ?>
+                    </ul>
+
+                    <div class="cd-nav-actions">
+<?php if ($loginHref): ?>
+                        <a href="<?= esc($loginHref) ?>" class="cd-login-link">Login</a>
+<?php endif; ?>
+                        <a href="<?= esc($contactHref) ?>" class="cd-btn cd-btn-primary">Contact Us</a>
                     </div>
-                </div>
+                </nav>
+
             </div>
         </div>
     </header>

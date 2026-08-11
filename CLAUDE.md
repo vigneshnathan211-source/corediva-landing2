@@ -49,6 +49,9 @@ The `invoice` product is deliberately generic at base level and renamed per coun
 - **`render_schema_localbusiness()` only emits `LocalBusiness` where an office actually exists** (IN, UK, AE). Singapore, USA, Australia and Malaysia are served remotely, so they get `Organization` + `areaServed` instead. Claiming a physical presence that doesn't exist is a misrepresentation Google penalises.
 - **Long-form fields render raw HTML** (`intro`, `body`, `core_description`) because they're admin-authored. Short fields must go through `esc()`. Admin write access is the trust boundary.
 - **Texas gets no hreflang** — a state is not a locale. `header.php` strips `hreflang_pattern` when `$region` is set.
+- **`nav_target()` returns `null` when a page doesn't exist yet**, and the header renders those entries as `<span class="cd-nav-pending">` instead of `<a>`. That's how the full menu structure stays visible without shipping dead links — entries become real links the moment their file lands on disk. Don't "fix" it by hardcoding hrefs.
+- **The "What We Do" mega menu is generated from `services` grouped by `category`**, not from `nav_items` children — `nav_items.mega_type = 'services'` triggers it. The five `category` values are deliberately the live site's five mega-menu columns, so adding a service to the right category puts it in the menu automatically.
+- **Grid tracks holding a Swiper must be `minmax(0, 1fr)`, never `1fr`.** A bare `1fr` means `minmax(auto, 1fr)`, whose auto minimum is the flex wrapper's min-content width — the sum of every slide. That blew the hero's left column out to 26 million pixels and pushed the form off-screen.
 
 ## Content status
 

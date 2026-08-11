@@ -49,69 +49,67 @@ $seo = [
 include __DIR__ . '/../includes/header.php';
 ?>
 
-    <!-- Hero -->
-    <section class="hero-empowerment-area cd-hero">
-        <div class="custom-container">
-            <div class="swiper cd-hero-swiper">
-                <div class="swiper-wrapper">
+    <!-- Hero: rotating message on the left, lead form pinned on the right -->
+    <section class="cd-hero">
+        <div class="cd-container">
+            <div class="cd-hero-grid">
+
+                <div class="cd-hero-left">
+                    <div class="swiper cd-hero-swiper">
+                        <div class="swiper-wrapper">
 <?php foreach ($slides as $i => $slide): ?>
 <?php
     // Exactly one H1 per page. The lead slide (Singapore-specific here, because
     // country rows sort ahead of global ones) carries it; the rest are H2.
     $headingTag = $i === 0 ? 'h1' : 'h2';
 ?>
-                    <div class="swiper-slide">
-                        <div class="cd-hero-slide">
+                            <div class="swiper-slide">
+                                <div class="cd-hero-slide">
 <?php if ($slide['badge']): ?>
-                            <h5 class="section-subtitle"><?= esc($slide['badge']) ?></h5>
+                                    <span class="cd-hero-badge"><?= esc($slide['badge']) ?></span>
 <?php endif; ?>
-                            <<?= $headingTag ?> class="section-title">
-                                <?= highlight_heading($slide['heading'], $slide['heading_highlight']) ?>
-                            </<?= $headingTag ?>>
+                                    <<?= $headingTag ?> class="cd-hero-title">
+                                        <?= highlight_heading($slide['heading'], $slide['heading_highlight']) ?>
+                                    </<?= $headingTag ?>>
 <?php if ($slide['subheading']): ?>
-                            <p class="cd-hero-sub"><?= esc($slide['subheading']) ?></p>
+                                    <p class="cd-hero-sub"><?= esc($slide['subheading']) ?></p>
 <?php endif; ?>
-                            <div class="btns-group d-flex">
+                                    <div class="cd-hero-ctas">
 <?php if ($slide['cta1_text']): ?>
-                                <a href="<?= esc($slide['cta1_url'] ?: '#contact') ?>" class="theme-btn">
-                                    <?= esc($slide['cta1_text']) ?>
-                                </a>
+                                        <a href="<?= esc($slide['cta1_url'] ?: '#contact') ?>" class="cd-btn cd-btn-gold">
+                                            <?= esc($slide['cta1_text']) ?> <i class="las la-arrow-right" aria-hidden="true"></i>
+                                        </a>
 <?php endif; ?>
 <?php if ($slide['cta2_text']): ?>
-                                <a href="<?= esc($slide['cta2_url'] ?: '#services') ?>" class="theme-btn2">
-                                    <?= esc($slide['cta2_text']) ?> <i class="iconoir-arrow-up-right"></i>
-                                </a>
+                                        <a href="<?= esc($slide['cta2_url'] ?: '#services') ?>" class="cd-btn cd-btn-ghost">
+                                            <?= esc($slide['cta2_text']) ?>
+                                        </a>
 <?php endif; ?>
+                                    </div>
+                                </div>
                             </div>
-<?php if ($slide['feature_title']): ?>
-                            <div class="cd-hero-feature">
-                                <i class="<?= esc($slide['feature_icon']) ?>" aria-hidden="true"></i>
-                                <span>
-                                    <strong><?= esc($slide['feature_title']) ?></strong>
-                                    <?= esc($slide['feature_subtitle']) ?>
-                                </span>
-                            </div>
-<?php endif; ?>
+<?php endforeach; ?>
                         </div>
+                        <div class="cd-hero-pagination"></div>
                     </div>
-<?php endforeach; ?>
-                </div>
-                <div class="swiper-pagination cd-hero-pagination"></div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Capability strip -->
-    <section class="cd-strip">
-        <div class="custom-container">
-            <div class="cd-strip-grid">
+                    <ul class="cd-hero-trust">
 <?php foreach ($features as $feature): ?>
-                <div class="cd-strip-item">
-                    <i class="<?= esc($feature['icon']) ?>" aria-hidden="true"></i>
-                    <h4><?= esc($feature['title']) ?></h4>
-                    <p><?= esc($feature['subtitle']) ?></p>
-                </div>
+                        <li>
+                            <i class="<?= esc($feature['icon']) ?>" aria-hidden="true"></i>
+                            <span><?= esc($feature['title']) ?></span>
+                        </li>
 <?php endforeach; ?>
+                    </ul>
+                </div>
+
+                <div class="cd-hero-right">
+<?php
+$lead_variant = 'hero';
+include __DIR__ . '/../includes/lead-form.php';
+?>
+                </div>
+
             </div>
         </div>
     </section>

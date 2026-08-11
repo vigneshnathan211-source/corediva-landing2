@@ -39,14 +39,14 @@ TRUNCATE TABLE `countries`;
 -- (web-development-singapore.php). Note uk -> en-gb.
 -- ---------------------------------------------------------------------
 INSERT INTO `countries`
-(`id`,`code`,`slug_suffix`,`name`,`hreflang`,`locale`,`currency`,`currency_symbol`,`phone`,`whatsapp`,`email`,`address`,`timezone`,`is_primary`,`is_active`,`sort_order`) VALUES
-(1,'sg','singapore','Singapore',     'en-sg','en_SG','SGD','S$','+91 89038 55325','918903855325','support@corediva365.com',NULL,'Asia/Singapore',1,1,10),
-(2,'ae','uae',      'United Arab Emirates','en-ae','en_AE','AED','AED','+91 89038 55325','918903855325','support@corediva365.com','United Arab Emirates','Asia/Dubai',0,1,20),
-(3,'us','usa',      'United States', 'en-us','en_US','USD','$', '+91 89038 55325','918903855325','support@corediva365.com',NULL,'America/Chicago',0,1,30),
-(4,'uk','uk',       'United Kingdom','en-gb','en_GB','GBP','£', '+91 89038 55325','918903855325','support@corediva365.com','United Kingdom','Europe/London',0,1,40),
-(5,'au','australia','Australia',     'en-au','en_AU','AUD','A$','+91 89038 55325','918903855325','support@corediva365.com',NULL,'Australia/Sydney',0,1,50),
-(6,'in','india',    'India',         'en-in','en_IN','INR','₹', '+91 89038 55325','918903855325','support@corediva365.com','No:09, Sai Street, Thendral Nagar, Trichy - 620021','Asia/Kolkata',0,1,60),
-(7,'my','malaysia', 'Malaysia',      'en-my','en_MY','MYR','RM','+91 89038 55325','918903855325','support@corediva365.com',NULL,'Asia/Kuala_Lumpur',0,1,70);
+(`id`,`code`,`slug_suffix`,`name`,`hreflang`,`locale`,`currency`,`currency_symbol`,`dial_code`,`phone`,`whatsapp`,`email`,`address`,`timezone`,`is_primary`,`is_active`,`sort_order`) VALUES
+(1,'sg','singapore','Singapore',     'en-sg','en_SG','SGD','S$','+65', '+91 89038 55325','918903855325','support@corediva365.com',NULL,'Asia/Singapore',1,1,10),
+(2,'ae','uae',      'United Arab Emirates','en-ae','en_AE','AED','AED','+971','+91 89038 55325','918903855325','support@corediva365.com','United Arab Emirates','Asia/Dubai',0,1,20),
+(3,'us','usa',      'United States', 'en-us','en_US','USD','$', '+1',  '+91 89038 55325','918903855325','support@corediva365.com',NULL,'America/Chicago',0,1,30),
+(4,'uk','uk',       'United Kingdom','en-gb','en_GB','GBP','£', '+44', '+91 89038 55325','918903855325','support@corediva365.com','United Kingdom','Europe/London',0,1,40),
+(5,'au','australia','Australia',     'en-au','en_AU','AUD','A$','+61', '+91 89038 55325','918903855325','support@corediva365.com',NULL,'Australia/Sydney',0,1,50),
+(6,'in','india',    'India',         'en-in','en_IN','INR','₹', '+91', '+91 89038 55325','918903855325','support@corediva365.com','No:09, Sai Street, Thendral Nagar, Trichy - 620021','Asia/Kolkata',0,1,60),
+(7,'my','malaysia', 'Malaysia',      'en-my','en_MY','MYR','RM','+60', '+91 89038 55325','918903855325','support@corediva365.com',NULL,'Asia/Kuala_Lumpur',0,1,70);
 
 INSERT INTO `regions` (`id`,`country_id`,`code`,`slug_suffix`,`name`,`cities`,`notes`,`is_active`,`sort_order`) VALUES
 (1,3,'texas','texas','Texas','Austin, Dallas, Houston','State-level geo page nested under /us/. Gets no hreflang of its own -- a state is not a locale.',1,10);
@@ -110,16 +110,37 @@ INSERT INTO `social_links` (`platform`,`url`,`icon`,`sort_order`,`is_active`) VA
 ('Instagram','https://instagram.com/corediva365','lab la-instagram',40,1);
 
 -- ---------------------------------------------------------------------
--- Landing-page navigation (on-page anchors).
--- The full mega menu gets seeded when the service/product pages exist.
+-- Navigation. Mirrors the live corediva365.com menu.
+--
+-- "What We Do" uses mega_type='services', so its panel is built from the
+-- services table grouped by `category` -- the five category values are
+-- exactly the live site's five mega-menu columns, so the IA matches while
+-- every entry maps to a real service page rather than a hand-kept list.
+--
+-- Items whose target page does not exist yet render as plain text rather
+-- than links (see nav_target()), so the intended structure is visible
+-- without shipping a single dead link. They become links automatically
+-- the moment the page lands on disk.
 -- ---------------------------------------------------------------------
-INSERT INTO `nav_items` (`id`,`parent_id`,`label`,`url`,`column_group`,`is_mega`,`sort_order`,`is_active`) VALUES
-(1,NULL,'Home','#top',NULL,0,10,1),
-(2,NULL,'What We Do','#services',NULL,0,20,1),
-(3,NULL,'Products','#products',NULL,0,30,1),
-(4,NULL,'Who We Are','#about',NULL,0,40,1),
-(5,NULL,'Partners','#partners',NULL,0,50,1),
-(6,NULL,'FAQs','#faq',NULL,0,60,1);
+INSERT INTO `nav_items` (`id`,`parent_id`,`label`,`url`,`column_group`,`is_mega`,`mega_type`,`sort_order`,`is_active`) VALUES
+(1,NULL,'Home','#top',NULL,0,NULL,10,1),
+(2,NULL,'Who We Are','#about',NULL,0,NULL,20,1),
+(3,NULL,'What We Do',NULL,NULL,1,'services',30,1),
+(4,NULL,'Company',NULL,NULL,0,NULL,40,1),
+(5,NULL,'Products','#products',NULL,0,NULL,50,1),
+(6,NULL,'Partners','#partners',NULL,0,NULL,60,1),
+-- No case studies exist yet (0 rows); activate once content lands.
+(7,NULL,'Case Studies','case-studies',NULL,0,NULL,70,0),
+
+-- Company dropdown. Only FAQs resolves today (it is an on-page anchor);
+-- the rest show as text until their pages are built.
+(10,4,'How We Work','company/our-process','Our Process',0,NULL,10,1),
+(11,4,'Leadership Team','company/leadership-team','Our Team',0,NULL,20,1),
+(12,4,'Pricing','company/pricing','Investment',0,NULL,30,1),
+(13,4,'FAQs Support','#faq','Knowledge',0,NULL,40,1),
+-- Deliberately inactive: the only testimonial in the source DB is flagged
+-- "do not publish placeholder testimonials live".
+(14,4,'Client Testimonials','company/testimonials','Evaluation',0,NULL,50,0);
 
 -- ---------------------------------------------------------------------
 -- Hero

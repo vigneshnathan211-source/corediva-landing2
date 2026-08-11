@@ -118,6 +118,66 @@ function get_nav_items(): array
     return db_all('SELECT * FROM nav_items WHERE is_active = 1 AND parent_id IS NULL ORDER BY sort_order');
 }
 
+/** Top-level nav items with their children attached. */
+function get_nav_tree(): array
+{
+    $items    = get_nav_items();
+    $children = db_all('SELECT * FROM nav_items WHERE is_active = 1 AND parent_id IS NOT NULL ORDER BY sort_order');
+
+    $byParent = [];
+    foreach ($children as $child) {
+        $byParent[(int) $child['parent_id']][] = $child;
+    }
+
+    foreach ($items as &$item) {
+        $item['children'] = $byParent[(int) $item['id']] ?? [];
+    }
+    unset($item);
+
+    return $items;
+}
+
+/**
+ * Resolve a stored nav URL for the current country.
+ *
+ * Returns null when the target page does not exist yet, so the caller can
+ * render plain text instead of a link. The intended menu structure stays
+ * visible without shipping dead links, and entries light up on their own
+ * as pages land on disk.
+ */
+function nav_target(?string $stored, array $country): ?string
+{
+    if ($stored === null || $stored === '') {
+        return null;
+    }
+
+    // On-page anchors always work.
+    if ($stored[0] === '#') {
+        return $stored;
+    }
+
+    // Absolute links pass through untouched.
+    if (preg_match('#^https?://#i', $stored)) {
+        return $stored;
+    }
+
+    $path = str_replace('{suffix}', $country['slug_suffix'], trim($stored, '/'));
+
+    return is_file(path_to_file($country['code'], $path))
+        ? url($country['code'] . '/' . $path . '/')
+        : null;
+}
+
+/** Services grouped by category, for the "What We Do" mega-menu panel. */
+function get_services_by_category(): array
+{
+    $grouped = [];
+    foreach (get_services() as $service) {
+        $grouped[$service['category'] ?: 'Other'][] = $service;
+    }
+    return $grouped;
+}
+
 /** WhatsApp click-to-chat link built from site settings. */
 function whatsapp_url(): string
 {
