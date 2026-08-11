@@ -96,12 +96,18 @@ INSERT INTO `stats` (`stat_key`,`value`,`suffix`,`label`,`sort_order`,`is_active
 ('customers_served','240','+','International customers served',30,1),
 ('countries','3','+','Countries with local representation',40,1);
 
-INSERT INTO `partners` (`name`,`description`,`sort_order`,`is_active`) VALUES
-('NxtGen','Cloud infrastructure partner',10,1),
-('Razorpay International','Payments partner',20,1),
-('PayPal','Payments partner',30,1),
-('Payoneer','Payments partner',40,1),
-('Bank of Baroda','Banking partner',50,1);
+-- Partners. `logo` is a path under assets/; rows without one fall back to a
+-- styled wordmark, so a missing asset degrades cleanly instead of leaving a
+-- gap. NxtGen and Bank of Baroda are not in the Simple Icons set, so they
+-- use the wordmark until Corediva supplies official artwork.
+-- `description` is retained for the admin UI and title attributes only: it is
+-- deliberately NOT printed under each logo on the page.
+INSERT INTO `partners` (`name`,`logo`,`logo_alt`,`url`,`description`,`sort_order`,`is_active`) VALUES
+('NxtGen',                 NULL,                            NULL,                'https://www.nxtgen.com',      'Cloud infrastructure partner',10,1),
+('Razorpay International','imgs/partners/razorpay.svg',    'Razorpay logo',      'https://razorpay.com',        'Payments partner',20,1),
+('PayPal',                'imgs/partners/paypal.svg',      'PayPal logo',        'https://www.paypal.com',      'Payments partner',30,1),
+('Payoneer',              'imgs/partners/payoneer.svg',    'Payoneer logo',      'https://www.payoneer.com',    'Payments partner',40,1),
+('Bank of Baroda',         NULL,                            NULL,                'https://www.bankofbaroda.in', 'Banking partner',50,1);
 
 INSERT INTO `social_links` (`platform`,`url`,`icon`,`sort_order`,`is_active`) VALUES
 ('LinkedIn','https://www.linkedin.com/company/corediva-tech-solutions','lab la-linkedin-in',10,1),

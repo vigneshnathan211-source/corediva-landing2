@@ -1055,35 +1055,64 @@ span.cd-nav-pending {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: var(--cd-gap);
-    margin-top: 40px;
+    margin: 40px 0 0;
+    padding: 0;
+    list-style: none;
 }
 
 .cd-partner {
     background: #fff;
     border: 1px solid var(--cd-line);
     border-radius: var(--cd-radius-card);
-    padding: 24px 20px;
-    text-align: center;
     transition: transform .25s var(--cd-ease-out),
-                box-shadow .25s var(--cd-ease-out);
+                box-shadow .25s var(--cd-ease-out),
+                border-color .25s var(--cd-ease-out);
 }
 
-.cd-partner strong {
-    display: block;
+.cd-partner a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 108px;
+    padding: 22px 18px;
+    text-align: center;
+}
+
+.cd-partner-mark {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    /* Marks rest desaturated so the row reads as one set rather than five
+       competing brand colours, then return to full colour on hover. */
+    filter: grayscale(1);
+    opacity: .55;
+    transition: filter .25s var(--cd-ease-out),
+                opacity .25s var(--cd-ease-out);
+}
+
+.cd-partner-name {
     font-family: var(--font_syne), sans-serif;
-    color: var(--cd-ink);
-    margin-bottom: 6px;
-}
-
-.cd-partner span {
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
     color: var(--cd-body);
+    transition: color .25s var(--cd-ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
     .cd-partner:hover {
         transform: translateY(-3px);
+        border-color: var(--cd-accent-2);
         box-shadow: var(--cd-shadow-lift);
+    }
+    .cd-partner:hover .cd-partner-mark {
+        filter: grayscale(0);
+        opacity: 1;
+    }
+    .cd-partner:hover .cd-partner-name {
+        color: var(--cd-accent);
     }
 }
 
@@ -1471,6 +1500,17 @@ span.cd-nav-pending {
     .theme-btn2:hover i,
     .cd-mega-cta:hover i,
     .cd-mega-col a:hover {
+        transform: none;
+    }
+
+    .cd-partner,
+    .cd-partner-mark,
+    .cd-partner-name {
+        transition-duration: .01ms !important;
+    }
+
+    /* Colour still conveys the hover, movement does not. */
+    .cd-partner:hover {
         transform: none;
     }
 

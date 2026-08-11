@@ -221,14 +221,29 @@ include __DIR__ . '/../includes/lead-form.php';
                 <h5 class="section-subtitle">PARTNERS</h5>
                 <h2 class="section-title">Who we build with</h2>
             </div>
-            <div class="cd-partner-grid">
+            <?php /* Mark + name lockup rather than a bare logo wall. The
+                     available marks are glyph-only monograms (PayPal's "P",
+                     Payoneer's swoosh), which identify nobody on their own,
+                     so the name carries the recognition and the mark carries
+                     the brand. Partners with no artwork yet show the name
+                     alone and the row still reads as one set.
+                     Deliberately no category label under each: that turns a
+                     logo row into a caption grid and tells the reader
+                     nothing they can't infer. */ ?>
+            <ul class="cd-partner-grid">
 <?php foreach ($partners as $partner): ?>
-                <div class="cd-partner simple-shadow">
-                    <strong><?= esc($partner['name']) ?></strong>
-                    <span><?= esc($partner['description']) ?></span>
-                </div>
+                <li class="cd-partner">
+                    <a href="<?= esc($partner['url'] ?: '#') ?>" target="_blank" rel="noopener"
+                       title="<?= esc($partner['name'] . ': ' . $partner['description']) ?>">
+<?php if ($partner['logo']): ?>
+                        <img class="cd-partner-mark" src="<?= esc(asset($partner['logo'])) ?>"
+                             alt="" aria-hidden="true" width="30" height="30">
+<?php endif; ?>
+                        <span class="cd-partner-name"><?= esc($partner['name']) ?></span>
+                    </a>
+                </li>
 <?php endforeach; ?>
-            </div>
+            </ul>
         </div>
     </section>
 
