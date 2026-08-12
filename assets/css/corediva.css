@@ -1077,21 +1077,37 @@ button.cd-panel-toggle:not(.cd-nav-link) {
     color: var(--cd-body);
 }
 
-/* RFQ: the same lead-form-wrap/cd-form markup as the hero card, but
-   presented as its own centred page section instead of a compact panel
-   docked beside hero copy -- no corner brackets, no left alignment. */
+/* RFQ: even 50/50 split, form against a supporting image. Both tracks are
+   minmax(0, 1fr) rather than a bare 1fr for the same reason as
+   .cd-hero-grid above -- an intrinsic-width child (the form card here)
+   would otherwise set the track's auto-minimum and refuse to shrink. */
+.cd-rfq-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 60px;
+    align-items: stretch;
+}
+
+.cd-rfq-col {
+    min-width: 0;
+}
+
+/* Same lead-form-wrap/cd-form markup as the hero card, docked in an even
+   column instead of centred as its own section. */
 .cd-rfq-form {
-    max-width: 560px;
-    margin: 0 auto;
+    max-width: 100%;
+    height: 100%;
     background: var(--cd-surface-soft);
     border: 1px solid var(--cd-line);
     border-radius: var(--cd-radius-card);
     padding: 40px 36px;
-    text-align: center;
 }
 
-.cd-rfq-form .cd-field {
-    text-align: left;
+.cd-rfq-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--cd-radius-card);
 }
 
 /* Honeypot: off-screen, never focusable by a human. */
@@ -2043,6 +2059,19 @@ button.cd-panel-toggle:not(.cd-nav-link) {
     }
     .cd-hero-form {
         max-width: 520px;
+    }
+    .cd-rfq-row {
+        grid-template-columns: 1fr;
+        gap: 44px;
+    }
+    .cd-rfq-form-col,
+    .cd-rfq-media {
+        max-width: 520px;
+        margin: 0 auto;
+        width: 100%;
+    }
+    .cd-rfq-media img {
+        max-height: 360px;
     }
     .cd-service-grid,
     .cd-product-grid {

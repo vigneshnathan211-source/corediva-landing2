@@ -163,15 +163,24 @@ include __DIR__ . '/../includes/header.php';
         </div>
     </section>
 
-    <!-- RFQ: reusable request-a-quote form, built once in
-         includes/lead-form.php (variant 'rfq') so it can sit unchanged on
-         every future service-detail page too. $lead_service stays null
-         here, so "Interested in" is a full dropdown of all 16 services --
-         a detail page will instead pass its own $lead_service row, which
-         restricts the field to just that one service. -->
+    <!-- RFQ: even 50/50 split -- reusable request-a-quote form
+         (includes/lead-form.php, variant 'rfq') on the left, a supporting
+         image on the right, so the form can sit unchanged on every future
+         service-detail page too. $lead_service stays null here, so
+         "Interested in" is a full dropdown of all 16 services -- a detail
+         page will instead pass its own $lead_service row, which restricts
+         the field to just that one service. -->
     <section class="about-area cd-rfq-area">
         <div class="custom-container">
+            <div class="cd-rfq-row">
+                <div class="cd-rfq-col cd-rfq-form-col">
 <?php $lead_variant = 'rfq'; $lead_service = null; include __DIR__ . '/../includes/lead-form.php'; ?>
+                </div>
+
+                <div class="cd-rfq-col cd-rfq-media">
+                    <img src="<?= esc(asset('imgs/about-service-6.jpg')) ?>" alt="A Corediva engineer working through a client's codebase">
+                </div>
+            </div>
         </div>
     </section>
 
