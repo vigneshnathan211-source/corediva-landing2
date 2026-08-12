@@ -133,6 +133,72 @@
         });
     }
 
+    /* ---------------- Scroll reveal (skeleton swap + stagger fade-in) ---------------- */
+
+    var revealGrids = Array.prototype.slice.call(
+        document.querySelectorAll('[data-cd-reveal], [data-cd-stagger]')
+    );
+
+    if (revealGrids.length && !prefersReduced) {
+        // [data-cd-reveal] grids swap a skeleton placeholder for real
+        // content via .cd-loading (see the Expertise section). Everything
+        // else -- [data-cd-stagger] -- just needs .is-revealed added once,
+        // permanently, to run its CSS stagger transition.
+        var triggerReveal = function (grid) {
+            if (grid.dataset.revealed) { return; }
+            grid.dataset.revealed = 'true';
+            if (grid.hasAttribute('data-cd-reveal')) {
+                grid.classList.add('cd-loading');
+                window.setTimeout(function () {
+                    grid.classList.remove('cd-loading');
+                }, 600);
+            } else {
+                grid.classList.add('is-revealed');
+            }
+        };
+
+        if ('IntersectionObserver' in window) {
+            var revealObserver = new IntersectionObserver(function (entries, observer) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) { return; }
+                    observer.unobserve(entry.target);
+                    triggerReveal(entry.target);
+                });
+            }, { threshold: 0.2 });
+
+            revealGrids.forEach(function (grid) { revealObserver.observe(grid); });
+        }
+
+        // Belt and suspenders: some layouts (body as the scrolling element
+        // rather than the viewport -- this theme's body {overflow-x:hidden}
+        // is exactly that trigger) have been seen to leave a default-root
+        // IntersectionObserver never re-firing on scroll. A throttled
+        // scroll/resize check against getBoundingClientRect catches those
+        // cases too; triggerReveal's dataset guard stops either path from
+        // firing twice.
+        var revealCheckQueued = false;
+        var checkRevealGrids = function () {
+            revealCheckQueued = false;
+            var viewportHeight = window.innerHeight;
+            revealGrids.forEach(function (grid) {
+                if (grid.dataset.revealed) { return; }
+                var rect = grid.getBoundingClientRect();
+                if (rect.top < viewportHeight * 0.8 && rect.bottom > 0) {
+                    triggerReveal(grid);
+                }
+            });
+        };
+        var queueRevealCheck = function () {
+            if (revealCheckQueued) { return; }
+            revealCheckQueued = true;
+            window.requestAnimationFrame(checkRevealGrids);
+        };
+
+        window.addEventListener('scroll', queueRevealCheck, { passive: true });
+        window.addEventListener('resize', queueRevealCheck);
+        checkRevealGrids();
+    }
+
     /* ---------------- In-page anchors ---------------- */
 
     document.querySelectorAll('a[href^="#"]').forEach(function (link) {
