@@ -87,10 +87,23 @@ function url(string $path = ''): string
     return base_url() . '/' . ltrim($path, '/');
 }
 
-/** Asset URL, resolved from the site root so it works at any folder depth. */
+/**
+ * Asset URL, resolved from the site root so it works at any folder depth.
+ *
+ * Appends a `?v=<mtime>` query string so the year-long browser cache set
+ * in .htaccess (ExpiresByType, needed for PageSpeed) busts itself on every
+ * edit instead of serving a stale file until someone manually clears their
+ * cache -- the failure mode is silent (an old asset just keeps loading
+ * with no error), so this has to be automatic rather than a step someone
+ * remembers to do on deploy.
+ */
 function asset(string $path): string
 {
-    return url('assets/' . ltrim($path, '/'));
+    $relative = 'assets/' . ltrim($path, '/');
+    $full     = dirname(__DIR__) . '/' . $relative;
+    $version  = is_file($full) ? filemtime($full) : false;
+
+    return url($relative) . ($version !== false ? '?v=' . $version : '');
 }
 
 /** Best-effort client IP as a packed binary string for storage. */
