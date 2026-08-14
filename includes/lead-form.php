@@ -8,13 +8,21 @@
  *   $lead_variant string       'hero' | 'short' | 'full' | 'rfq' (default 'full')
  *   $lead_result  array|null   return value of save_lead(), if the page
  *                              already handled a POST
- *   $lead_service array|null   a single row from `services`. When set, the
- *                              "Interested in" field is restricted to this
- *                              one service instead of listing all of them --
- *                              for service-detail pages, where the visitor
- *                              already picked a service by being on that
- *                              page. Ignored on 'hero', which has no service
+ *   $lead_service array|null   a single row from `services` or `products`.
+ *                              When set, the "Interested in" field is
+ *                              restricted to this one row instead of
+ *                              listing every service -- for service/
+ *                              product-detail pages, where the visitor
+ *                              already picked one by being on that page.
+ *                              Ignored on 'hero', which has no interest
  *                              field at all.
+ *   $lead_label   string       label for the restricted field above,
+ *                              e.g. 'Service' (default) or 'Product'.
+ *   $lead_options array|null   rows to list in the unrestricted "Interested
+ *                              in" dropdown (each needs a 'title'). Defaults
+ *                              to every service -- pass get_products($id)
+ *                              on a products-context page instead. Ignored
+ *                              when $lead_service is set.
  *
  * The page including this is responsible for handling the POST, e.g.:
  *
@@ -37,6 +45,8 @@ declare(strict_types=1);
 $lead_variant = $lead_variant ?? 'full';
 $lead_result  = $lead_result  ?? null;
 $lead_service = $lead_service ?? null;
+$lead_label   = $lead_label   ?? 'Service';
+$lead_options = $lead_options ?? get_services();
 $isHero       = $lead_variant === 'hero';
 $isRfq        = $lead_variant === 'rfq';
 $showHeader   = $isHero || $isRfq;
@@ -116,7 +126,7 @@ $formId       = $isHero ? 'hero' : ($isRfq ? 'rfq' : 'main');
 
 <?php if ($lead_service): ?>
         <div class="cd-field">
-            <label for="service-<?= $formId ?>">Service</label>
+            <label for="service-<?= $formId ?>"><?= esc($lead_label) ?></label>
             <select id="service-<?= $formId ?>" name="service_interest">
                 <option value="<?= esc($lead_service['title']) ?>" selected><?= esc($lead_service['title']) ?></option>
             </select>
@@ -125,11 +135,11 @@ $formId       = $isHero ? 'hero' : ($isRfq ? 'rfq' : 'main');
         <div class="cd-field">
             <label for="service-<?= $formId ?>">Interested in</label>
             <select id="service-<?= $formId ?>" name="service_interest">
-                <option value="">Select a service</option>
-<?php foreach (get_services() as $svc): ?>
-                <option value="<?= esc($svc['title']) ?>"
-                    <?= (($_POST['service_interest'] ?? '') === $svc['title']) ? 'selected' : '' ?>>
-                    <?= esc($svc['title']) ?>
+                <option value="">Select an option</option>
+<?php foreach ($lead_options as $opt): ?>
+                <option value="<?= esc($opt['title']) ?>"
+                    <?= (($_POST['service_interest'] ?? '') === $opt['title']) ? 'selected' : '' ?>>
+                    <?= esc($opt['title']) ?>
                 </option>
 <?php endforeach; ?>
             </select>
@@ -150,7 +160,7 @@ $formId       = $isHero ? 'hero' : ($isRfq ? 'rfq' : 'main');
 
         <p class="cd-form-note">
             No spam. Your details go straight to our engineering team.
-            <?php if ($country['code'] === 'sg'): ?>Handled in line with Singapore's PDPA.<?php endif; ?>
+            <?php if ($note = compliance_note_for_country($country['code'])): ?><?= esc($note) ?><?php endif; ?>
         </p>
     </form>
 

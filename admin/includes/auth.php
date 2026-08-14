@@ -309,15 +309,78 @@ function admin_otp_verify(string $code): array
     return ['ok' => true, 'message' => ''];
 }
 
+/**
+ * The OTP email, built as a real table-based transactional template
+ * (inline styles only, no <style> block, no flexbox/grid, no CSS
+ * variables) rather than the bare <p> tags this used to be. Table
+ * layout + inline styles is the boring, correct choice for email --
+ * Outlook desktop renders with Word's engine and ignores most modern
+ * CSS, so anything not inlined-on-the-element is a gamble.
+ */
 function admin_otp_email_html(string $name, string $code, int $ttlMinutes): string
 {
     $safeName = esc($name);
     $safeCode = esc($code);
+    $siteName = esc(setting('site_name', 'Corediva Tech Solutions'));
+    $logoUrl  = esc(public_asset('imgs/corediva-logo.png'));
+
     return <<<HTML
-        <p>Hi {$safeName},</p>
-        <p>Your Corediva admin login code is:</p>
-        <p style="font-size:28px;font-weight:700;letter-spacing:6px;">{$safeCode}</p>
-        <p>This code expires in {$ttlMinutes} minutes. If you didn't request this, you can ignore this email.</p>
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="color-scheme" content="light">
+        <title>Your admin sign-in code</title>
+        </head>
+        <body style="margin:0; padding:0; background-color:#F4F6FB; -webkit-text-size-adjust:100%;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F4F6FB;">
+        <tr>
+        <td align="center" style="padding:40px 16px;">
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:440px; background-color:#FFFFFF; border-radius:16px; border:1px solid #E4E7F0;">
+                <tr>
+                    <td style="padding:32px 36px 0;">
+                        <img src="{$logoUrl}" width="140" height="18" alt="{$siteName}" style="display:block; border:0; outline:0;">
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:28px 36px 0; font-family:'DM Sans',Arial,Helvetica,sans-serif;">
+                        <p style="margin:0 0 6px; font-size:12.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#1351D8;">Admin sign-in</p>
+                        <h1 style="margin:0 0 12px; font-size:21px; line-height:1.35; font-weight:700; color:#1C1C1C;">Hi {$safeName}, here's your code</h1>
+                        <p style="margin:0; font-size:14.5px; line-height:1.6; color:#454545;">Enter this code to finish signing in. It expires in {$ttlMinutes} minutes.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:24px 36px 4px;">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td align="center" style="background-color:#F3F6FD; border:1px solid #DCE4F7; border-radius:12px; padding:20px 24px;">
+                                    <span style="font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace; font-size:32px; font-weight:700; letter-spacing:.3em; color:#1351D8;">{$safeCode}</span>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- Plain text, one selectable run -- a per-digit tile layout copies as
+                             several separate clipboard lines instead of one pasteable code. -->
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:20px 36px 32px; font-family:'DM Sans',Arial,Helvetica,sans-serif;">
+                        <p style="margin:0; font-size:13px; line-height:1.6; color:#8A8F9C;">Didn't request this? You can safely ignore this email. No changes were made to your account.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:18px 36px; border-top:1px solid #EDEFF5; background-color:#FAFBFD; border-radius:0 0 16px 16px; font-family:'DM Sans',Arial,Helvetica,sans-serif;">
+                        <p style="margin:0; font-size:12px; color:#9198A6;">{$siteName} &middot; This is an automated message, please don't reply.</p>
+                    </td>
+                </tr>
+            </table>
+
+        </td>
+        </tr>
+        </table>
+        </body>
+        </html>
     HTML;
 }
 

@@ -114,29 +114,12 @@ foreach ($permissions as $p) {
 
 $pageTitle = 'Roles & Permissions';
 require __DIR__ . '/includes/layout-header.php';
+$activeNav = 'roles';
 ?>
-
-<header class="cd-admin-topbar">
-    <a href="<?= esc(admin_url('dashboard.php')) ?>" class="cd-admin-topbar-logo">
-        <img src="<?= esc(asset('imgs/corediva-logo.png')) ?>"
-             alt="<?= esc(setting('site_name')) ?>" width="150" height="19">
-    </a>
-    <nav class="cd-admin-nav" aria-label="Admin">
-        <a href="<?= esc(admin_url('dashboard.php')) ?>" class="cd-admin-nav-link">Dashboard</a>
-        <a href="<?= esc(admin_url('users.php')) ?>" class="cd-admin-nav-link">Admin Users</a>
-        <a href="<?= esc(admin_url('roles.php')) ?>" class="cd-admin-nav-link is-active">Roles &amp; Permissions</a>
-    </nav>
-    <div class="cd-admin-topbar-user">
-        <span class="cd-admin-topbar-name"><?= esc($admin['name']) ?></span>
-        <span class="cd-admin-topbar-role"><?= esc($admin['role_name']) ?></span>
-        <form method="post" action="<?= esc(admin_url('logout.php')) ?>">
-            <input type="hidden" name="csrf_token" value="<?= esc(csrf_token()) ?>">
-            <button type="submit" class="cd-admin-logout">Log out</button>
-        </form>
-    </div>
-</header>
-
-<main class="cd-admin-main">
+<div class="cd-admin-shell">
+<?php require __DIR__ . '/includes/admin-nav.php'; ?>
+    <div class="cd-admin-content">
+        <main class="cd-admin-main cd-admin-main-wide">
     <h1>Roles &amp; Permissions</h1>
     <p class="cd-admin-lede">What each role can do. Super Admin always has every permission and can't be edited here.</p>
 
@@ -261,6 +244,8 @@ require __DIR__ . '/includes/layout-header.php';
             </table>
         </div>
     </section>
-</main>
+        </main>
+    </div>
+</div>
 
 <?php require __DIR__ . '/includes/layout-footer.php'; ?>

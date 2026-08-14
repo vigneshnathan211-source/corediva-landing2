@@ -89,6 +89,29 @@
     line-height: 1.3;
 }
 
+/* Services hero: the theme's .hero-service-wrap p has margin-bottom: 0,
+   since it's normally the last element before the checklist panel -- the
+   RFQ button sits directly under it now, so its own wrapper carries the
+   gap instead. */
+.cd-hero-service-cta {
+    margin-top: 34px;
+}
+
+/* Theme bug: .theme-btn/.theme-btn2's hover fill is built from two
+   50%-wide halves (::before grows top-down on the left, ::after grows
+   bottom-up on the right) meant to meet exactly at centre. On a fractional
+   button width the two halves round to not-quite-touching, leaving a
+   hairline seam where the button's original background colour shows
+   through on hover. Widening each half past 50% guarantees an overlap
+   regardless of rounding -- same colour on both, so the overlap itself is
+   invisible. */
+.theme-btn::before,
+.theme-btn::after,
+.theme-btn2::before,
+.theme-btn2::after {
+    width: calc(50% + 1px);
+}
+
 .cd-skip-link {
     position: absolute;
     left: -9999px;
@@ -1358,11 +1381,14 @@ button.cd-panel-toggle:not(.cd-nav-link) {
 }
 
 .cd-tab-products .service-card {
+    display: block;
     background: #fff;
     border: 1px solid var(--cd-line);
     border-radius: var(--cd-radius-card);
     padding: 24px 22px;
     position: relative;
+    color: inherit;
+    text-decoration: none;
     transition: transform .25s var(--cd-ease-out),
                 box-shadow .25s var(--cd-ease-out),
                 border-color .25s var(--cd-ease-out);
@@ -1511,11 +1537,14 @@ button.cd-panel-toggle:not(.cd-nav-link) {
 
 .cd-service-grid .service-card,
 .cd-product-grid .service-card {
+    display: block;
     padding: 28px 24px;
     background: #fff;
     border: 1px solid var(--cd-line);
     border-radius: var(--cd-radius-card);
     position: relative;
+    color: inherit;
+    text-decoration: none;
     transition: transform .25s var(--cd-ease-out),
                 box-shadow .25s var(--cd-ease-out),
                 border-color .25s var(--cd-ease-out);
@@ -1708,6 +1737,210 @@ button.cd-panel-toggle:not(.cd-nav-link) {
     .cd-cert-badge:hover img {
         filter: none;
         opacity: 1;
+    }
+}
+
+/* ---------- Service detail (admin-built sections) ----------
+   Sections render from includes/functions.php:render_service_sections().
+   Each type pairs with an existing theme wrapper class (about-area,
+   service-area, faq-area) for padding/background, same convention the
+   rest of the site uses, plus a cd-svc-* class for its own layout. */
+
+.cd-svc-heading {
+    font-family: var(--font_yantramanv), sans-serif;
+    font-size: clamp(28px, 3vw, 38px);
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--cd-ink);
+    margin-bottom: 16px;
+}
+
+.cd-svc-subheading {
+    max-width: 65ch;
+    color: var(--cd-body);
+    margin-bottom: 36px;
+}
+
+.cd-svc-prose {
+    color: var(--cd-body);
+    line-height: 1.75;
+}
+
+.cd-svc-prose p {
+    margin-bottom: 16px;
+}
+
+.cd-svc-prose p:last-child {
+    margin-bottom: 0;
+}
+
+.cd-svc-richtext-inner {
+    max-width: 780px;
+}
+
+/* Image + text: one reversible layout instead of hand-built left/right
+   variants, so admins alternate sides via a dropdown, not two block types. */
+.cd-svc-image-feature-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 60px;
+    align-items: center;
+}
+
+.cd-svc-image-feature-reverse .cd-svc-image-feature-row {
+    direction: rtl;
+}
+
+.cd-svc-image-feature-reverse .cd-svc-image-feature-media,
+.cd-svc-image-feature-reverse .cd-svc-image-feature-body {
+    direction: ltr;
+}
+
+.cd-svc-image-feature-media img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--cd-radius-card);
+    box-shadow: var(--cd-shadow);
+}
+
+/* Process steps: a plain numbered list. The homepage's how-we-do-card
+   markup is tightly coupled to its own icon assets and 3-column layout,
+   so a lighter version lives here rather than forcing that markup to fit
+   an admin-editable, variable-length list. */
+.cd-svc-process {
+    background: var(--cd-surface-soft);
+}
+
+.cd-svc-process-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 40px;
+    margin-top: 8px;
+}
+
+.cd-svc-process-number {
+    display: block;
+    font-family: var(--font_yantramanv), sans-serif;
+    font-size: 34px;
+    font-weight: 700;
+    color: var(--cd-accent);
+    opacity: .35;
+    margin-bottom: 10px;
+}
+
+.cd-svc-process-item h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cd-ink);
+    margin-bottom: 8px;
+}
+
+.cd-svc-process-item p {
+    color: var(--cd-body);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Deliverables: a checklist, not a bordered spec table -- avoids a
+   border-under-every-row wall of hairlines for what's usually 4-8 items. */
+.cd-svc-deliverables-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 40px;
+    margin: 0;
+    padding: 0;
+}
+
+.cd-svc-deliverables-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: var(--cd-body);
+    line-height: 1.5;
+}
+
+.cd-svc-deliverables-list li i {
+    flex-shrink: 0;
+    margin-top: 3px;
+    font-size: 18px;
+    color: var(--cd-accent);
+}
+
+/* CTA banner: the page's one clear conversion moment between the intro
+   RFQ form and the FAQ -- tinted so it reads as a deliberate pause, same
+   accent-soft treatment already used for highlighted panels elsewhere. */
+.cd-svc-cta-banner {
+    background: var(--cd-accent-soft);
+}
+
+.cd-svc-cta-banner-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 32px;
+}
+
+.cd-svc-cta-banner-inner .cd-svc-heading {
+    margin-bottom: 8px;
+}
+
+.cd-svc-cta-banner-inner .theme-btn {
+    flex-shrink: 0;
+}
+
+/* Breadcrumb for the per-service hero (What We Do > Category > Service). */
+.cd-svc-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    list-style: none;
+    margin: 0 0 18px;
+    padding: 0;
+    font-size: 14px;
+    color: var(--cd-body);
+}
+
+.cd-svc-breadcrumb li:not(:last-child)::after {
+    content: "/";
+    margin-left: 6px;
+    color: var(--cd-line);
+}
+
+.cd-svc-breadcrumb a {
+    color: var(--cd-body);
+    text-decoration: none;
+    transition: color .2s var(--cd-ease-out);
+}
+
+.cd-svc-breadcrumb a:hover {
+    color: var(--cd-accent);
+}
+
+.cd-svc-breadcrumb li:last-child {
+    color: var(--cd-ink);
+    font-weight: 600;
+}
+
+@media (max-width: 991px) {
+    .cd-svc-image-feature-row {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    .cd-svc-image-feature-reverse .cd-svc-image-feature-row {
+        direction: ltr;
+    }
+
+    .cd-svc-deliverables-list {
+        grid-template-columns: 1fr;
+    }
+
+    .cd-svc-cta-banner-inner {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
 

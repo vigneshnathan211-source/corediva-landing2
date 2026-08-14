@@ -50,6 +50,11 @@ require __DIR__ . '/includes/layout-header.php';
         <img src="<?= esc(asset('imgs/corediva-logo.png')) ?>"
              alt="<?= esc(setting('site_name')) ?>" class="cd-admin-logo" width="180" height="23">
 
+        <div class="cd-admin-auth-steps" aria-hidden="true">
+            <span class="is-active"></span>
+            <span class="is-active"></span>
+        </div>
+
         <h1>Enter your code</h1>
         <p class="cd-admin-lede">We sent a 6-digit code to <strong><?= esc($pendingEmail) ?></strong>.
            It expires in <?= esc((string) admin_cfg('otp.ttl_minutes', 10)) ?> minutes.</p>
@@ -69,7 +74,7 @@ require __DIR__ . '/includes/layout-header.php';
         </div>
 <?php endif; ?>
 
-        <form method="post" novalidate>
+        <form method="post" novalidate id="verify-form">
             <input type="hidden" name="csrf_token" value="<?= esc(csrf_token()) ?>">
 
             <label for="code">6-digit code</label>
@@ -77,7 +82,10 @@ require __DIR__ . '/includes/layout-header.php';
                    inputmode="numeric" pattern="[0-9]*" maxlength="6"
                    autocomplete="one-time-code" class="cd-admin-otp-input">
 
-            <button type="submit" class="cd-admin-btn">Verify &amp; sign in</button>
+            <button type="submit" class="cd-admin-btn" id="verify-submit">
+                <span class="cd-admin-btn-spinner" aria-hidden="true"></span>
+                <span class="cd-admin-btn-label">Verify &amp; sign in</span>
+            </button>
         </form>
 
         <a class="cd-admin-resend" href="<?= esc(admin_url('login.php?email=' . urlencode($pendingEmail))) ?>">
@@ -85,5 +93,37 @@ require __DIR__ . '/includes/layout-header.php';
         </a>
     </div>
 </main>
+
+<script>
+(function () {
+    var form = document.getElementById('verify-form');
+    var btn = document.getElementById('verify-submit');
+    var code = document.getElementById('code');
+    if (!form || !btn || !code) { return; }
+
+    function submitOnce() {
+        if (btn.hasAttribute('data-pending')) { return; }
+        btn.setAttribute('data-pending', '');
+        btn.querySelector('.cd-admin-btn-label').textContent = 'Verifying…';
+        form.submit();
+    }
+
+    form.addEventListener('submit', function () {
+        if (btn.hasAttribute('data-pending')) { return; }
+        btn.setAttribute('data-pending', '');
+        btn.querySelector('.cd-admin-btn-label').textContent = 'Verifying…';
+    });
+
+    // A 6-digit code is unambiguous the moment it's complete -- submitting
+    // automatically saves a tap without risking a premature submit on any
+    // shorter, still-being-typed value.
+    code.addEventListener('input', function () {
+        code.value = code.value.replace(/\D/g, '').slice(0, 6);
+        if (code.value.length === 6) {
+            submitOnce();
+        }
+    });
+})();
+</script>
 
 <?php require __DIR__ . '/includes/layout-footer.php'; ?>

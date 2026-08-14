@@ -1,13 +1,17 @@
 <?php
 /**
- * XML sitemap.
+ * Dynamic XML sitemap. Served at /sitemap.xml via the rewrite rule in
+ * .htaccess (inert under `php -S`, so hit this file directly in dev).
  *
- * Only emits URLs that actually exist on disk right now -- currently the
- * country landing pages. As service/product/blog pages get generated they
- * are added here, so the sitemap never advertises a page that 404s or is
- * still an empty shell.
+ * Walks every country and includes a URL only when the flat file that
+ * serves it actually exists on disk -- same is_file() gating hreflang_map()
+ * uses, so the sitemap never advertises a page that 404s. Per-service URLs
+ * additionally respect service_content.is_published, and the three hub
+ * pages (home/about/services) respect page_seo.is_noindex.
  *
- * Served at /sitemap.xml via the rewrite in .htaccess.
+ * CLAUDE.md is explicit: do not submit this to Search Console until real
+ * copy is imported -- is_published defaults to 1, so nothing here blocks
+ * premature indexing on its own.
  */
 
 declare(strict_types=1);
@@ -15,47 +19,99 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/functions.php';
 
-header('Content-Type: application/xml; charset=utf-8');
+header('Content-Type: application/xml; charset=UTF-8');
 
+/** @var array<int,array{loc:string,lastmod?:?string}> $urls */
 $urls = [];
 
-foreach (get_countries() as $c) {
-    // Only list a country once its landing page exists on disk.
-    if (!is_file(__DIR__ . '/' . $c['code'] . '/index.php')) {
-        continue;
-    }
+foreach (get_countries() as $country) {
+    $code      = $country['code'];
+    $countryId = (int) $country['id'];
 
-    $alternates = [];
-    foreach (get_countries() as $alt) {
-        if (!is_file(__DIR__ . '/' . $alt['code'] . '/index.php')) {
+    $hubs = [
+        ''             => '',
+        'about'        => 'about',
+        'services'     => 'services',
+        'products'     => 'products',
+        'blog'         => 'blog',
+        'case-studies' => 'case-studies',
+    ];
+
+    foreach ($hubs as $pageKey => $path) {
+        if (!is_file(path_to_file($code, $path))) {
             continue;
         }
-        $alternates[$alt['hreflang']] = country_url($alt['code']);
+        $pageSeo = get_page_seo($pageKey === '' ? 'home' : $pageKey, $countryId);
+        if (!empty($pageSeo['is_noindex'])) {
+            continue;
+        }
+        $urls[] = ['loc' => url($code . '/' . ($path !== '' ? $path . '/' : ''))];
     }
 
-    $urls[] = [
-        'loc'        => country_url($c['code']),
-        'priority'   => $c['is_primary'] ? '1.0' : '0.8',
-        'changefreq' => 'weekly',
-        'alternates' => $alternates,
-    ];
+    foreach (get_services() as $service) {
+        $path = 'services/' . $service['slug'] . '-' . $country['slug_suffix'];
+        if (!is_file(path_to_file($code, $path))) {
+            continue;
+        }
+
+        $content = get_service_content((int) $service['id'], $countryId);
+        if ($content !== null && !$content['is_published']) {
+            continue;
+        }
+
+        $urls[] = [
+            'loc'     => url($code . '/' . $path . '/'),
+            'lastmod' => $content['updated_at'] ?? null,
+        ];
+    }
+
+    foreach (db_all('SELECT id, slug FROM products WHERE is_active = 1') as $product) {
+        $path = 'products/' . $product['slug'] . '-' . $country['slug_suffix'];
+        if (!is_file(path_to_file($code, $path))) {
+            continue;
+        }
+
+        $content = get_product_content((int) $product['id'], $countryId);
+        if ($content !== null && !$content['is_published']) {
+            continue;
+        }
+
+        $urls[] = [
+            'loc'     => url($code . '/' . $path . '/'),
+            'lastmod' => $content['updated_at'] ?? null,
+        ];
+    }
+
+    // Blog posts and case studies use one shared handler file per country
+    // (blog/post.php, case-studies/view.php) rather than a file per slug,
+    // so the is_file() check happens once outside the row loop.
+    if (is_file(path_to_file($code, 'blog/post'))) {
+        foreach (get_posts($countryId, 1000) as $post) {
+            $urls[] = [
+                'loc'     => url($code . '/blog/' . $post['slug'] . '/'),
+                'lastmod' => $post['updated_at'] ?? null,
+            ];
+        }
+    }
+
+    if (is_file(path_to_file($code, 'case-studies/view'))) {
+        foreach (get_case_studies($countryId, 1000) as $case) {
+            $urls[] = [
+                'loc'     => url($code . '/case-studies/' . $case['slug'] . '/'),
+                'lastmod' => $case['updated_at'] ?? null,
+            ];
+        }
+    }
 }
 
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
-<?php foreach ($urls as $u): ?>
-    <url>
-        <loc><?= esc($u['loc']) ?></loc>
-        <changefreq><?= esc($u['changefreq']) ?></changefreq>
-        <priority><?= esc($u['priority']) ?></priority>
-<?php foreach ($u['alternates'] as $lang => $href): ?>
-        <xhtml:link rel="alternate" hreflang="<?= esc($lang) ?>" href="<?= esc($href) ?>"/>
-<?php endforeach; ?>
-<?php if (!empty($u['alternates'])): ?>
-        <xhtml:link rel="alternate" hreflang="x-default" href="<?= esc(country_url((string) cfg('app.default_country', 'sg'))) ?>"/>
-<?php endif; ?>
-    </url>
-<?php endforeach; ?>
-</urlset>
+echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+foreach ($urls as $u) {
+    echo "  <url>\n";
+    echo '    <loc>' . esc($u['loc']) . "</loc>\n";
+    if (!empty($u['lastmod'])) {
+        echo '    <lastmod>' . esc(date('Y-m-d', strtotime((string) $u['lastmod']))) . "</lastmod>\n";
+    }
+    echo "  </url>\n";
+}
+echo "</urlset>\n";

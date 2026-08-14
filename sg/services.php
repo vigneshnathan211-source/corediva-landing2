@@ -27,13 +27,15 @@ $servicesByCategory = get_services_by_category();
 $serviceCount        = count(get_services());
 $categoryCount       = count($servicesByCategory);
 
+$pageSeo = get_page_seo('services', (int) $country['id']);
 $seo = [
-    'title'            => 'What We Do | IT, ERP & AI Services | Corediva Tech Solutions',
-    'description'      => "Sixteen services across web, ERP, AI and cloud, delivered by one "
+    'title'            => $pageSeo['meta_title'] ?? 'What We Do | IT, ERP & AI Services | Corediva Tech Solutions',
+    'description'      => $pageSeo['meta_description'] ?? ("Sixteen services across web, ERP, AI and cloud, delivered by one "
                          . "accountable team. See everything Corediva Tech Solutions builds for "
-                         . "Singapore SMEs.",
+                         . "Singapore SMEs."),
     'canonical'        => 'sg/services/',
     'hreflang_pattern' => 'services',
+    'noindex'          => (bool) ($pageSeo['is_noindex'] ?? false),
 ];
 
 include __DIR__ . '/../includes/header.php';
@@ -53,6 +55,9 @@ include __DIR__ . '/../includes/header.php';
                     <p>From web platforms to AI automation, ERP to cybersecurity: every service
                        on this page is delivered by the same team that scoped it, not handed off
                        to a subcontractor partway through.</p>
+                    <div class="cd-hero-service-cta">
+                        <a href="#rfq-form" class="theme-btn">Request a Quote <i class="iconoir-arrow-up-right" aria-hidden="true"></i></a>
+                    </div>
                 </div>
 
                 <div class="hero-service-about">
@@ -94,11 +99,11 @@ include __DIR__ . '/../includes/header.php';
                 <h3 class="cd-service-group-title"><?= esc($category) ?></h3>
                 <div class="cd-service-grid">
 <?php foreach ($items as $svc): ?>
-                    <article class="service-card simple-shadow">
+                    <a href="<?= esc(service_url($svc['slug'], $country)) ?>" class="service-card simple-shadow">
                         <i class="<?= esc($svc['icon']) ?> cd-service-icon" aria-hidden="true"></i>
                         <h4><?= esc($svc['title']) ?></h4>
                         <p><?= esc($svc['short_description']) ?></p>
-                    </article>
+                    </a>
 <?php endforeach; ?>
                 </div>
             </div>

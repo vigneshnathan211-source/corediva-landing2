@@ -21,12 +21,14 @@ $stats    = get_stats();
 $partners = get_partners();
 $offices  = get_offices();
 
+$pageSeo = get_page_seo('about', (int) $country['id']);
 $seo = [
-    'title'            => 'Who We Are | Corediva Tech Solutions Singapore',
-    'description'      => 'A decade-old, MSME & DUNS certified engineering team headquartered in '
-                         . 'India, building ERP, CRM, AI and cloud systems for Singapore SMEs.',
+    'title'            => $pageSeo['meta_title'] ?? 'Who We Are | Corediva Tech Solutions Singapore',
+    'description'      => $pageSeo['meta_description'] ?? ('A decade-old, MSME & DUNS certified engineering team headquartered in '
+                         . 'India, building ERP, CRM, AI and cloud systems for Singapore SMEs.'),
     'canonical'        => 'sg/about/',
     'hreflang_pattern' => 'about',
+    'noindex'          => (bool) ($pageSeo['is_noindex'] ?? false),
 ];
 
 include __DIR__ . '/../includes/header.php';

@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form'] ?? '') === 'lead') 
 }
 
 $slides   = get_hero_slides($countryId);
-$features = get_hero_feature_rows();
+$features = get_hero_feature_rows($countryId);
 $stats    = get_stats();
 $services = get_services();
 $products = get_products($countryId);
@@ -42,11 +42,13 @@ foreach ($services as $svc) {
     $servicesByCategory[$svc['category'] ?: 'Other'][] = $svc;
 }
 
+$pageSeo = get_page_seo('home', $countryId);
 $seo = [
-    'title'            => 'IT, ERP & AI Solutions Company in Singapore | Corediva',
-    'description'      => 'Enterprise ERP, AI chatbots, cloud & cybersecurity for Singapore businesses. 4-hour response. Get a free technical assessment today.',
+    'title'            => $pageSeo['meta_title'] ?? 'IT, ERP & AI Solutions Company in Singapore | Corediva',
+    'description'      => $pageSeo['meta_description'] ?? 'Enterprise ERP, AI chatbots, cloud & cybersecurity for Singapore businesses. 4-hour response. Get a free technical assessment today.',
     'canonical'        => 'sg/',
     'hreflang_pattern' => '',
+    'noindex'          => (bool) ($pageSeo['is_noindex'] ?? false),
 ];
 
 include __DIR__ . '/../includes/header.php';
@@ -372,7 +374,7 @@ if (!$isSerpentine) {
 
                             <div class="cd-tab-products">
 <?php foreach ($productGroups[$group] as $product): ?>
-                                <article class="service-card<?= $product['is_featured'] ? ' cd-featured' : '' ?>">
+                                <a href="<?= esc(product_url($product['slug'], $country)) ?>" class="service-card<?= $product['is_featured'] ? ' cd-featured' : '' ?>">
 <?php if ($product['is_featured']): ?>
                                     <span class="service-badge">Popular</span>
 <?php endif; ?>
@@ -380,7 +382,7 @@ if (!$isSerpentine) {
                                     <h4><?= esc($product['display_title']) ?></h4>
                                     <p class="cd-product-category"><?= esc($product['category']) ?></p>
                                     <p><?= esc($product['short_description']) ?></p>
-                                </article>
+                                </a>
 <?php endforeach; ?>
                             </div>
 

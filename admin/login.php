@@ -52,6 +52,11 @@ require __DIR__ . '/includes/layout-header.php';
         <img src="<?= esc(asset('imgs/corediva-logo.png')) ?>"
              alt="<?= esc(setting('site_name')) ?>" class="cd-admin-logo" width="180" height="23">
 
+        <div class="cd-admin-auth-steps" aria-hidden="true">
+            <span class="is-active"></span>
+            <span></span>
+        </div>
+
         <h1>Admin sign in</h1>
         <p class="cd-admin-lede">Enter your email and password. We'll then send a one-time code to confirm it's you.</p>
 
@@ -63,7 +68,7 @@ require __DIR__ . '/includes/layout-header.php';
         </div>
 <?php endif; ?>
 
-        <form method="post" novalidate>
+        <form method="post" novalidate id="login-form">
             <input type="hidden" name="csrf_token" value="<?= esc(csrf_token()) ?>">
 
             <div class="cd-admin-hp" aria-hidden="true">
@@ -80,9 +85,25 @@ require __DIR__ . '/includes/layout-header.php';
             <input type="password" id="password" name="password" required
                    autocomplete="current-password">
 
-            <button type="submit" class="cd-admin-btn">Continue</button>
+            <button type="submit" class="cd-admin-btn" id="login-submit">
+                <span class="cd-admin-btn-spinner" aria-hidden="true"></span>
+                <span class="cd-admin-btn-label">Continue</span>
+            </button>
         </form>
     </div>
 </main>
+
+<script>
+(function () {
+    var form = document.getElementById('login-form');
+    var btn = document.getElementById('login-submit');
+    if (!form || !btn) { return; }
+    form.addEventListener('submit', function () {
+        if (btn.hasAttribute('data-pending')) { return; }
+        btn.setAttribute('data-pending', '');
+        btn.querySelector('.cd-admin-btn-label').textContent = 'Signing in…';
+    });
+})();
+</script>
 
 <?php require __DIR__ . '/includes/layout-footer.php'; ?>

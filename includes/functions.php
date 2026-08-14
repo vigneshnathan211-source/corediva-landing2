@@ -106,6 +106,24 @@ function asset(string $path): string
     return url($relative) . ($version !== false ? '?v=' . $version : '');
 }
 
+/**
+ * Asset URL for content read outside the current request, e.g. an
+ * emailed <img>. asset()/url() follow the request's Host header in
+ * debug mode so a page renders correctly from whatever local or tunnel
+ * address served it -- but an email's image is fetched by the
+ * recipient's mail server later, which has never heard of localhost.
+ * Always resolves against the configured app.base_url, debug mode or not.
+ */
+function public_asset(string $path): string
+{
+    $relative = 'assets/' . ltrim($path, '/');
+    $full     = dirname(__DIR__) . '/' . $relative;
+    $version  = is_file($full) ? filemtime($full) : false;
+    $base     = rtrim((string) cfg('app.base_url', ''), '/');
+
+    return $base . '/' . $relative . ($version !== false ? '?v=' . $version : '');
+}
+
 /** Best-effort client IP as a packed binary string for storage. */
 function client_ip_binary(): ?string
 {
@@ -260,6 +278,22 @@ function whatsapp_url(): string
     return 'https://wa.me/' . $number . ($text !== '' ? '?text=' . rawurlencode($text) : '');
 }
 
+/**
+ * One-line data-handling reassurance shown under the lead form, naming the
+ * regulation actually relevant to that country. NULL (no line shown) for
+ * any country not yet in this list, rather than a generic guess -- see
+ * Docs/BUILD-PLAN.md's compliance-hooks table for the source per market.
+ */
+const COUNTRY_COMPLIANCE_NOTES = [
+    'sg' => "Handled in line with Singapore's PDPA.",
+    'ae' => 'Built for FTA VAT and e-invoicing compliance.',
+];
+
+function compliance_note_for_country(string $country_code): ?string
+{
+    return COUNTRY_COMPLIANCE_NOTES[$country_code] ?? null;
+}
+
 // =====================================================================
 // Countries & regions
 // =====================================================================
@@ -319,6 +353,400 @@ function get_service_content(int $service_id, int $country_id, int $region_id = 
         'SELECT * FROM service_content WHERE service_id = ? AND country_id = ? AND region_id = 0',
         [$service_id, $country_id]
     );
+}
+
+/**
+ * Section types a service-detail page can be built from, admin-facing
+ * label first. Validated here (not a DB ENUM) so a new block type is a
+ * one-line addition, not a migration. 'faq' has no rows of its own -- it's
+ * a placement marker that tells render_service_sections() where to pull
+ * live rows from the `faqs` table (page_type='service'), so FAQ copy is
+ * never duplicated between two tables.
+ */
+const SERVICE_SECTION_TYPES = [
+    'rich_text'     => 'Rich text',
+    'feature_grid'  => 'Feature grid',
+    'image_feature' => 'Image + text',
+    'process_steps' => 'Process steps',
+    'deliverables'  => 'Deliverables checklist',
+    'cta_banner'    => 'CTA banner',
+    'faq'           => 'FAQ (pulls from this service\'s FAQs)',
+];
+
+/**
+ * Section rows for a service-detail page, in display order. Same
+ * region-falls-back-to-country semantics as get_service_content(): if the
+ * region has any published sections, use those; otherwise use the
+ * country-level (region_id = 0) rows.
+ */
+function get_service_sections(int $service_id, int $country_id, int $region_id = 0): array
+{
+    if ($region_id > 0) {
+        $rows = db_all(
+            'SELECT * FROM service_page_sections
+             WHERE service_id = ? AND country_id = ? AND region_id = ? AND is_published = 1
+             ORDER BY sort_order',
+            [$service_id, $country_id, $region_id]
+        );
+        if ($rows) {
+            return $rows;
+        }
+    }
+    return db_all(
+        'SELECT * FROM service_page_sections
+         WHERE service_id = ? AND country_id = ? AND region_id = 0 AND is_published = 1
+         ORDER BY sort_order',
+        [$service_id, $country_id]
+    );
+}
+
+/**
+ * Renders a service-detail page's section stack. Long-form fields
+ * (`body`) are admin-authored HTML and render raw, same trust boundary as
+ * service_content.intro (see CLAUDE.md "Long-form fields render raw
+ * HTML"). Short fields (`heading`, `subheading`, item text, CTA labels)
+ * always go through esc().
+ */
+function render_service_sections(array $sections, array $service, array $country): void
+{
+    foreach ($sections as $section) {
+        $items = [];
+        if (!empty($section['items'])) {
+            $decoded = json_decode((string) $section['items'], true);
+            $items   = is_array($decoded) ? $decoded : [];
+        }
+
+        switch ($section['section_type']) {
+            case 'rich_text': ?>
+                <section class="about-area cd-svc-richtext">
+                    <div class="custom-container cd-svc-richtext-inner">
+                        <?php if (!empty($section['heading'])): ?>
+                        <h2 class="cd-svc-heading"><?= esc($section['heading']) ?></h2>
+                        <?php endif; ?>
+                        <div class="cd-svc-prose"><?= $section['body'] ?? '' ?></div>
+                    </div>
+                </section>
+            <?php break;
+
+            case 'feature_grid': ?>
+                <section class="service-area cd-svc-features">
+                    <div class="custom-container">
+                        <?php if (!empty($section['heading'])): ?>
+                        <h2 class="cd-svc-heading"><?= esc($section['heading']) ?></h2>
+                        <?php endif; ?>
+                        <?php if (!empty($section['subheading'])): ?>
+                        <p class="cd-svc-subheading"><?= esc($section['subheading']) ?></p>
+                        <?php endif; ?>
+                        <div class="cd-service-grid cd-expertise-grid">
+                            <?php foreach ($items as $item): ?>
+                            <article class="service-card simple-shadow cd-expertise-card">
+                                <?php if (!empty($item['icon'])): ?>
+                                <i class="<?= esc($item['icon']) ?> cd-service-icon" aria-hidden="true"></i>
+                                <?php endif; ?>
+                                <div class="cd-expertise-content">
+                                    <h4><?= esc($item['title'] ?? '') ?></h4>
+                                    <p><?= esc($item['text'] ?? '') ?></p>
+                                </div>
+                            </article>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </section>
+            <?php break;
+
+            case 'image_feature':
+                $reverse = ($section['image_position'] ?? 'right') === 'left'; ?>
+                <section class="about-area cd-svc-image-feature<?= $reverse ? ' cd-svc-image-feature-reverse' : '' ?>">
+                    <div class="custom-container cd-svc-image-feature-row">
+                        <div class="cd-svc-image-feature-media">
+                            <?php if (!empty($section['media_url'])): ?>
+                            <img src="<?= esc($section['media_url']) ?>" alt="<?= esc($section['media_alt'] ?? '') ?>" loading="lazy">
+                            <?php endif; ?>
+                        </div>
+                        <div class="cd-svc-image-feature-body">
+                            <?php if (!empty($section['heading'])): ?>
+                            <h2 class="cd-svc-heading"><?= esc($section['heading']) ?></h2>
+                            <?php endif; ?>
+                            <div class="cd-svc-prose"><?= $section['body'] ?? '' ?></div>
+                        </div>
+                    </div>
+                </section>
+            <?php break;
+
+            case 'process_steps': ?>
+                <section class="about-area cd-svc-process">
+                    <div class="custom-container">
+                        <?php if (!empty($section['heading'])): ?>
+                        <h2 class="cd-svc-heading"><?= esc($section['heading']) ?></h2>
+                        <?php endif; ?>
+                        <div class="cd-svc-process-items">
+                            <?php foreach ($items as $i => $item): ?>
+                            <div class="cd-svc-process-item">
+                                <span class="cd-svc-process-number"><?= esc(str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT)) ?></span>
+                                <h3><?= esc($item['title'] ?? '') ?></h3>
+                                <p><?= esc($item['text'] ?? '') ?></p>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </section>
+            <?php break;
+
+            case 'deliverables': ?>
+                <section class="about-area cd-svc-deliverables">
+                    <div class="custom-container">
+                        <?php if (!empty($section['heading'])): ?>
+                        <h2 class="cd-svc-heading"><?= esc($section['heading']) ?></h2>
+                        <?php endif; ?>
+                        <ul class="cd-svc-deliverables-list">
+                            <?php foreach ($items as $item): ?>
+                            <li><i class="las la-check-circle" aria-hidden="true"></i> <?= esc(is_array($item) ? ($item['text'] ?? '') : $item) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                </section>
+            <?php break;
+
+            case 'cta_banner': ?>
+                <section class="about-area cd-svc-cta-banner">
+                    <div class="custom-container cd-svc-cta-banner-inner">
+                        <div>
+                            <?php if (!empty($section['heading'])): ?>
+                            <h2 class="cd-svc-heading"><?= esc($section['heading']) ?></h2>
+                            <?php endif; ?>
+                            <?php if (!empty($section['body'])): ?>
+                            <div class="cd-svc-prose"><?= $section['body'] ?></div>
+                            <?php endif; ?>
+                        </div>
+                        <?php if (!empty($section['cta_label']) && !empty($section['cta_url'])): ?>
+                        <a href="<?= esc($section['cta_url']) ?>" class="theme-btn">
+                            <?= esc($section['cta_label']) ?> <i class="iconoir-arrow-up-right" aria-hidden="true"></i>
+                        </a>
+                        <?php endif; ?>
+                    </div>
+                </section>
+            <?php break;
+
+            case 'faq':
+                $faqs = get_faqs('service', (int) $service['id'], (int) $country['id']);
+                if (empty($faqs)) {
+                    break;
+                } ?>
+                <section class="faq-area cd-faq cd-svc-faq">
+                    <div class="custom-container">
+                        <?php if (!empty($section['heading'])): ?>
+                        <h2 class="cd-svc-heading"><?= esc($section['heading']) ?></h2>
+                        <?php endif; ?>
+                        <div class="accordion cd-accordion" id="cd-svc-faq-accordion">
+                            <?php foreach ($faqs as $i => $faq): ?>
+                            <div class="accordion-item">
+                                <h3 class="accordion-header" id="cd-svc-faq-heading-<?= (int) $faq['id'] ?>">
+                                    <button class="accordion-button<?= $i === 0 ? '' : ' collapsed' ?>" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#cd-svc-faq-<?= (int) $faq['id'] ?>"
+                                            aria-expanded="<?= $i === 0 ? 'true' : 'false' ?>"
+                                            aria-controls="cd-svc-faq-<?= (int) $faq['id'] ?>">
+                                        <?= esc($faq['question']) ?>
+                                    </button>
+                                </h3>
+                                <div id="cd-svc-faq-<?= (int) $faq['id'] ?>" class="accordion-collapse collapse<?= $i === 0 ? ' show' : '' ?>"
+                                     aria-labelledby="cd-svc-faq-heading-<?= (int) $faq['id'] ?>" data-bs-parent="#cd-svc-faq-accordion">
+                                    <div class="accordion-body"><?= esc($faq['answer']) ?></div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </section>
+            <?php break;
+        }
+    }
+}
+
+/** Same vocabulary as SERVICE_SECTION_TYPES -- one shared section-type
+ *  system, just stored against a different table per detail-page kind. */
+const PRODUCT_SECTION_TYPES = [
+    'rich_text'     => 'Rich text',
+    'feature_grid'  => 'Feature grid',
+    'image_feature' => 'Image + text',
+    'process_steps' => 'Process steps',
+    'deliverables'  => 'Deliverables checklist',
+    'cta_banner'    => 'CTA banner',
+    'faq'           => 'FAQ (pulls from this product\'s FAQs)',
+];
+
+/** Section rows for a product-detail page, in display order. No region
+ *  fallback here -- product_content has no region_id to fall back from. */
+function get_product_sections(int $product_id, int $country_id): array
+{
+    return db_all(
+        'SELECT * FROM product_page_sections
+         WHERE product_id = ? AND country_id = ? AND is_published = 1
+         ORDER BY sort_order',
+        [$product_id, $country_id]
+    );
+}
+
+/**
+ * Renders a product-detail page's section stack. Identical block types
+ * and markup to render_service_sections() (same cd-svc-* classes are
+ * reused deliberately -- the section vocabulary isn't service-specific,
+ * and duplicating the CSS for a product-flavoured class name would just
+ * be the same rules twice), except the FAQ case pulls from this
+ * product's own FAQs instead of a service's.
+ */
+function render_product_sections(array $sections, array $product, array $country): void
+{
+    foreach ($sections as $section) {
+        $items = [];
+        if (!empty($section['items'])) {
+            $decoded = json_decode((string) $section['items'], true);
+            $items   = is_array($decoded) ? $decoded : [];
+        }
+
+        switch ($section['section_type']) {
+            case 'rich_text': ?>
+                <section class="about-area cd-svc-richtext">
+                    <div class="custom-container cd-svc-richtext-inner">
+                        <?php if (!empty($section['heading'])): ?>
+                        <h2 class="cd-svc-heading"><?= esc($section['heading']) ?></h2>
+                        <?php endif; ?>
+                        <div class="cd-svc-prose"><?= $section['body'] ?? '' ?></div>
+                    </div>
+                </section>
+            <?php break;
+
+            case 'feature_grid': ?>
+                <section class="service-area cd-svc-features">
+                    <div class="custom-container">
+                        <?php if (!empty($section['heading'])): ?>
+                        <h2 class="cd-svc-heading"><?= esc($section['heading']) ?></h2>
+                        <?php endif; ?>
+                        <?php if (!empty($section['subheading'])): ?>
+                        <p class="cd-svc-subheading"><?= esc($section['subheading']) ?></p>
+                        <?php endif; ?>
+                        <div class="cd-service-grid cd-expertise-grid">
+                            <?php foreach ($items as $item): ?>
+                            <article class="service-card simple-shadow cd-expertise-card">
+                                <?php if (!empty($item['icon'])): ?>
+                                <i class="<?= esc($item['icon']) ?> cd-service-icon" aria-hidden="true"></i>
+                                <?php endif; ?>
+                                <div class="cd-expertise-content">
+                                    <h4><?= esc($item['title'] ?? '') ?></h4>
+                                    <p><?= esc($item['text'] ?? '') ?></p>
+                                </div>
+                            </article>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </section>
+            <?php break;
+
+            case 'image_feature':
+                $reverse = ($section['image_position'] ?? 'right') === 'left'; ?>
+                <section class="about-area cd-svc-image-feature<?= $reverse ? ' cd-svc-image-feature-reverse' : '' ?>">
+                    <div class="custom-container cd-svc-image-feature-row">
+                        <div class="cd-svc-image-feature-media">
+                            <?php if (!empty($section['media_url'])): ?>
+                            <img src="<?= esc($section['media_url']) ?>" alt="<?= esc($section['media_alt'] ?? '') ?>" loading="lazy">
+                            <?php endif; ?>
+                        </div>
+                        <div class="cd-svc-image-feature-body">
+                            <?php if (!empty($section['heading'])): ?>
+                            <h2 class="cd-svc-heading"><?= esc($section['heading']) ?></h2>
+                            <?php endif; ?>
+                            <div class="cd-svc-prose"><?= $section['body'] ?? '' ?></div>
+                        </div>
+                    </div>
+                </section>
+            <?php break;
+
+            case 'process_steps': ?>
+                <section class="about-area cd-svc-process">
+                    <div class="custom-container">
+                        <?php if (!empty($section['heading'])): ?>
+                        <h2 class="cd-svc-heading"><?= esc($section['heading']) ?></h2>
+                        <?php endif; ?>
+                        <div class="cd-svc-process-items">
+                            <?php foreach ($items as $i => $item): ?>
+                            <div class="cd-svc-process-item">
+                                <span class="cd-svc-process-number"><?= esc(str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT)) ?></span>
+                                <h3><?= esc($item['title'] ?? '') ?></h3>
+                                <p><?= esc($item['text'] ?? '') ?></p>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </section>
+            <?php break;
+
+            case 'deliverables': ?>
+                <section class="about-area cd-svc-deliverables">
+                    <div class="custom-container">
+                        <?php if (!empty($section['heading'])): ?>
+                        <h2 class="cd-svc-heading"><?= esc($section['heading']) ?></h2>
+                        <?php endif; ?>
+                        <ul class="cd-svc-deliverables-list">
+                            <?php foreach ($items as $item): ?>
+                            <li><i class="las la-check-circle" aria-hidden="true"></i> <?= esc(is_array($item) ? ($item['text'] ?? '') : $item) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                </section>
+            <?php break;
+
+            case 'cta_banner': ?>
+                <section class="about-area cd-svc-cta-banner">
+                    <div class="custom-container cd-svc-cta-banner-inner">
+                        <div>
+                            <?php if (!empty($section['heading'])): ?>
+                            <h2 class="cd-svc-heading"><?= esc($section['heading']) ?></h2>
+                            <?php endif; ?>
+                            <?php if (!empty($section['body'])): ?>
+                            <div class="cd-svc-prose"><?= $section['body'] ?></div>
+                            <?php endif; ?>
+                        </div>
+                        <?php if (!empty($section['cta_label']) && !empty($section['cta_url'])): ?>
+                        <a href="<?= esc($section['cta_url']) ?>" class="theme-btn">
+                            <?= esc($section['cta_label']) ?> <i class="iconoir-arrow-up-right" aria-hidden="true"></i>
+                        </a>
+                        <?php endif; ?>
+                    </div>
+                </section>
+            <?php break;
+
+            case 'faq':
+                $faqs = get_faqs('product', (int) $product['id'], (int) $country['id']);
+                if (empty($faqs)) {
+                    break;
+                } ?>
+                <section class="faq-area cd-faq cd-svc-faq">
+                    <div class="custom-container">
+                        <?php if (!empty($section['heading'])): ?>
+                        <h2 class="cd-svc-heading"><?= esc($section['heading']) ?></h2>
+                        <?php endif; ?>
+                        <div class="accordion cd-accordion" id="cd-prod-faq-accordion">
+                            <?php foreach ($faqs as $i => $faq): ?>
+                            <div class="accordion-item">
+                                <h3 class="accordion-header" id="cd-prod-faq-heading-<?= (int) $faq['id'] ?>">
+                                    <button class="accordion-button<?= $i === 0 ? '' : ' collapsed' ?>" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#cd-prod-faq-<?= (int) $faq['id'] ?>"
+                                            aria-expanded="<?= $i === 0 ? 'true' : 'false' ?>"
+                                            aria-controls="cd-prod-faq-<?= (int) $faq['id'] ?>">
+                                        <?= esc($faq['question']) ?>
+                                    </button>
+                                </h3>
+                                <div id="cd-prod-faq-<?= (int) $faq['id'] ?>" class="accordion-collapse collapse<?= $i === 0 ? ' show' : '' ?>"
+                                     aria-labelledby="cd-prod-faq-heading-<?= (int) $faq['id'] ?>" data-bs-parent="#cd-prod-faq-accordion">
+                                    <div class="accordion-body"><?= esc($faq['answer']) ?></div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </section>
+            <?php break;
+        }
+    }
 }
 
 function get_product(string $slug): ?array
@@ -397,9 +825,15 @@ function get_hero_slides(int $country_id, string $page_slug = 'home'): array
     );
 }
 
-function get_hero_feature_rows(): array
+/** Hero trust-badge list for a country: country-specific rows plus global ones. */
+function get_hero_feature_rows(int $country_id): array
 {
-    return db_all('SELECT * FROM hero_feature_rows WHERE is_active = 1 ORDER BY sort_order');
+    return db_all(
+        'SELECT * FROM hero_feature_rows
+         WHERE is_active = 1 AND (country_id IS NULL OR country_id = ?)
+         ORDER BY sort_order',
+        [$country_id]
+    );
 }
 
 function get_posts(?int $country_id = null, int $limit = 6, int $offset = 0): array
@@ -426,6 +860,41 @@ function get_case_studies(?int $country_id = null, int $limit = 6): array
     return db_all($sql, $params);
 }
 
+/** A single published post, visible on $country_id (global posts show on every country). */
+function get_post(string $slug, ?int $country_id = null): ?array
+{
+    $sql = 'SELECT * FROM blog_posts WHERE slug = ? AND is_published = 1';
+    $params = [$slug];
+    if ($country_id !== null) {
+        $sql .= ' AND (country_id IS NULL OR country_id = ?)';
+        $params[] = $country_id;
+    }
+    return db_one($sql, $params);
+}
+
+/** A single published case study, visible on $country_id (global rows show on every country). */
+function get_case_study(string $slug, ?int $country_id = null): ?array
+{
+    $sql = 'SELECT * FROM case_studies WHERE slug = ? AND is_published = 1';
+    $params = [$slug];
+    if ($country_id !== null) {
+        $sql .= ' AND (country_id IS NULL OR country_id = ?)';
+        $params[] = $country_id;
+    }
+    return db_one($sql, $params);
+}
+
+/**
+ * Admin-editable title/description/noindex for a page that has no content
+ * table of its own to hang meta fields off (home, about, services hub).
+ * Callers keep their existing hardcoded copy as the fallback default --
+ * same pattern as service_content's meta_title/meta_description.
+ */
+function get_page_seo(string $page_key, int $country_id): ?array
+{
+    return db_one('SELECT * FROM page_seo WHERE page_key = ? AND country_id = ?', [$page_key, $country_id]);
+}
+
 // =====================================================================
 // URL builders
 // =====================================================================
@@ -446,6 +915,18 @@ function service_url(string $service_slug, array $country): string
 function product_url(string $product_slug, array $country): string
 {
     return url($country['code'] . '/products/' . $product_slug . '-' . $country['slug_suffix'] . '/');
+}
+
+/** /sg/blog/some-post-slug/ -- unlike services/products, one shared post.php serves every slug. */
+function blog_url(string $post_slug, array $country): string
+{
+    return url($country['code'] . '/blog/' . $post_slug . '/');
+}
+
+/** /sg/case-studies/some-client-slug/ */
+function case_study_url(string $case_slug, array $country): string
+{
+    return url($country['code'] . '/case-studies/' . $case_slug . '/');
 }
 
 /** Absolute filesystem path of the web root. */

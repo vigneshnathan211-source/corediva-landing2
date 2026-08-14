@@ -46,29 +46,89 @@ a {
     color: var(--cda-accent);
 }
 
-/* ---------- Auth screens (login, verify) ---------- */
+/* ---------- Auth screens (login, verify) ----------
+   Rare-use screens (a handful of times per week per admin, per Emil
+   Kowalski's animation-frequency framework) so a bit of entrance motion
+   earns its keep here in a way it wouldn't on something like a toolbar
+   button pressed hundreds of times a day. Kept restrained: one soft
+   brand-tinted glow, one card entrance, no loops, nothing that repeats. */
 
 .cd-admin-auth {
+    position: relative;
     min-height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 24px;
+    overflow: hidden;
+    background: var(--cda-surface-soft);
+}
+
+/* A quiet radial glow in the brand color, not a loud AI-gradient mesh --
+   low opacity, fixed position, purely atmospheric. */
+.cd-admin-auth::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(560px circle at 50% 0%, rgba(19, 81, 216, .07), transparent 70%);
+    pointer-events: none;
 }
 
 .cd-admin-card {
+    position: relative;
     width: 100%;
     max-width: 400px;
     background: var(--cda-surface);
     border: 1px solid var(--cda-line);
-    border-radius: var(--cda-radius);
-    box-shadow: 0 4px 20px 5px rgba(0, 0, 0, .03);
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(16, 24, 51, .04), 0 20px 44px -12px rgba(16, 24, 51, .12);
     padding: 40px 36px;
+
+    opacity: 0;
+    transform: translateY(10px) scale(.98);
+    animation: cd-admin-card-in .5s var(--cda-ease-out) forwards;
+}
+
+@keyframes cd-admin-card-in {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cd-admin-card {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
 }
 
 .cd-admin-logo {
     display: block;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
+}
+
+/* Two-dot progress: quiet orientation for the two-step flow, not a
+   decorative status dot -- it reflects a real, currently-two-step
+   process and updates per screen. */
+.cd-admin-auth-steps {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.cd-admin-auth-steps span {
+    width: 20px;
+    height: 3px;
+    border-radius: 30px;
+    background: var(--cda-line);
+    transition: background-color .3s var(--cda-ease-out);
+}
+
+.cd-admin-auth-steps span.is-active {
+    background: var(--cda-accent);
 }
 
 .cd-admin-card h1 {
@@ -96,11 +156,12 @@ a {
 }
 
 .cd-admin-card input[type="email"],
+.cd-admin-card input[type="password"],
 .cd-admin-card input[type="text"] {
     width: 100%;
     padding: 11px 14px;
     border: 1px solid var(--cda-line);
-    border-radius: 8px;
+    border-radius: 9px;
     font-family: inherit;
     font-size: 15px;
     color: var(--cda-ink);
@@ -116,26 +177,32 @@ a {
 }
 
 .cd-admin-otp-input {
-    font-size: 22px !important;
+    font-size: 26px !important;
     font-weight: 600;
     letter-spacing: .5em;
     text-align: center;
     font-variant-numeric: tabular-nums;
+    /* Optically centered despite the trailing letter-spacing gap. */
+    padding-left: calc(14px + .5em) !important;
 }
 
 .cd-admin-btn {
+    position: relative;
+    display: inline-block;
     margin-top: 10px;
     padding: 12px 20px;
     background: var(--cda-accent);
     color: #fff;
     border: 0;
-    border-radius: 8px;
+    border-radius: 9px;
     font-family: inherit;
     font-size: 15px;
     font-weight: 600;
+    text-decoration: none;
     cursor: pointer;
     transition: background-color .2s var(--cda-ease-out),
-                transform .12s var(--cda-ease-out);
+                transform .12s var(--cda-ease-out),
+                opacity .2s var(--cda-ease-out);
 }
 
 .cd-admin-btn:hover {
@@ -149,6 +216,42 @@ a {
 .cd-admin-btn:focus-visible {
     outline: 2px solid var(--cda-accent);
     outline-offset: 2px;
+}
+
+.cd-admin-btn:disabled {
+    cursor: default;
+    opacity: .75;
+    transform: none;
+}
+
+/* Inline spinner for the pending-submit state -- shown by toggling
+   [data-pending] from the small progressive-enhancement script in
+   login.php/verify.php, not by default (works with JS disabled too,
+   the form just submits and reloads as it always has). */
+.cd-admin-btn-spinner {
+    display: none;
+    width: 15px;
+    height: 15px;
+    margin-right: 8px;
+    border: 2px solid rgba(255, 255, 255, .4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    vertical-align: -3px;
+    animation: cd-admin-spin .6s linear infinite;
+}
+
+.cd-admin-btn[data-pending] .cd-admin-btn-spinner {
+    display: inline-block;
+}
+
+@keyframes cd-admin-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cd-admin-btn-spinner {
+        animation-duration: 1.2s;
+    }
 }
 
 .cd-admin-resend {
@@ -179,11 +282,31 @@ a {
 }
 
 .cd-admin-alert {
-    border-radius: 8px;
+    border-radius: 10px;
+    border-left: 3px solid transparent;
     padding: 12px 14px;
     margin-bottom: 18px;
     font-size: 14px;
     line-height: 1.5;
+
+    opacity: 0;
+    transform: translateY(-4px);
+    animation: cd-admin-alert-in .3s var(--cda-ease-out) forwards;
+}
+
+@keyframes cd-admin-alert-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cd-admin-alert {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
 }
 
 .cd-admin-alert p {
@@ -196,46 +319,85 @@ a {
 
 .cd-admin-alert-error {
     background: var(--cda-error-soft);
+    border-left-color: var(--cda-error);
     color: var(--cda-error);
 }
 
 .cd-admin-alert-dev {
     background: var(--cda-dev-soft);
+    border-left-color: var(--cda-dev);
     color: var(--cda-dev);
 }
 
 .cd-admin-alert-ok {
     background: #E9F7EF;
+    border-left-color: #1E7B3C;
     color: #1E7B3C;
 }
 
-/* ---------- Dashboard shell ---------- */
-
-.cd-admin-topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 16px 32px;
-    background: var(--cda-surface);
-    border-bottom: 1px solid var(--cda-line);
+.cd-admin-alert-info {
+    background: var(--cda-surface-soft);
+    border-left-color: var(--cda-line);
+    color: var(--cda-body);
 }
 
-.cd-admin-topbar-logo {
+/* ---------- Dashboard shell: sidebar + content ----------
+   Grouped sidebar rather than a flat topbar row -- a horizontal nav runs
+   out of room the moment a module or two more ships (this one already
+   has 8 destinations across 3 real groupings), where a sidebar just
+   grows a new group. Grouping also does the labelling work a flat row
+   can't: "SEO" and "AI Chat" read as siblings of "Services" once they're
+   visibly under the same "Content"/"Engagement" heading, instead of
+   floating between Dashboard and Settings with no signal either way. */
+
+.cd-admin-shell {
+    display: flex;
+    align-items: flex-start;
+    min-height: 100dvh;
+}
+
+.cd-admin-sidebar {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    width: 232px;
+    flex-shrink: 0;
+    height: 100dvh;
+    padding: 24px 18px;
+    background: var(--cda-surface);
+    border-right: 1px solid var(--cda-line);
+}
+
+.cd-admin-sidebar-logo {
     display: block;
     line-height: 0;
+    margin: 0 8px 28px;
 }
 
-.cd-admin-nav {
+.cd-admin-sidebar-nav {
     display: flex;
-    align-items: center;
-    gap: 4px;
+    flex-direction: column;
+    gap: 1px;
     flex: 1;
-    margin: 0 24px;
+    overflow-y: auto;
 }
 
-.cd-admin-nav-link {
-    padding: 7px 14px;
+.cd-admin-sidebar-group {
+    margin: 18px 8px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--cda-body);
+}
+
+.cd-admin-sidebar-nav .cd-admin-sidebar-group:first-child {
+    margin-top: 0;
+}
+
+.cd-admin-sidebar-link {
+    padding: 9px 10px;
     border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
@@ -245,37 +407,42 @@ a {
                 color .2s var(--cda-ease-out);
 }
 
-.cd-admin-nav-link:hover {
+.cd-admin-sidebar-link:hover {
     color: var(--cda-ink);
     background: var(--cda-surface-soft);
 }
 
-.cd-admin-nav-link.is-active {
+.cd-admin-sidebar-link.is-active {
     color: var(--cda-accent);
     background: rgba(19, 81, 216, .08);
+    font-weight: 600;
 }
 
-.cd-admin-topbar-user {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    font-size: 14px;
+.cd-admin-sidebar-user {
+    margin-top: 16px;
+    padding: 14px 8px 0;
+    border-top: 1px solid var(--cda-line);
 }
 
-.cd-admin-topbar-name {
+.cd-admin-sidebar-name {
+    margin: 0;
+    font-size: 13.5px;
     font-weight: 600;
     color: var(--cda-ink);
 }
 
-.cd-admin-topbar-role {
+.cd-admin-sidebar-role {
+    margin: 2px 0 10px;
+    font-size: 12px;
     color: var(--cda-body);
-    padding: 3px 10px;
-    background: var(--cda-surface-soft);
-    border-radius: 30px;
-    font-size: 12.5px;
+}
+
+.cd-admin-sidebar-user form {
+    margin: 0;
 }
 
 .cd-admin-logout {
+    width: 100%;
     background: none;
     border: 1px solid var(--cda-line);
     border-radius: 8px;
@@ -294,14 +461,24 @@ a {
     color: var(--cda-accent);
 }
 
+.cd-admin-content {
+    flex: 1;
+    min-width: 0;
+}
+
 .cd-admin-main {
+    max-width: 900px;
+    padding: 40px 40px 56px;
+}
+
+/* Table-heavy screens (leads, admin users, roles matrix) get more room --
+   900px is right for a form, cramped for an 8-column table. */
+.cd-admin-main-wide {
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 48px 32px;
 }
 
 .cd-admin-main h1 {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 700;
     letter-spacing: -.3px;
     margin: 0 0 10px;
@@ -313,14 +490,59 @@ a {
     background: var(--cda-surface);
     border: 1px solid var(--cda-line);
     border-radius: var(--cda-radius);
-    padding: 28px 30px;
-    margin-top: 28px;
+    padding: 26px 28px;
+    margin-top: 24px;
 }
 
 .cd-admin-panel h2 {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
     margin: 0 0 18px;
+}
+
+/* A panel holding just a couple of fields (SEO, AI Chat) shouldn't
+   stretch its inputs to the full 900px content width -- that reads as
+   an unfinished form, not a simple one. */
+.cd-admin-panel-narrow {
+    max-width: 560px;
+}
+
+/* ---------- Settings tabs ---------- */
+
+.cd-admin-tabs {
+    display: flex;
+    gap: 4px;
+    margin-top: 28px;
+    border-bottom: 1px solid var(--cda-line);
+}
+
+.cd-admin-tab {
+    padding: 10px 18px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--cda-body);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color .2s var(--cda-ease-out), border-color .2s var(--cda-ease-out);
+}
+
+.cd-admin-tab:hover {
+    color: var(--cda-ink);
+}
+
+.cd-admin-tab.is-active {
+    color: var(--cda-accent);
+    border-bottom-color: var(--cda-accent);
+}
+
+.cd-admin-panel > .cd-admin-panel {
+    margin-top: 24px;
+}
+
+.cd-admin-table .cd-admin-child-row td:first-child {
+    padding-left: 34px;
+    color: var(--cda-body);
 }
 
 .cd-admin-form {
@@ -335,6 +557,58 @@ a {
     gap: 16px;
 }
 
+/* Selector/filter bars (service+country+region pickers, SEO's page+country
+   picker, the leads filter row) hold 2-4 short fields, never a fixed
+   count -- a rigid 3-equal-column grid leaves a visibly empty third
+   column when only 2 fields are present. auto-fit sizes each field to a
+   sane range and lets the row end where the fields end instead of
+   stretching to fill whatever width the panel happens to have. */
+.cd-admin-selector {
+    grid-template-columns: repeat(auto-fit, minmax(190px, 260px));
+    justify-content: start;
+    align-items: end;
+}
+
+/* The section-item repeater always has exactly 3 sub-fields (icon/title/
+   text), so equal thirds is the right call there. */
+.cd-admin-item-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: end;
+}
+
+@media (max-width: 767px) {
+    .cd-admin-selector,
+    .cd-admin-item-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Services admin: drag-and-drop section reordering. */
+.cd-admin-drag-handle-cell {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.cd-admin-drag-handle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    color: var(--cda-body);
+    cursor: grab;
+    touch-action: none;
+}
+
+.cd-admin-drag-row {
+    cursor: grab;
+    transition: background-color 120ms var(--cda-ease-out), opacity 120ms var(--cda-ease-out);
+}
+
+.cd-admin-drag-row.is-dragging {
+    opacity: .4;
+    background-color: var(--cda-surface-soft);
+}
+
 .cd-admin-form label {
     display: block;
     font-size: 13.5px;
@@ -343,10 +617,19 @@ a {
     margin-bottom: 6px;
 }
 
-.cd-admin-form input[type="text"],
-.cd-admin-form input[type="email"],
-.cd-admin-form input[type="password"],
-.cd-admin-form select {
+/* Scoped to .cd-admin-main rather than .cd-admin-form -- the selector/
+   filter bars (service+country picker, SEO's page picker, leads filters)
+   are plain <form>s without the .cd-admin-form class, and previously fell
+   through to unstyled native inputs while every other field on the same
+   page looked deliberate. One field style for the whole admin area. */
+.cd-admin-main input[type="text"],
+.cd-admin-main input[type="email"],
+.cd-admin-main input[type="password"],
+.cd-admin-main input[type="number"],
+.cd-admin-main input[type="url"],
+.cd-admin-main input[type="tel"],
+.cd-admin-main select,
+.cd-admin-main textarea {
     width: 100%;
     padding: 10px 12px;
     border: 1px solid var(--cda-line);
@@ -359,15 +642,39 @@ a {
                 box-shadow .2s var(--cda-ease-out);
 }
 
-.cd-admin-form input:focus-visible,
-.cd-admin-form select:focus-visible {
+.cd-admin-main select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23454545' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 34px;
+    cursor: pointer;
+}
+
+.cd-admin-main textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.cd-admin-main input:focus-visible,
+.cd-admin-main select:focus-visible,
+.cd-admin-main textarea:focus-visible {
     outline: none;
     border-color: var(--cda-accent);
     box-shadow: 0 0 0 3px rgba(19, 81, 216, .15);
 }
 
-.cd-admin-form input[readonly] {
+.cd-admin-main input[readonly] {
     background: var(--cda-surface-soft);
+    color: var(--cda-body);
+}
+
+.cd-admin-hint {
+    display: block;
+    margin-top: 5px;
+    font-size: 12.5px;
+    font-weight: 400;
     color: var(--cda-body);
 }
 
@@ -378,6 +685,13 @@ a {
     font-size: 14px;
     font-weight: 500;
     color: var(--cda-ink);
+    cursor: pointer;
+}
+
+.cd-admin-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--cda-accent);
     cursor: pointer;
 }
 
@@ -471,6 +785,44 @@ a {
     color: var(--cda-error);
 }
 
+/* ---------- Leads table ---------- */
+
+.cd-admin-inline-form {
+    margin: 0;
+}
+
+.cd-admin-table td.cd-admin-wrap-cell {
+    white-space: normal;
+    max-width: 320px;
+}
+
+.cd-admin-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 16px;
+}
+
+.cd-admin-page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border-radius: 8px;
+    background: var(--cda-surface-soft);
+    color: var(--cda-body);
+    font-size: 13.5px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.cd-admin-page-link.is-active {
+    background: var(--cda-accent);
+    color: #fff;
+}
+
 /* ---------- Permission matrix ---------- */
 
 .cd-admin-matrix th,
@@ -508,16 +860,56 @@ a {
     opacity: .6;
 }
 
-@media (max-width: 767px) {
-    .cd-admin-topbar {
-        flex-wrap: wrap;
+@media (max-width: 900px) {
+    /* Sidebar collapses to a horizontally-scrolling top bar -- a fixed
+       232px rail has nowhere to go on a narrow viewport, but the same
+       grouped links still work as a scrollable row. */
+    .cd-admin-shell {
+        flex-direction: column;
     }
-    .cd-admin-nav {
-        order: 3;
+    .cd-admin-sidebar {
+        position: static;
         width: 100%;
-        margin: 4px 0 0;
+        height: auto;
+        flex-direction: row;
+        align-items: center;
+        gap: 18px;
+        padding: 14px 20px;
+        border-right: 0;
+        border-bottom: 1px solid var(--cda-line);
+    }
+    .cd-admin-sidebar-logo {
+        margin: 0;
+        flex-shrink: 0;
+    }
+    .cd-admin-sidebar-nav {
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
         overflow-x: auto;
     }
+    .cd-admin-sidebar-group {
+        display: none;
+    }
+    .cd-admin-sidebar-link {
+        white-space: nowrap;
+    }
+    .cd-admin-sidebar-user {
+        flex-shrink: 0;
+        margin: 0;
+        padding: 0;
+        border-top: 0;
+    }
+    .cd-admin-sidebar-name,
+    .cd-admin-sidebar-role {
+        display: none;
+    }
+    .cd-admin-logout {
+        width: auto;
+    }
+}
+
+@media (max-width: 767px) {
     .cd-admin-form-row {
         grid-template-columns: 1fr;
     }
@@ -527,14 +919,13 @@ a {
     .cd-admin-card {
         padding: 32px 24px;
     }
-    .cd-admin-topbar {
-        flex-wrap: wrap;
-        padding: 14px 20px;
+    .cd-admin-sidebar {
+        padding: 12px 16px;
     }
     .cd-admin-main {
-        padding: 32px 20px;
+        padding: 28px 20px 40px;
     }
     .cd-admin-panel {
-        padding: 22px 20px;
+        padding: 20px 18px;
     }
 }

@@ -171,12 +171,15 @@ CREATE TABLE `process_steps` (
 DROP TABLE IF EXISTS `hero_feature_rows`;
 CREATE TABLE `hero_feature_rows` (
   `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `country_id` INT UNSIGNED DEFAULT NULL COMMENT 'NULL = shown on every country, same convention as hero_slides',
   `title`      VARCHAR(150) NOT NULL,
   `subtitle`   VARCHAR(255) DEFAULT NULL,
   `icon`       VARCHAR(50)  NOT NULL DEFAULT 'star',
   `sort_order` INT          NOT NULL DEFAULT 0,
   `is_active`  TINYINT(1)   NOT NULL DEFAULT 1,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_feature_country` (`country_id`),
+  CONSTRAINT `fk_feature_country` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 DROP TABLE IF EXISTS `hero_slides`;
@@ -250,6 +253,64 @@ CREATE TABLE `service_content` (
   CONSTRAINT `fk_sc_country` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- `service_content` covers the fixed top-of-page fields (h1, intro, meta).
+-- This table covers the repeatable body: admins build a service-detail
+-- page as an ordered stack of typed blocks instead of one long text field.
+-- Same region_id=0-for-country-level convention as service_content, for
+-- the same reason (MySQL NULLs would let the unique-style lookup silently
+-- return duplicates); no UNIQUE key here though, since a service legitimately
+-- has many section rows per service/country/region.
+-- section_type is validated in PHP (SERVICE_SECTION_TYPES in functions.php),
+-- not a DB ENUM, so new block types don't need a migration.
+DROP TABLE IF EXISTS `service_page_sections`;
+CREATE TABLE `service_page_sections` (
+  `id`               INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `service_id`       INT UNSIGNED NOT NULL,
+  `country_id`       INT UNSIGNED NOT NULL,
+  `region_id`        INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '0 = country-level row',
+  `section_type`     VARCHAR(30)  NOT NULL COMMENT 'rich_text|feature_grid|image_feature|process_steps|deliverables|cta_banner|faq',
+  `heading`          VARCHAR(255) DEFAULT NULL,
+  `subheading`       VARCHAR(500) DEFAULT NULL,
+  `body`             MEDIUMTEXT   COMMENT 'admin-authored HTML, rendered raw -- see functions.php esc() note',
+  `items`            JSON         DEFAULT NULL COMMENT 'structured list for feature_grid/process_steps/deliverables; shape depends on section_type',
+  `media_url`        VARCHAR(255) DEFAULT NULL,
+  `media_alt`        VARCHAR(255) DEFAULT NULL,
+  `image_position`   VARCHAR(10)  NOT NULL DEFAULT 'right' COMMENT 'left|right, image_feature only',
+  `cta_label`        VARCHAR(100) DEFAULT NULL,
+  `cta_url`          VARCHAR(255) DEFAULT NULL,
+  `sort_order`        INT         NOT NULL DEFAULT 0,
+  `is_published`     TINYINT(1)   NOT NULL DEFAULT 1,
+  `created_at`       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_sps_lookup` (`service_id`, `country_id`, `region_id`, `is_published`, `sort_order`),
+  CONSTRAINT `fk_sps_service` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_sps_country` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- ---------------------------------------------------------------------
+-- Page-level SEO (home / about / services-hub -- pages with no content
+-- table of their own to hang meta fields off). Canonical URLs and
+-- hreflang patterns stay hardcoded in each page's PHP -- those are
+-- structural, not editorial -- only title/description/noindex are
+-- admin-editable here, same split as service_content's meta_* columns.
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `page_seo`;
+CREATE TABLE `page_seo` (
+  `id`               INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `page_key`         VARCHAR(60)  NOT NULL COMMENT 'home|about|services -- matches the page, not a URL',
+  `country_id`       INT UNSIGNED NOT NULL,
+  `meta_title`       VARCHAR(255) DEFAULT NULL,
+  `meta_description` VARCHAR(320) DEFAULT NULL,
+  `is_noindex`       TINYINT(1)   NOT NULL DEFAULT 0,
+  `created_at`       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_page_seo` (`page_key`, `country_id`),
+  CONSTRAINT `fk_page_seo_country` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 -- ---------------------------------------------------------------------
 -- Products
 -- ---------------------------------------------------------------------
@@ -293,6 +354,34 @@ CREATE TABLE `product_content` (
   KEY `idx_pc_country` (`country_id`, `is_published`),
   CONSTRAINT `fk_pc_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_pc_country` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Same idea as service_page_sections: an ordered stack of typed blocks
+-- instead of one long text field. No region_id here -- product_content
+-- has none either, since no product currently ships region-specific copy.
+DROP TABLE IF EXISTS `product_page_sections`;
+CREATE TABLE `product_page_sections` (
+  `id`               INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `product_id`       INT UNSIGNED NOT NULL,
+  `country_id`       INT UNSIGNED NOT NULL,
+  `section_type`     VARCHAR(30)  NOT NULL COMMENT 'rich_text|feature_grid|image_feature|process_steps|deliverables|cta_banner|faq',
+  `heading`          VARCHAR(255) DEFAULT NULL,
+  `subheading`       VARCHAR(500) DEFAULT NULL,
+  `body`             MEDIUMTEXT   COMMENT 'admin-authored HTML, rendered raw -- see functions.php esc() note',
+  `items`            JSON         DEFAULT NULL COMMENT 'structured list for feature_grid/process_steps/deliverables; shape depends on section_type',
+  `media_url`        VARCHAR(255) DEFAULT NULL,
+  `media_alt`        VARCHAR(255) DEFAULT NULL,
+  `image_position`   VARCHAR(10)  NOT NULL DEFAULT 'right' COMMENT 'left|right, image_feature only',
+  `cta_label`        VARCHAR(100) DEFAULT NULL,
+  `cta_url`          VARCHAR(255) DEFAULT NULL,
+  `sort_order`       INT          NOT NULL DEFAULT 0,
+  `is_published`     TINYINT(1)   NOT NULL DEFAULT 1,
+  `created_at`       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_pps_lookup` (`product_id`, `country_id`, `is_published`, `sort_order`),
+  CONSTRAINT `fk_pps_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_pps_country` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- ---------------------------------------------------------------------
