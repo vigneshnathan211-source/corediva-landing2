@@ -1302,6 +1302,8 @@ function save_lead(array $post): array
 
     $country = $ccode !== '' ? get_country($ccode) : null;
 
+    $sourceUrl = mb_substr((string) ($post['source_url'] ?? ''), 0, 255) ?: null;
+
     db_exec(
         'INSERT INTO leads
            (name, email, phone, country_code, country_id, service_interest,
@@ -1315,14 +1317,33 @@ function save_lead(array $post): array
             $country['id'] ?? null,
             $service !== '' ? $service : null,
             $message !== '' ? $message : null,
-            mb_substr((string) ($post['source_url'] ?? ''), 0, 255) ?: null,
+            $sourceUrl,
             mb_substr((string) ($_SERVER['HTTP_REFERER'] ?? ''), 0, 255) ?: null,
             $ip,
             mb_substr((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 255) ?: null,
         ]
     );
 
-    return ['ok' => true, 'errors' => [], 'id' => (int) db()->lastInsertId()];
+    $leadId = (int) db()->lastInsertId();
+
+    // Best-effort: the lead is already captured in the DB above regardless
+    // of whether either email goes out, so a mail failure here must not
+    // turn a successful submission into an error response for the visitor.
+    require_once __DIR__ . '/mailer.php';
+    send_lead_notifications(
+        [
+            'name'             => $name,
+            'email'            => $email,
+            'phone'            => $phone !== '' ? $phone : null,
+            'country_code'     => $ccode !== '' ? $ccode : null,
+            'service_interest' => $service !== '' ? $service : null,
+            'message'          => $message !== '' ? $message : null,
+            'source_url'       => $sourceUrl,
+        ],
+        $country
+    );
+
+    return ['ok' => true, 'errors' => [], 'id' => $leadId];
 }
 
 // =====================================================================

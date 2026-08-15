@@ -25,11 +25,13 @@ return [
     ],
 
     'mail' => [
+        // Hostinger's SMTP relay, SSL on port 465 (their recommended
+        // config over STARTTLS on 587).
         'host'        => 'smtp.hostinger.com',
-        'port'        => 587,
+        'port'        => 465,
         'username'    => 'noreply@corediva365.com',
         'password'    => 'YOUR_SMTP_PASSWORD',
-        'encryption'  => 'tls',
+        'encryption'  => 'ssl',
         'from_email'  => 'noreply@corediva365.com',
         'from_name'   => 'Corediva Tech Solutions',
         'lead_notify' => 'support@corediva365.com',
