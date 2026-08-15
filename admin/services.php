@@ -413,13 +413,13 @@ $activeNav = 'services';
             </div>
 
             <div>
-                <label for="info_core_desc">Core description (HTML, client-supplied long copy)</label>
-                <textarea id="info_core_desc" name="core_description" rows="5"><?= esc($service['core_description'] ?? '') ?></textarea>
+                <label for="info_core_desc">Core description (client-supplied long copy)</label>
+                <textarea id="info_core_desc" name="core_description" rows="5" data-rich-text><?= esc($service['core_description'] ?? '') ?></textarea>
             </div>
 
             <div>
-                <label for="info_core_deliv">Core deliverables (HTML)</label>
-                <textarea id="info_core_deliv" name="core_deliverables" rows="5"><?= esc($service['core_deliverables'] ?? '') ?></textarea>
+                <label for="info_core_deliv">Core deliverables</label>
+                <textarea id="info_core_deliv" name="core_deliverables" rows="5" data-rich-text><?= esc($service['core_deliverables'] ?? '') ?></textarea>
             </div>
 
             <label class="cd-admin-checkbox">
@@ -456,19 +456,19 @@ $activeNav = 'services';
             </div>
 
             <div>
-                <label for="intro">Intro (HTML, renders raw on the page)</label>
-                <textarea id="intro" name="intro" rows="4"><?= esc($basics['intro'] ?? '') ?></textarea>
-                <span class="cd-admin-hint">This is admin-authored HTML and is not escaped on the public page -- only people with services.edit can write it.</span>
+                <label for="intro">Intro</label>
+                <textarea id="intro" name="intro" rows="4" data-rich-text><?= esc($basics['intro'] ?? '') ?></textarea>
+                <span class="cd-admin-hint">Renders directly on the public page -- only people with services.edit can write it.</span>
             </div>
 
             <div>
-                <label for="local_proof">Local proof (HTML)</label>
-                <textarea id="local_proof" name="local_proof" rows="3"><?= esc($basics['local_proof'] ?? '') ?></textarea>
+                <label for="local_proof">Local proof</label>
+                <textarea id="local_proof" name="local_proof" rows="3" data-rich-text><?= esc($basics['local_proof'] ?? '') ?></textarea>
             </div>
 
             <div>
-                <label for="compliance_note">Compliance note (HTML)</label>
-                <textarea id="compliance_note" name="compliance_note" rows="3"><?= esc($basics['compliance_note'] ?? '') ?></textarea>
+                <label for="compliance_note">Compliance note</label>
+                <textarea id="compliance_note" name="compliance_note" rows="3" data-rich-text><?= esc($basics['compliance_note'] ?? '') ?></textarea>
             </div>
 
             <div class="cd-admin-form-row">
@@ -536,9 +536,9 @@ $activeNav = 'services';
             </div>
 
             <div data-section-fields="rich_text,image_feature,cta_banner">
-                <label for="body">Body (HTML, renders raw)</label>
-                <textarea id="body" name="body" rows="5"><?= esc($editingSection['body'] ?? '') ?></textarea>
-                <span class="cd-admin-hint">Admin-authored HTML, not escaped on the public page.</span>
+                <label for="body">Body</label>
+                <textarea id="body" name="body" rows="5" data-rich-text><?= esc($editingSection['body'] ?? '') ?></textarea>
+                <span class="cd-admin-hint">Renders directly on the public page.</span>
             </div>
 
             <div class="cd-admin-form-row" data-section-fields="image_feature">

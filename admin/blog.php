@@ -197,9 +197,9 @@ $activeNav = 'blog';
             </div>
 
             <div>
-                <label for="body">Body (HTML, renders raw)</label>
-                <textarea id="body" name="body" rows="10"><?= esc($editing['body'] ?? '') ?></textarea>
-                <span class="cd-admin-hint">Admin-authored HTML, not escaped on the public page.</span>
+                <label for="body">Body</label>
+                <textarea id="body" name="body" rows="10" data-rich-text><?= esc($editing['body'] ?? '') ?></textarea>
+                <span class="cd-admin-hint">Renders directly on the public page.</span>
             </div>
 
             <div class="cd-admin-form-row">

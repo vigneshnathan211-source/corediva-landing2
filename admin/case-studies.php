@@ -186,14 +186,14 @@ $activeNav = 'case_studies';
             </div>
 
             <div>
-                <label for="body">Body (HTML, renders raw)</label>
-                <textarea id="body" name="body" rows="8"><?= esc($editing['body'] ?? '') ?></textarea>
-                <span class="cd-admin-hint">Admin-authored HTML, not escaped on the public page.</span>
+                <label for="body">Body</label>
+                <textarea id="body" name="body" rows="8" data-rich-text><?= esc($editing['body'] ?? '') ?></textarea>
+                <span class="cd-admin-hint">Renders directly on the public page.</span>
             </div>
 
             <div>
-                <label for="results">Results (HTML, renders raw)</label>
-                <textarea id="results" name="results" rows="4"><?= esc($editing['results'] ?? '') ?></textarea>
+                <label for="results">Results</label>
+                <textarea id="results" name="results" rows="4" data-rich-text><?= esc($editing['results'] ?? '') ?></textarea>
             </div>
 
             <div class="cd-admin-form-row">

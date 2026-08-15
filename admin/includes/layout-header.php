@@ -33,6 +33,7 @@ if (!isset($GLOBALS['corediva_config'])) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="<?= esc(asset('css/quill.snow.css')) ?>">
     <link rel="stylesheet" href="<?= esc(asset('css/admin.css')) ?>">
 </head>
 <body class="cd-admin">

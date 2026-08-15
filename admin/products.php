@@ -395,8 +395,8 @@ $activeNav = 'products';
             </div>
 
             <div>
-                <label for="info_core_desc">Core description (HTML, country-independent long copy)</label>
-                <textarea id="info_core_desc" name="core_description" rows="5"><?= esc($product['core_description'] ?? '') ?></textarea>
+                <label for="info_core_desc">Core description (country-independent long copy)</label>
+                <textarea id="info_core_desc" name="core_description" rows="5" data-rich-text><?= esc($product['core_description'] ?? '') ?></textarea>
             </div>
 
             <label class="cd-admin-checkbox">
@@ -438,14 +438,14 @@ $activeNav = 'products';
             </div>
 
             <div>
-                <label for="intro">Intro (HTML, renders raw on the page)</label>
-                <textarea id="intro" name="intro" rows="4"><?= esc($basics['intro'] ?? '') ?></textarea>
-                <span class="cd-admin-hint">This is admin-authored HTML and is not escaped on the public page -- only people with products.edit can write it.</span>
+                <label for="intro">Intro</label>
+                <textarea id="intro" name="intro" rows="4" data-rich-text><?= esc($basics['intro'] ?? '') ?></textarea>
+                <span class="cd-admin-hint">Renders directly on the public page -- only people with products.edit can write it.</span>
             </div>
 
             <div>
-                <label for="local_proof">Local proof (HTML)</label>
-                <textarea id="local_proof" name="local_proof" rows="3"><?= esc($basics['local_proof'] ?? '') ?></textarea>
+                <label for="local_proof">Local proof</label>
+                <textarea id="local_proof" name="local_proof" rows="3" data-rich-text><?= esc($basics['local_proof'] ?? '') ?></textarea>
             </div>
 
             <div class="cd-admin-form-row">
@@ -506,9 +506,9 @@ $activeNav = 'products';
             </div>
 
             <div data-section-fields="rich_text,image_feature,cta_banner">
-                <label for="body">Body (HTML, renders raw)</label>
-                <textarea id="body" name="body" rows="5"><?= esc($editingSection['body'] ?? '') ?></textarea>
-                <span class="cd-admin-hint">Admin-authored HTML, not escaped on the public page.</span>
+                <label for="body">Body</label>
+                <textarea id="body" name="body" rows="5" data-rich-text><?= esc($editingSection['body'] ?? '') ?></textarea>
+                <span class="cd-admin-hint">Renders directly on the public page.</span>
             </div>
 
             <div class="cd-admin-form-row" data-section-fields="image_feature">

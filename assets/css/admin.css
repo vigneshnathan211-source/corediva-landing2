@@ -670,6 +670,44 @@ a {
     color: var(--cda-body);
 }
 
+/* Quill WYSIWYG editor -- overrides the snow theme's own border/radius so
+   toolbar + editing surface read as one bordered field, matching every
+   other input on the page, instead of Quill's default two-box look. The
+   source textarea stays in the DOM (hidden) as the real form field. */
+.cd-admin-editor-source {
+    display: none;
+}
+
+.cd-admin-editor-wrap .ql-toolbar.ql-snow {
+    border: 1px solid var(--cda-line);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    background: var(--cda-surface-soft);
+    font-family: inherit;
+}
+
+.cd-admin-editor-wrap .ql-container.ql-snow {
+    border: 1px solid var(--cda-line);
+    border-radius: 0 0 8px 8px;
+    font-family: inherit;
+    font-size: 14.5px;
+    color: var(--cda-ink);
+    background: var(--cda-surface);
+}
+
+.cd-admin-editor-wrap .ql-editor {
+    min-height: 140px;
+}
+
+.cd-admin-editor-wrap:focus-within .ql-toolbar.ql-snow,
+.cd-admin-editor-wrap:focus-within .ql-container.ql-snow {
+    border-color: var(--cda-accent);
+}
+
+.cd-admin-editor-wrap:focus-within .ql-container.ql-snow {
+    box-shadow: 0 0 0 3px rgba(19, 81, 216, .15);
+}
+
 .cd-admin-hint {
     display: block;
     margin-top: 5px;
