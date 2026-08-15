@@ -109,7 +109,7 @@ $activeNav = 'users';
 <div class="cd-admin-shell">
 <?php require __DIR__ . '/includes/admin-nav.php'; ?>
     <div class="cd-admin-content">
-        <main class="cd-admin-main cd-admin-main-wide">
+        <main class="cd-admin-main">
     <h1>Admin Users</h1>
     <p class="cd-admin-lede">Who can sign in, and what role they hold.</p>
 

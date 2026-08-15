@@ -119,7 +119,7 @@ $activeNav = 'roles';
 <div class="cd-admin-shell">
 <?php require __DIR__ . '/includes/admin-nav.php'; ?>
     <div class="cd-admin-content">
-        <main class="cd-admin-main cd-admin-main-wide">
+        <main class="cd-admin-main">
     <h1>Roles &amp; Permissions</h1>
     <p class="cd-admin-lede">What each role can do. Super Admin always has every permission and can't be edited here.</p>
 

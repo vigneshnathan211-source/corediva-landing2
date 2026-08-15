@@ -126,7 +126,7 @@ $activeNav = 'blog';
 <div class="cd-admin-shell">
 <?php require __DIR__ . '/includes/admin-nav.php'; ?>
     <div class="cd-admin-content">
-        <main class="cd-admin-main cd-admin-main-wide">
+        <main class="cd-admin-main">
     <h1>Blog</h1>
     <p class="cd-admin-lede">Posts are unpublished by default. Nothing appears on the public site until "Published" is checked.</p>
 

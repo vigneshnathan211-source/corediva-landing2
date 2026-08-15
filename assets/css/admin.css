@@ -467,14 +467,8 @@ a {
 }
 
 .cd-admin-main {
-    max-width: 900px;
+    max-width: none;
     padding: 40px 40px 56px;
-}
-
-/* Table-heavy screens (leads, admin users, roles matrix) get more room --
-   900px is right for a form, cramped for an 8-column table. */
-.cd-admin-main-wide {
-    max-width: 1200px;
 }
 
 .cd-admin-main h1 {
