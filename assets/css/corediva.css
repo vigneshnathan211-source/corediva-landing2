@@ -2884,10 +2884,12 @@ button.cd-panel-toggle:not(.cd-nav-link) {
    - .cd-hero-video-section (About/"Who We Are"): full-bleed across the
      whole hero, video/overlay are the section's first children so the
      white stat-card boxes below just paint on top in normal flow.
-   - .cd-hero-video-content (Services/"What We Do"): confined to the
-     eyebrow/title/paragraph/CTA block only, NOT the photo panel below --
-     .hero-section-content itself is the video's positioned ancestor, so
-     the video ends exactly where its last child (the CTA button) ends.
+   - .cd-hero-video-content (Services/"What We Do"): a standalone full-width
+     banner (as wide as .custom-container, not the whole viewport) that
+     wraps just the eyebrow/title/paragraph/CTA, NOT the photo panel below
+     -- it's a sibling of .hero-service-about, not an ancestor. The video
+     fills the full banner width while .hero-section-content inside it
+     keeps its own narrower max-width so the text column stays readable.
    .cd-hero-video-bg/.cd-hero-video-overlay are shared, unscoped rules:
    whichever ancestor is position:relative is what they fill. Both flavours
    fall back to a plain dark background behind the overlay when the video
@@ -2900,8 +2902,9 @@ button.cd-panel-toggle:not(.cd-nav-link) {
     position: relative;
     overflow: hidden;
     background-color: #0A0E1C;
-    border-radius: 10px;
-    padding: 64px 40px;
+    border-radius: 16px;
+    padding: 100px 40px;
+    margin-bottom: 40px;
 }
 .cd-hero-video-bg {
     position: absolute;
@@ -2917,31 +2920,29 @@ button.cd-panel-toggle:not(.cd-nav-link) {
 .cd-hero-video-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(8, 12, 28, 0.8) 0%, rgba(8, 12, 28, 0.62) 55%, rgba(8, 12, 28, 0.82) 100%);
+    background: linear-gradient(180deg, rgba(8, 12, 28, 0.55) 0%, rgba(8, 12, 28, 0.35) 45%, rgba(8, 12, 28, 0.6) 100%);
 }
 .cd-hero-video-section > .hero-section-content-wrap {
     position: relative;
     z-index: 1;
     background: none;
 }
+.cd-hero-video-content > .hero-section-content {
+    position: relative;
+    z-index: 1;
+    margin: 0 auto;
+}
 .cd-hero-video-section .hero-section-content-wrap .hero-section-content h5.section-subtitle,
-.cd-hero-video-content > h5.section-subtitle {
+.cd-hero-video-content > .hero-section-content h5.section-subtitle {
     color: #FFFFFF;
 }
 .cd-hero-video-section .hero-section-content-wrap .hero-section-content h1.section-title,
-.cd-hero-video-content > h1.section-title {
+.cd-hero-video-content > .hero-section-content h1.section-title {
     color: #FFFFFF;
 }
 .cd-hero-video-section .hero-section-content-wrap .hero-section-content p,
-.hero-section-wrap .hero-section-content-wrap .hero-section-content.cd-hero-video-content > p {
-    color: rgba(255, 255, 255, 0.85);
-}
-.cd-hero-video-content > h5.section-subtitle,
-.cd-hero-video-content > h1.section-title,
-.cd-hero-video-content > p,
-.cd-hero-video-content > .cd-hero-service-cta {
-    position: relative;
-    z-index: 1;
+.hero-section-wrap .hero-section-content-wrap .cd-hero-video-content > .hero-section-content p {
+    color: rgba(255, 255, 255, 0.9);
 }
 
 @media (prefers-reduced-motion: reduce) {
