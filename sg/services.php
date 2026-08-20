@@ -46,16 +46,16 @@ include __DIR__ . '/../includes/header.php';
          after it. Checklist swapped for real commitments (credentials,
          response time, PDPA) instead of the theme's generic "Flexibility
          and Adaptability" placeholders. -->
-    <section class="hero-service-wrap hero-section-wrap cd-hero-video-section">
-        <div class="cd-hero-video-bg" aria-hidden="true">
-            <video autoplay muted loop playsinline>
-                <source src="<?= esc(asset('video/2.mp4')) ?>" type="video/mp4">
-            </video>
-            <div class="cd-hero-video-overlay"></div>
-        </div>
+    <section class="hero-service-wrap hero-section-wrap">
         <div class="hero-section-content-wrap">
             <div class="custom-container">
-                <div class="hero-section-content text-center">
+                <div class="hero-section-content text-center cd-hero-video-content">
+                    <div class="cd-hero-video-bg" aria-hidden="true">
+                        <video autoplay muted loop playsinline>
+                            <source src="<?= esc(asset('video/2.mp4')) ?>" type="video/mp4">
+                        </video>
+                        <div class="cd-hero-video-overlay"></div>
+                    </div>
                     <h5 class="section-subtitle">Our Services</h5>
                     <h1 class="section-title">Sixteen services. One accountable team.</h1>
                     <p>From web platforms to AI automation, ERP to cybersecurity: every service
