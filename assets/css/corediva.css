@@ -2879,3 +2879,51 @@ button.cd-panel-toggle:not(.cd-nav-link) {
         transform: none;
     }
 }
+
+/* Hero background video: About ("Who We Are") and Services ("What We Do")
+   page heroes. The video/overlay are the section's first children,
+   absolutely positioned and z-index:0, so the existing white-card stat
+   boxes and the services photo panel keep painting on top untouched --
+   they only need position:relative to establish their own stacking. Falls
+   back to a plain dark section behind the overlay when the video is
+   hidden (no supported source, reduced motion). */
+.cd-hero-video-section {
+    position: relative;
+    background-color: #0A0E1C;
+}
+.cd-hero-video-bg {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+}
+.cd-hero-video-bg video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.cd-hero-video-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(8, 12, 28, 0.8) 0%, rgba(8, 12, 28, 0.62) 55%, rgba(8, 12, 28, 0.82) 100%);
+}
+.cd-hero-video-section > .hero-section-content-wrap {
+    position: relative;
+    z-index: 1;
+    background: none;
+}
+.cd-hero-video-section .hero-section-content-wrap .hero-section-content h5.section-subtitle {
+    color: #FFFFFF;
+}
+.cd-hero-video-section .hero-section-content-wrap .hero-section-content h1.section-title {
+    color: #FFFFFF;
+}
+.cd-hero-video-section .hero-section-content-wrap .hero-section-content p {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cd-hero-video-bg video {
+        display: none;
+    }
+}

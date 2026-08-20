@@ -43,7 +43,13 @@ include __DIR__ . '/../includes/header.php';
 
     <!-- Hero: on the theme's service.html hero. Checklist swapped for real
          commitments (credentials, response time, VAT-ready invoicing). -->
-    <section class="hero-service-wrap hero-section-wrap">
+    <section class="hero-service-wrap hero-section-wrap cd-hero-video-section">
+        <div class="cd-hero-video-bg" aria-hidden="true">
+            <video autoplay muted loop playsinline>
+                <source src="<?= esc(asset('video/2.mp4')) ?>" type="video/mp4">
+            </video>
+            <div class="cd-hero-video-overlay"></div>
+        </div>
         <div class="hero-section-content-wrap">
             <div class="custom-container">
                 <div class="hero-section-content text-center">

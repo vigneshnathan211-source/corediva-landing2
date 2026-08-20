@@ -138,8 +138,8 @@ INSERT INTO `process_steps` (`title`,`subtitle`,`summary`,`icon`,`sort_order`,`i
 -- ---------------------------------------------------------------------
 -- Navigation. Mirrors the live corediva365.com menu.
 --
--- "What We Do" uses mega_type='services', so its panel is built from the
--- services table grouped by `category` -- the five category values are
+-- "Services" (id=3) uses mega_type='services', so its panel is built from
+-- the services table grouped by `category` -- the five category values are
 -- exactly the live site's five mega-menu columns, so the IA matches while
 -- every entry maps to a real service page rather than a hand-kept list.
 --
@@ -151,7 +151,7 @@ INSERT INTO `process_steps` (`title`,`subtitle`,`summary`,`icon`,`sort_order`,`i
 INSERT INTO `nav_items` (`id`,`parent_id`,`label`,`url`,`column_group`,`is_mega`,`mega_type`,`sort_order`,`is_active`) VALUES
 (1,NULL,'Home','#top',NULL,0,NULL,10,1),
 (2,NULL,'Who We Are','about',NULL,0,NULL,20,1),
-(3,NULL,'What We Do','services',NULL,1,'services',30,1),
+(3,NULL,'Services','services',NULL,1,'services',30,1),
 (4,NULL,'Insights',NULL,NULL,0,NULL,40,1),
 (5,NULL,'Products','products',NULL,0,NULL,50,1),
 (6,NULL,'Partners','#partners',NULL,0,NULL,60,1),
