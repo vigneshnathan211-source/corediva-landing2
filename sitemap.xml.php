@@ -82,6 +82,20 @@ foreach (get_countries() as $country) {
         ];
     }
 
+    // Region landing pages (Texas today, any future state/region follows
+    // the same nested-file convention: {code}/{region-code}/index.php).
+    foreach (db_all('SELECT code FROM regions WHERE country_id = ? AND is_active = 1', [$countryId]) as $region) {
+        $regionPath = $region['code'] . '/index';
+        if (!is_file(path_to_file($code, $regionPath))) {
+            continue;
+        }
+        $pageSeo = get_page_seo($region['code'], $countryId);
+        if (!empty($pageSeo['is_noindex'])) {
+            continue;
+        }
+        $urls[] = ['loc' => url($code . '/' . $region['code'] . '/')];
+    }
+
     // Blog posts and case studies use one shared handler file per country
     // (blog/post.php, case-studies/view.php) rather than a file per slug,
     // so the is_file() check happens once outside the row loop.
