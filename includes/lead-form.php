@@ -45,6 +45,10 @@ declare(strict_types=1);
 $lead_variant = $lead_variant ?? 'full';
 $lead_result  = $lead_result  ?? null;
 $lead_service = $lead_service ?? null;
+// get_service()/get_product() return the base row only, so a product with a
+// per-country title override (e.g. "invoice" -> "Invoice USA") needs the
+// same display_title fallback used for the unrestricted dropdown below.
+$leadServiceLabel = $lead_service ? ($lead_service['display_title'] ?? $lead_service['title']) : '';
 $lead_label   = $lead_label   ?? 'Service';
 $lead_options = $lead_options ?? get_services();
 $isHero       = $lead_variant === 'hero';
@@ -64,7 +68,7 @@ $formId       = $isHero ? 'hero' : ($isRfq ? 'rfq' : 'main');
     <p class="cd-form-sub">We'll respond within <?= esc(setting('response_time_hours', '4')) ?> hours.</p>
 <?php else: ?>
     <span class="cd-form-kicker">Request a Quote</span>
-    <h2 class="cd-form-title"><?= $lead_service ? 'Get a quote for ' . esc($lead_service['title']) : 'Get a fixed-scope quote' ?></h2>
+    <h2 class="cd-form-title"><?= $lead_service ? 'Get a quote for ' . esc($leadServiceLabel) : 'Get a fixed-scope quote' ?></h2>
     <p class="cd-form-sub">Tell us what you need and we'll reply within <?= esc(setting('response_time_hours', '4')) ?> hours with next steps, not a sales call.</p>
 <?php endif; ?>
 <?php endif; ?>
@@ -128,7 +132,7 @@ $formId       = $isHero ? 'hero' : ($isRfq ? 'rfq' : 'main');
         <div class="cd-field">
             <label for="service-<?= $formId ?>"><?= esc($lead_label) ?></label>
             <select id="service-<?= $formId ?>" name="service_interest">
-                <option value="<?= esc($lead_service['title']) ?>" selected><?= esc($lead_service['title']) ?></option>
+                <option value="<?= esc($leadServiceLabel) ?>" selected><?= esc($leadServiceLabel) ?></option>
             </select>
         </div>
 <?php else: ?>
