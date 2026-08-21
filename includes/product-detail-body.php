@@ -61,7 +61,16 @@ $productsUrl = url($country['code'] . '/products/');
         <div class="custom-container">
             <div class="cd-rfq-row">
                 <div class="cd-rfq-col cd-rfq-form-col">
-<?php $lead_variant = 'rfq'; $lead_service = $product; $lead_label = 'Product'; include __DIR__ . '/lead-form.php'; ?>
+<?php
+    // $product is the base row -- a product with a per-country title
+    // override (e.g. "invoice" -> "Invoice USA") needs that override
+    // merged in, same COALESCE lead-form.php's dropdown already applies.
+    $lead_service = $product;
+    if (!empty($content['title'])) {
+        $lead_service['display_title'] = $content['title'];
+    }
+    $lead_variant = 'rfq'; $lead_label = 'Product'; include __DIR__ . '/lead-form.php';
+?>
                 </div>
 
                 <div class="cd-rfq-col cd-rfq-media">

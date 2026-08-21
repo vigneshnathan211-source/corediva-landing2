@@ -22,6 +22,7 @@ const PAGE_SEO_KEYS = [
     'services'     => 'What We Do (hub)',
     'products'     => 'Products (hub)',
     'partners'     => 'Partners',
+    'texas'        => 'Texas (US region landing)',
     'blog'         => 'Blog (hub)',
     'case-studies' => 'Case Studies (hub)',
 ];
