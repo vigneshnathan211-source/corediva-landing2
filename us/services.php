@@ -46,14 +46,22 @@ include __DIR__ . '/../includes/header.php';
     <section class="hero-service-wrap hero-section-wrap">
         <div class="hero-section-content-wrap">
             <div class="custom-container">
-                <div class="hero-section-content text-center">
-                    <h5 class="section-subtitle">Our Services</h5>
-                    <h1 class="section-title">Sixteen services. One accountable team.</h1>
-                    <p>From web platforms to AI automation, ERP to cybersecurity: every service
-                       on this page is delivered by the same team that scoped it, not handed off
-                       to a subcontractor partway through.</p>
-                    <div class="cd-hero-service-cta">
-                        <a href="#rfq-form" class="theme-btn">Request a Quote <i class="iconoir-arrow-up-right" aria-hidden="true"></i></a>
+                <div class="cd-hero-video-content">
+                    <div class="cd-hero-video-bg" aria-hidden="true">
+                        <video autoplay muted loop playsinline>
+                            <source src="<?= esc(asset(setting('hero_video_services', 'video/2.mp4'))) ?>" type="video/mp4">
+                        </video>
+                        <div class="cd-hero-video-overlay"></div>
+                    </div>
+                    <div class="hero-section-content text-center">
+                        <h5 class="section-subtitle">Our Services</h5>
+                        <h1 class="section-title">Sixteen services. One accountable team.</h1>
+                        <p>From web platforms to AI automation, ERP to cybersecurity: every service
+                           on this page is delivered by the same team that scoped it, not handed off
+                           to a subcontractor partway through.</p>
+                        <div class="cd-hero-service-cta">
+                            <a href="#rfq-form" class="theme-btn">Request a Quote <i class="iconoir-arrow-up-right" aria-hidden="true"></i></a>
+                        </div>
                     </div>
                 </div>
 

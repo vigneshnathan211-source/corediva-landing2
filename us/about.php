@@ -37,7 +37,13 @@ include __DIR__ . '/../includes/header.php';
     <!-- Hero: on the theme's about.html "hero-about-wrap" layout, with the
          four stat boxes fed from real data instead of the theme's demo
          figures. -->
-    <section class="hero-service-wrap hero-section-wrap hero-about-wrap">
+    <section class="hero-service-wrap hero-section-wrap hero-about-wrap cd-hero-video-section">
+        <div class="cd-hero-video-bg" aria-hidden="true">
+            <video autoplay muted loop playsinline>
+                <source src="<?= esc(asset(setting('hero_video_about', 'video/1.mp4'))) ?>" type="video/mp4">
+            </video>
+            <div class="cd-hero-video-overlay"></div>
+        </div>
         <div class="hero-section-content-wrap">
             <div class="custom-container">
                 <div class="hero-portfolio-body">
