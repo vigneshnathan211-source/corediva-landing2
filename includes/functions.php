@@ -355,6 +355,7 @@ const COUNTRY_COMPLIANCE_NOTES = [
     'ae' => 'Built for FTA VAT and e-invoicing compliance.',
     'us' => 'Invoices itemize state and local sales tax by line.',
     'uk' => "Invoicing formatted for HMRC's Making Tax Digital requirements.",
+    'au' => 'Invoicing structured for ABN and BAS (GST) reporting.',
 ];
 
 function compliance_note_for_country(string $country_code): ?string
