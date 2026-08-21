@@ -152,6 +152,10 @@ $footerCountries = array_map(
     <i class="lab la-whatsapp" aria-hidden="true"></i>
 </a>
 
+<button type="button" class="cd-back-to-top" aria-label="Back to top">
+    <i class="iconoir-arrow-up" aria-hidden="true"></i>
+</button>
+
 <script src="<?= esc(asset('js/jquery-3.7.0.min.js')) ?>"></script>
 <script src="<?= esc(asset('js/bootstrap.bundle.min.js')) ?>"></script>
 <script src="<?= esc(asset('js/gsap.min.js')) ?>"></script>

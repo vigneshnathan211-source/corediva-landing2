@@ -133,6 +133,51 @@
         });
     }
 
+    /* ---------------- Sticky header glass state + back-to-top ---------------- */
+
+    var cdHeader   = document.querySelector('.cd-header');
+    var backToTop  = document.querySelector('.cd-back-to-top');
+    var scrollTick = false;
+
+    var onScroll = function () {
+        var y = window.scrollY;
+
+        if (cdHeader) {
+            cdHeader.classList.toggle('is-scrolled', y > 8);
+        }
+
+        if (backToTop) {
+            backToTop.classList.toggle('is-visible', y > 400);
+
+            // Ring around the button fills as a scroll progress indicator,
+            // so it doubles as "how far down the page am I" at a glance.
+            var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            var pct = docHeight > 0 ? Math.min(100, (y / docHeight) * 100) : 0;
+            backToTop.style.setProperty('--cd-scroll-progress', pct.toFixed(1));
+        }
+
+        scrollTick = false;
+    };
+
+    var queueScroll = function () {
+        if (!scrollTick) {
+            scrollTick = true;
+            window.requestAnimationFrame(onScroll);
+        }
+    };
+
+    if (cdHeader || backToTop) {
+        onScroll();
+        window.addEventListener('scroll', queueScroll, { passive: true });
+        window.addEventListener('resize', queueScroll, { passive: true });
+    }
+
+    if (backToTop) {
+        backToTop.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' });
+        });
+    }
+
     /* ---------------- Scroll reveal (skeleton swap + stagger fade-in) ---------------- */
 
     var revealGrids = Array.prototype.slice.call(

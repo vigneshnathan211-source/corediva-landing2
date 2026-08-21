@@ -380,10 +380,28 @@
    ===================================================================== */
 
 .cd-header {
-    background: #fff;
-    border-bottom: 1px solid var(--cd-line);
-    position: relative;
+    background: rgb(255 255 255 / 70%);
+    border-bottom: 1px solid rgb(217 217 217 / 60%);
+    position: sticky;
+    top: 0;
     z-index: 200;
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    transition: background-color .3s var(--cd-ease-out),
+                box-shadow .3s var(--cd-ease-out);
+}
+
+/* backdrop-filter is unsupported (very old browsers) -- fall back to a
+   solid header rather than a see-through one sitting over page content. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .cd-header {
+        background: #fff;
+    }
+}
+
+.cd-header.is-scrolled {
+    background: rgb(255 255 255 / 85%);
+    box-shadow: 0 8px 30px rgb(28 28 28 / 8%);
 }
 
 .cd-header-inner {
@@ -2305,6 +2323,70 @@ button.cd-panel-toggle:not(.cd-nav-link) {
     }
 }
 
+/* Ring is a conic-gradient dial filled via --cd-scroll-progress (0-100,
+   set from JS on scroll) so the button doubles as a page-progress
+   indicator, not just a jump-to-top control. */
+.cd-back-to-top {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 300;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 0;
+    padding: 3px;
+    cursor: pointer;
+    background: conic-gradient(var(--cd-accent) calc(var(--cd-scroll-progress, 0) * 1%), var(--cd-line) 0);
+    box-shadow: 0 8px 24px rgb(28 28 28 / 14%);
+    opacity: 0;
+    transform: translateY(16px) scale(.85);
+    pointer-events: none;
+    transition: opacity .3s var(--cd-ease-out),
+                transform .3s var(--cd-ease-out),
+                box-shadow .2s var(--cd-ease-out);
+}
+
+.cd-back-to-top::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: #fff;
+}
+
+.cd-back-to-top i {
+    position: relative;
+    z-index: 1;
+    color: var(--cd-accent);
+    font-size: 20px;
+    transition: transform .25s var(--cd-ease-out);
+}
+
+.cd-back-to-top.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.cd-back-to-top:active {
+    transform: scale(.92);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .cd-back-to-top:hover {
+        box-shadow: 0 12px 30px rgb(28 28 28 / 20%);
+    }
+    .cd-back-to-top.is-visible:hover {
+        transform: translateY(-4px) scale(1.05);
+    }
+    .cd-back-to-top:hover i {
+        transform: translateY(-3px);
+    }
+}
+
 /* ---------- Footer ----------
    Markup keeps the theme's outer wrappers (.footer-area, .footer-top,
    .footer-bottom, .copyright-area, .custom-container) so the dark panel,
@@ -2803,6 +2885,15 @@ button.cd-panel-toggle:not(.cd-nav-link) {
         left: 16px;
         bottom: 16px;
     }
+    .cd-back-to-top {
+        width: 46px;
+        height: 46px;
+        right: 16px;
+        bottom: 16px;
+    }
+    .cd-back-to-top i {
+        font-size: 18px;
+    }
     .cd-footer-columns {
         grid-template-columns: 1fr;
         row-gap: 32px;
@@ -2833,6 +2924,8 @@ button.cd-panel-toggle:not(.cd-nav-link) {
     .cd-mega,
     .cd-dropdown,
     .cd-whatsapp-float,
+    .cd-back-to-top,
+    .cd-back-to-top i,
     .cd-menu-toggle,
     .cd-topbar-social a {
         transition-duration: .01ms !important;
@@ -2844,6 +2937,8 @@ button.cd-panel-toggle:not(.cd-nav-link) {
     .cd-product-grid .service-card:hover,
     .cd-partner:hover,
     .cd-whatsapp-float:hover,
+    .cd-back-to-top.is-visible:hover,
+    .cd-back-to-top:hover i,
     .cd-menu-toggle:active,
     .cd-topbar-social a:active {
         transform: none;

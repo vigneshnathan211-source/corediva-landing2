@@ -579,8 +579,9 @@ $activeNav = 'settings';
                     <select id="mega_type" name="mega_type">
                         <option value="" <?= empty($editingNavItem['mega_type']) ? 'selected' : '' ?>>&mdash; None &mdash;</option>
                         <option value="services" <?= ($editingNavItem['mega_type'] ?? '') === 'services' ? 'selected' : '' ?>>Services (built from the services catalogue)</option>
+                        <option value="products" <?= ($editingNavItem['mega_type'] ?? '') === 'products' ? 'selected' : '' ?>>Products (built from the products catalogue)</option>
                     </select>
-                    <span class="cd-admin-hint">Top-level only. This is currently the only mega-menu panel the site knows how to render.</span>
+                    <span class="cd-admin-hint">Top-level only. These are currently the only mega-menu panels the site knows how to render.</span>
                 </div>
                 <div>
                     <label for="nav_sort">Sort order</label>

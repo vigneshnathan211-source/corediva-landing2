@@ -166,7 +166,7 @@ INSERT INTO `nav_items` (`id`,`parent_id`,`label`,`url`,`column_group`,`is_mega`
 (2,NULL,'Who We Are','about',NULL,0,NULL,20,1),
 (3,NULL,'Services','services',NULL,1,'services',30,1),
 (4,NULL,'Insights',NULL,NULL,0,NULL,40,1),
-(5,NULL,'Products','products',NULL,0,NULL,50,1),
+(5,NULL,'Products','products',NULL,1,'products',50,1),
 (6,NULL,'Partners','partners',NULL,0,NULL,60,1),
 
 -- Insights dropdown -- case studies and blog only for now. Neither table

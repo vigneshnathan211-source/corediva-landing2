@@ -60,7 +60,7 @@ $loginHref   = is_file(doc_root() . '/admin/login.php') ? url('admin/login.php')
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..800;1,9..40,100..600&family=Yantramanav:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..800;1,9..40,100..600&family=Yantramanav:wght@100;300;400;500;700;900&display=optional" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/iconoir-icons/iconoir@main/css/iconoir.css">
     <link rel="stylesheet" href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
@@ -157,11 +157,38 @@ render_schema_localbusiness($country);
                     <ul class="cd-nav-list">
 <?php foreach ($navTree as $item): ?>
 <?php
-    $isMegaServices = $item['mega_type'] === 'services';
-    $hasChildren    = !empty($item['children']);
-    $href           = nav_target($item['url'], $country);
+    $megaType    = $item['mega_type'];
+    $isMega      = in_array($megaType, ['services', 'products'], true);
+    $hasChildren = !empty($item['children']);
+    $href        = nav_target($item['url'], $country);
+
+    /* Both mega panels share one shell (link groups + social/contact footer
+       + promo rail); only the columns and the "not sure" copy differ, so
+       each type just builds a [heading => [['label','href'], ...]] map
+       before the shared markup below reads it. Keeps the services' five
+       real category columns and the products' six real group columns
+       intact instead of collapsing either into decorative cards. */
+    $megaColumns = [];
+    $megaNotSure = 'Not sure what fits?';
+    if ($megaType === 'services') {
+        foreach (get_services_by_category() as $category => $services) {
+            $megaColumns[$category] = array_map(
+                static fn (array $s) => ['label' => $s['title'], 'href' => nav_target('services/' . $s['slug'] . '-{suffix}', $country)],
+                $services
+            );
+        }
+        $megaNotSure = 'Not sure which service fits?';
+    } elseif ($megaType === 'products') {
+        foreach (get_products_by_group((int) $country['id']) as $group => $products) {
+            $megaColumns[$group] = array_map(
+                static fn (array $p) => ['label' => $p['display_title'], 'href' => nav_target('products/' . $p['slug'] . '-{suffix}', $country)],
+                $products
+            );
+        }
+        $megaNotSure = 'Not sure which product fits?';
+    }
 ?>
-<?php if ($isMegaServices): ?>
+<?php if ($isMega): ?>
                         <li class="cd-nav-item cd-has-panel cd-has-mega">
 <?php if ($href): ?>
                             <a href="<?= esc($href) ?>" class="cd-nav-link cd-nav-link-mega"><?= esc($item['label']) ?></a>
@@ -181,8 +208,8 @@ render_schema_localbusiness($country);
        whose background bleeds to the viewport edge.
 
        The theme's own left column pairs four icon "service cards" with two
-       link lists. We keep all five category columns instead -- those five
-       categories ARE the site's service taxonomy, and collapsing them to two
+       link lists. We keep every real category/group column instead --
+       those columns ARE the site's taxonomy, and collapsing them to two
        lists to make room for decorative cards would hide half the catalogue. */
 ?>
                             <div class="cd-mega">
@@ -191,17 +218,16 @@ render_schema_localbusiness($country);
                                         <div class="cd-mega-main">
                                             <div class="cd-mega-link-wrap">
                                                 <div class="cd-mega-grid">
-<?php foreach (get_services_by_category() as $category => $services): ?>
+<?php foreach ($megaColumns as $heading => $links): ?>
                                                     <div class="cd-mega-col">
-                                                        <h3 class="cd-mega-heading"><?= esc($category) ?></h3>
+                                                        <h3 class="cd-mega-heading"><?= esc($heading) ?></h3>
                                                         <ul>
-<?php foreach ($services as $service): ?>
-<?php $svcHref = nav_target('services/' . $service['slug'] . '-{suffix}', $country); ?>
+<?php foreach ($links as $link): ?>
                                                             <li>
-<?php if ($svcHref): ?>
-                                                                <a href="<?= esc($svcHref) ?>"><?= esc($service['title']) ?></a>
+<?php if ($link['href']): ?>
+                                                                <a href="<?= esc($link['href']) ?>"><?= esc($link['label']) ?></a>
 <?php else: ?>
-                                                                <span class="cd-nav-pending"><?= esc($service['title']) ?></span>
+                                                                <span class="cd-nav-pending"><?= esc($link['label']) ?></span>
 <?php endif; ?>
                                                             </li>
 <?php endforeach; ?>
@@ -222,7 +248,7 @@ render_schema_localbusiness($country);
                                                     </li>
 <?php endforeach; ?>
                                                 </ul>
-                                                <p>Not sure which service fits?
+                                                <p><?= esc($megaNotSure) ?>
                                                     <a href="<?= esc($contactHref) ?>"<?= $contactExtern ? ' target="_blank" rel="noopener"' : '' ?>>Tell us the problem</a>
                                                 </p>
                                             </div>
