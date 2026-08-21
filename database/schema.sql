@@ -118,6 +118,7 @@ CREATE TABLE `partners` (
   `logo_alt`    VARCHAR(255) DEFAULT NULL,
   `url`         VARCHAR(255) DEFAULT NULL,
   `description` VARCHAR(255) DEFAULT NULL,
+  `category`    VARCHAR(30)  NOT NULL DEFAULT 'homepage' COMMENT 'homepage = footer/hero marquee strip; alliance = Partners page Global Alliances grid',
   `sort_order`  INT          NOT NULL DEFAULT 0,
   `is_active`   TINYINT(1)   NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`)
@@ -217,6 +218,7 @@ CREATE TABLE `services` (
   `title`             VARCHAR(150) NOT NULL,
   `short_description` VARCHAR(500) DEFAULT NULL COMMENT 'one-line, used on cards/grids',
   `icon`              VARCHAR(50)  NOT NULL DEFAULT 'layout',
+  `banner_image`      VARCHAR(255) DEFAULT NULL COMMENT 'path relative to /assets/, e.g. imgs/services/{slug}/banner-123.jpg; admin-uploaded via admin/services.php',
   `category`          VARCHAR(80)  DEFAULT NULL,
   `core_description`  MEDIUMTEXT COMMENT 'country-independent long copy (client-supplied)',
   `core_deliverables` MEDIUMTEXT,

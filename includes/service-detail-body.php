@@ -21,26 +21,37 @@ declare(strict_types=1);
 $heroH1     = $content['h1'] ?? $detailService['title'];
 $heroIntro  = $content['intro'] ?? ('<p>' . esc($detailService['short_description'] ?? '') . '</p>');
 $servicesUrl = url($country['code'] . '/services/');
+$heroBanner = service_card_image($detailService);
 ?>
 
     <section class="hero-service-wrap hero-section-wrap">
         <div class="hero-section-content-wrap">
             <div class="custom-container">
-                <div class="hero-section-content text-center">
-                    <ol class="cd-svc-breadcrumb">
-                        <li><a href="<?= esc(country_url($country['code'])) ?>">Home</a></li>
-                        <li><a href="<?= esc($servicesUrl) ?>">What We Do</a></li>
-                        <li><?= esc($detailService['title']) ?></li>
-                    </ol>
-                    <?php if (!empty($detailService['category'])): ?>
-                    <h5 class="section-subtitle"><?= esc($detailService['category']) ?></h5>
-                    <?php endif; ?>
-                    <h1 class="section-title"><?= esc($heroH1) ?></h1>
-                    <div class="cd-svc-prose cd-svc-hero-intro"><?= $heroIntro ?></div>
-                    <div class="cd-hero-service-cta">
-                        <a href="#rfq-form" class="theme-btn">Request a Quote <i class="iconoir-arrow-up-right" aria-hidden="true"></i></a>
+<?php if ($heroBanner): ?>
+                <div class="cd-hero-video-content cd-hero-photo-banner">
+                    <div class="cd-hero-video-bg" aria-hidden="true">
+                        <img src="<?= esc($heroBanner) ?>" alt="">
+                        <div class="cd-hero-video-overlay"></div>
                     </div>
+<?php endif; ?>
+                    <div class="hero-section-content text-center">
+                        <ol class="cd-svc-breadcrumb">
+                            <li><a href="<?= esc(country_url($country['code'])) ?>">Home</a></li>
+                            <li><a href="<?= esc($servicesUrl) ?>">What We Do</a></li>
+                            <li><?= esc($detailService['title']) ?></li>
+                        </ol>
+                        <?php if (!empty($detailService['category'])): ?>
+                        <h5 class="section-subtitle"><?= esc($detailService['category']) ?></h5>
+                        <?php endif; ?>
+                        <h1 class="section-title"><?= esc($heroH1) ?></h1>
+                        <div class="cd-svc-prose cd-svc-hero-intro"><?= $heroIntro ?></div>
+                        <div class="cd-hero-service-cta">
+                            <a href="#rfq-form" class="theme-btn">Request a Quote <i class="iconoir-arrow-up-right" aria-hidden="true"></i></a>
+                        </div>
+                    </div>
+<?php if ($heroBanner): ?>
                 </div>
+<?php endif; ?>
             </div>
         </div>
     </section>

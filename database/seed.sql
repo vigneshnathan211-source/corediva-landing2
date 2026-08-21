@@ -106,12 +106,25 @@ INSERT INTO `stats` (`stat_key`,`value`,`suffix`,`label`,`sort_order`,`is_active
 -- use the wordmark until Corediva supplies official artwork.
 -- `description` is retained for the admin UI and title attributes only: it is
 -- deliberately NOT printed under each logo on the page.
-INSERT INTO `partners` (`name`,`logo`,`logo_alt`,`url`,`description`,`sort_order`,`is_active`) VALUES
-('NxtGen',                 NULL,                            NULL,                'https://www.nxtgen.com',      'Cloud infrastructure partner',10,1),
-('Razorpay International','imgs/partners/razorpay.svg',    'Razorpay logo',      'https://razorpay.com',        'Payments partner',20,1),
-('PayPal',                'imgs/partners/paypal.svg',      'PayPal logo',        'https://www.paypal.com',      'Payments partner',30,1),
-('Payoneer',              'imgs/partners/payoneer.svg',    'Payoneer logo',      'https://www.payoneer.com',    'Payments partner',40,1),
-('Bank of Baroda',         NULL,                            NULL,                'https://www.bankofbaroda.in', 'Banking partner',50,1);
+-- `category` splits two unrelated logo walls sharing one table: 'homepage'
+-- is the small payments/cloud/banking marquee under the homepage hero;
+-- 'alliance' is the Partners page's larger business-alliance grid (real
+-- logos pulled from corediva365.com, the company's live site -- Bizsafe's
+-- source logo is a broken image there too, so it ships wordmark-only here).
+INSERT INTO `partners` (`name`,`logo`,`logo_alt`,`url`,`description`,`category`,`sort_order`,`is_active`) VALUES
+('NxtGen',                 NULL,                            NULL,                'https://www.nxtgen.com',      'Cloud infrastructure partner','homepage',10,1),
+('Razorpay International','imgs/partners/razorpay.svg',    'Razorpay logo',      'https://razorpay.com',        'Payments partner','homepage',20,1),
+('PayPal',                'imgs/partners/paypal.svg',      'PayPal logo',        'https://www.paypal.com',      'Payments partner','homepage',30,1),
+('Payoneer',              'imgs/partners/payoneer.svg',    'Payoneer logo',      'https://www.payoneer.com',    'Payments partner','homepage',40,1),
+('Bank of Baroda',         NULL,                            NULL,                'https://www.bankofbaroda.in', 'Banking partner','homepage',50,1),
+('Jawaad Trading Academy','imgs/partners/jawaad-trading.png','Jawaad Trading Academy logo',NULL,'Financial Education Alliance','alliance',10,1),
+('Environmental India Foundation','imgs/partners/eif-usa.png','Environmental India Foundation logo',NULL,'United States Development Alliance','alliance',20,1),
+('Vision Construction','imgs/partners/vision-construction.png','Vision Construction logo',NULL,'Trichy Operations Infrastructure','alliance',30,1),
+('New Life Trust','imgs/partners/new-life-trust.png','New Life Trust logo',NULL,'Social Impact Ecosystem Partner','alliance',40,1),
+('Directs Technologies','imgs/partners/directs-tech.png','Directs Technologies logo',NULL,'Systems Outsourcing Alliance','alliance',50,1),
+('Bizsafe Company Singapore',NULL,NULL,NULL,'Singapore Compliance Alliance','alliance',60,1),
+('Miniox Tech Park','imgs/partners/miniox.png','Miniox Tech Park logo',NULL,'Incubation & Infrastructure','alliance',70,1),
+('Webops Groups','imgs/partners/webops.png','Webops Groups logo',NULL,'Network Routing Alliance','alliance',80,1);
 
 INSERT INTO `social_links` (`platform`,`url`,`icon`,`sort_order`,`is_active`) VALUES
 ('LinkedIn','https://www.linkedin.com/company/corediva-tech-solutions','lab la-linkedin-in',10,1),
@@ -154,7 +167,7 @@ INSERT INTO `nav_items` (`id`,`parent_id`,`label`,`url`,`column_group`,`is_mega`
 (3,NULL,'Services','services',NULL,1,'services',30,1),
 (4,NULL,'Insights',NULL,NULL,0,NULL,40,1),
 (5,NULL,'Products','products',NULL,0,NULL,50,1),
-(6,NULL,'Partners','#partners',NULL,0,NULL,60,1),
+(6,NULL,'Partners','partners',NULL,0,NULL,60,1),
 
 -- Insights dropdown -- case studies and blog only for now. Neither table
 -- has rows yet, so both render as plain text (see nav_target()) until

@@ -41,7 +41,7 @@ include __DIR__ . '/../includes/header.php';
     <section class="hero-service-wrap hero-section-wrap hero-about-wrap cd-hero-video-section">
         <div class="cd-hero-video-bg" aria-hidden="true">
             <video autoplay muted loop playsinline>
-                <source src="<?= esc(asset('video/1.mp4')) ?>" type="video/mp4">
+                <source src="<?= esc(asset(setting('hero_video_about', 'video/1.mp4'))) ?>" type="video/mp4">
             </video>
             <div class="cd-hero-video-overlay"></div>
         </div>

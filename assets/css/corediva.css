@@ -1574,6 +1574,32 @@ button.cd-panel-toggle:not(.cd-nav-link) {
     margin: 0;
 }
 
+/* Media variant: a service illustration filling the top of the card
+   instead of the small inline icon. Only rendered when
+   service_card_image() finds a file for that service's slug (see
+   functions.php) -- services without one keep the plain icon card, so
+   the two variants can coexist in the same grid while illustrations are
+   added service by service. */
+.cd-service-grid .service-card.cd-service-card-media {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+}
+.cd-service-card-media .cd-service-card-body {
+    padding: 22px 24px 26px;
+}
+.cd-service-card-media-wrap {
+    line-height: 0;
+}
+.cd-service-card-media-wrap img {
+    display: block;
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+    object-position: center 25%;
+}
+
 .cd-product-category {
     font-size: 12px !important;
     text-transform: uppercase;
@@ -1798,7 +1824,8 @@ button.cd-panel-toggle:not(.cd-nav-link) {
 
 .cd-svc-image-feature-media img {
     width: 100%;
-    height: auto;
+    height: 480px;
+    object-fit: cover;
     border-radius: var(--cd-radius-card);
     box-shadow: var(--cd-shadow);
 }
@@ -2880,7 +2907,7 @@ button.cd-panel-toggle:not(.cd-nav-link) {
     }
 }
 
-/* Hero background video, two flavours:
+/* Hero background media, three flavours:
    - .cd-hero-video-section (About/"Who We Are"): full-bleed across the
      whole hero, video/overlay are the section's first children so the
      white stat-card boxes below just paint on top in normal flow.
@@ -2890,8 +2917,13 @@ button.cd-panel-toggle:not(.cd-nav-link) {
      -- it's a sibling of .hero-service-about, not an ancestor. The video
      fills the full banner width while .hero-section-content inside it
      keeps its own narrower max-width so the text column stays readable.
+   - .cd-hero-video-content also doubles as the per-service detail page
+     banner (service-detail-body.php): same wrapper/overlay, but
+     .cd-hero-video-bg holds a plain <img> (that service's catalogue photo
+     from service_card_image()) instead of a <video>. Services with no
+     photo yet skip the wrapper entirely and get the older plain hero.
    .cd-hero-video-bg/.cd-hero-video-overlay are shared, unscoped rules:
-   whichever ancestor is position:relative is what they fill. Both flavours
+   whichever ancestor is position:relative is what they fill. All flavours
    fall back to a plain dark background behind the overlay when the video
    itself is hidden (no supported source, reduced motion). */
 .cd-hero-video-section {
@@ -2912,7 +2944,8 @@ button.cd-panel-toggle:not(.cd-nav-link) {
     overflow: hidden;
     z-index: 0;
 }
-.cd-hero-video-bg video {
+.cd-hero-video-bg video,
+.cd-hero-video-bg img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -2921,6 +2954,13 @@ button.cd-panel-toggle:not(.cd-nav-link) {
     position: absolute;
     inset: 0;
     background: linear-gradient(180deg, rgba(8, 12, 28, 0.55) 0%, rgba(8, 12, 28, 0.35) 45%, rgba(8, 12, 28, 0.6) 100%);
+}
+/* Photos vary a lot in brightness/busyness (SEO tiles, a lit conference
+   stage) in a way stock video never did, so the per-service detail-page
+   banner needs a stronger, flatter overlay than the video hero to keep
+   white text reliably readable over any of them. */
+.cd-hero-photo-banner .cd-hero-video-overlay {
+    background: linear-gradient(180deg, rgba(6, 9, 20, 0.72) 0%, rgba(6, 9, 20, 0.6) 45%, rgba(6, 9, 20, 0.78) 100%);
 }
 .cd-hero-video-section > .hero-section-content-wrap {
     position: relative;
@@ -2943,6 +2983,157 @@ button.cd-panel-toggle:not(.cd-nav-link) {
 .cd-hero-video-section .hero-section-content-wrap .hero-section-content p,
 .hero-section-wrap .hero-section-content-wrap .cd-hero-video-content > .hero-section-content p {
     color: rgba(255, 255, 255, 0.9);
+}
+.cd-hero-video-content > .hero-section-content .cd-svc-breadcrumb a {
+    color: rgba(255, 255, 255, 0.75);
+}
+.cd-hero-video-content > .hero-section-content .cd-svc-breadcrumb li:last-child {
+    color: #FFFFFF;
+}
+.cd-hero-video-content > .hero-section-content .cd-svc-breadcrumb li:not(:last-child)::after {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ==================================================================
+   # Partners page: Global Alliances / Engineering Stack / Platform
+   Integrations (sg/partners.php, ae/partners.php)
+=================================================================== */
+
+.cd-alliance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--cd-gap);
+    margin-top: 40px;
+}
+.cd-alliance-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 28px 20px;
+    gap: 6px;
+}
+.cd-alliance-card img {
+    max-height: 48px;
+    width: auto;
+    max-width: 160px;
+    object-fit: contain;
+    filter: grayscale(1);
+    opacity: 0.8;
+    transition: filter var(--cd-ease-out) .25s, opacity var(--cd-ease-out) .25s;
+    margin-bottom: 12px;
+}
+.cd-alliance-card:hover img {
+    filter: grayscale(0);
+    opacity: 1;
+}
+.cd-alliance-wordmark {
+    font-family: var(--font_syne);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--cd-ink);
+    margin-bottom: 12px;
+}
+.cd-alliance-card h4 {
+    font-size: 16px;
+    margin: 0;
+}
+.cd-alliance-card p {
+    font-size: 13.5px;
+    color: var(--cd-body);
+    margin: 0;
+}
+
+.cd-tech-area {
+    background: #060914;
+    padding: 100px 0;
+}
+.cd-tech-eyebrow {
+    color: var(--cd-accent-2);
+}
+.cd-tech-title,
+.cd-tech-lede {
+    color: #FFFFFF;
+}
+.cd-tech-lede {
+    opacity: 0.75;
+}
+.cd-tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: var(--cd-gap);
+    margin-top: 40px;
+}
+.cd-tech-col {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--cd-radius-card);
+    padding: 28px 24px;
+}
+.cd-tech-col h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 17px;
+    color: #FFFFFF;
+    margin: 0 0 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.cd-tech-col h3 i {
+    color: var(--cd-accent-2);
+}
+.cd-tech-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.cd-tech-pill {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--cd-radius-pill);
+    padding: 6px 14px;
+}
+
+.cd-integration-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--cd-gap);
+    margin-top: 40px;
+}
+.cd-integration-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 24px 16px;
+    text-align: center;
+}
+.cd-integration-card i {
+    font-size: 26px;
+    color: var(--cd-accent);
+}
+.cd-integration-card span {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cd-ink);
+}
+
+.cd-section-cta {
+    text-align: center;
+    margin-top: 48px;
+}
+.theme-btn-outline {
+    background: transparent;
+    color: var(--cd-accent);
+    border: 1.5px solid var(--cd-accent);
+}
+.theme-btn-outline:hover {
+    color: #FFFFFF;
+    background: var(--cd-accent);
 }
 
 @media (prefers-reduced-motion: reduce) {

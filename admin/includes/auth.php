@@ -26,6 +26,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/../../includes/functions.php';
 require_once __DIR__ . '/../../includes/mailer.php';
+require_once __DIR__ . '/uploads.php';
 
 const ADMIN_SESSION_COOKIE = 'cd_admin_session';
 

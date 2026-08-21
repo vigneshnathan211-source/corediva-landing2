@@ -52,7 +52,7 @@ include __DIR__ . '/../includes/header.php';
                 <div class="cd-hero-video-content">
                     <div class="cd-hero-video-bg" aria-hidden="true">
                         <video autoplay muted loop playsinline>
-                            <source src="<?= esc(asset('video/2.mp4')) ?>" type="video/mp4">
+                            <source src="<?= esc(asset(setting('hero_video_services', 'video/2.mp4'))) ?>" type="video/mp4">
                         </video>
                         <div class="cd-hero-video-overlay"></div>
                     </div>
@@ -107,11 +107,24 @@ include __DIR__ . '/../includes/header.php';
                 <h3 class="cd-service-group-title"><?= esc($category) ?></h3>
                 <div class="cd-service-grid">
 <?php foreach ($items as $svc): ?>
+<?php $cardImage = service_card_image($svc); ?>
+<?php if ($cardImage): ?>
+                    <a href="<?= esc(service_url($svc['slug'], $country)) ?>" class="service-card cd-service-card-media">
+                        <div class="cd-service-card-media-wrap">
+                            <img src="<?= esc($cardImage) ?>" alt="" loading="lazy">
+                        </div>
+                        <div class="cd-service-card-body">
+                            <h4><?= esc($svc['title']) ?></h4>
+                            <p><?= esc($svc['short_description']) ?></p>
+                        </div>
+                    </a>
+<?php else: ?>
                     <a href="<?= esc(service_url($svc['slug'], $country)) ?>" class="service-card simple-shadow">
                         <i class="<?= esc($svc['icon']) ?> cd-service-icon" aria-hidden="true"></i>
                         <h4><?= esc($svc['title']) ?></h4>
                         <p><?= esc($svc['short_description']) ?></p>
                     </a>
+<?php endif; ?>
 <?php endforeach; ?>
                 </div>
             </div>

@@ -126,13 +126,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errors[] = 'That slug is already used by another service.';
             }
 
+            $bannerImage = $service['banner_image'] ?? null;
+            if (!$errors && !empty($_POST['remove_banner_image'])) {
+                $bannerImage = null;
+            }
+            if (!$errors && !empty($_FILES['banner_image']['name'])) {
+                [$uploadedPath, $uploadError] = admin_store_upload(
+                    $_FILES['banner_image'],
+                    'imgs/services/' . $slug,
+                    ['jpg', 'jpeg', 'png', 'webp'],
+                    'image/',
+                    5 * 1024 * 1024
+                );
+                if ($uploadError !== null) {
+                    $errors[] = $uploadError;
+                } elseif ($uploadedPath !== null) {
+                    $bannerImage = $uploadedPath;
+                }
+            }
+
             if (!$errors) {
                 db_exec(
                     'UPDATE services SET
-                        title=?, slug=?, icon=?, category=?, short_description=?,
+                        title=?, slug=?, icon=?, banner_image=?, category=?, short_description=?,
                         core_description=?, core_deliverables=?, sort_order=?, is_active=?
                      WHERE id = ?',
-                    [$title, $slug, $icon, $category, $shortDesc, $coreDesc, $coreDeliv, $sortOrder, $isActive, $serviceId]
+                    [$title, $slug, $icon, $bannerImage, $category, $shortDesc, $coreDesc, $coreDeliv, $sortOrder, $isActive, $serviceId]
                 );
                 admin_audit((int) $admin['id'], 'update', 'services', $serviceId, $slug);
                 $notice = 'Service info saved.';
@@ -377,9 +396,24 @@ $activeNav = 'services';
         <p class="cd-admin-hint">Changing the slug does not rename the existing <code>sg/services/*.php</code>
            file on disk &mdash; its links will 404 until the file is renamed to match.</p>
 <?php if ($canEdit): ?>
-        <form method="post" class="cd-admin-form">
+        <form method="post" class="cd-admin-form" enctype="multipart/form-data">
             <input type="hidden" name="csrf_token" value="<?= esc(csrf_token()) ?>">
             <input type="hidden" name="action" value="save_info">
+
+            <div>
+                <label for="info_banner">Card / banner image</label>
+<?php if (!empty($service['banner_image'])): ?>
+                <div class="cd-admin-media-preview">
+                    <img src="<?= esc(asset($service['banner_image'])) ?>" alt="" style="max-width:240px; border-radius:8px; display:block; margin-bottom:8px;">
+                    <label class="cd-admin-checkbox">
+                        <input type="checkbox" name="remove_banner_image" value="1">
+                        Remove current image
+                    </label>
+                </div>
+<?php endif; ?>
+                <input type="file" id="info_banner" name="banner_image" accept="image/jpeg,image/png,image/webp">
+                <span class="cd-admin-hint">Used on the services catalogue card and the service-detail page banner. JPG/PNG/WEBP, up to 5&nbsp;MB.</span>
+            </div>
 
             <div class="cd-admin-form-row">
                 <div>

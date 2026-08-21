@@ -30,7 +30,7 @@ $features = get_hero_feature_rows($countryId);
 $stats    = get_stats();
 $services = get_services();
 $products = get_products($countryId);
-$partners = get_partners();
+$partners = get_partners('homepage');
 $faqs     = get_faqs('home', null, $countryId);
 
 $processSteps  = get_process_steps();

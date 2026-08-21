@@ -124,6 +124,68 @@ function public_asset(string $path): string
     return $base . '/' . $relative . ($version !== false ? '?v=' . $version : '');
 }
 
+/**
+ * Maps a service's DB slug to its illustration folder under
+ * assets/imgs/services/ -- kept explicit rather than assuming the folder
+ * name always matches the slug, since the first one (web-dev) was named
+ * before this mapping existed. Add an entry here as each service gets its
+ * illustration; services with no entry (or no file in the folder) fall
+ * back to the plain icon card.
+ */
+const SERVICE_CARD_IMAGE_FOLDERS = [
+    'web-development' => 'web-dev',
+    'erp-crm' => 'erp-crm',
+    'ai-solutions' => 'ai-solutions',
+    'microsoft-365' => 'microsoft-365',
+    'sap' => 'sap',
+    'salesforce' => 'salesforce',
+    'zoho' => 'zoho',
+    'digital-marketing' => 'digital-marketing',
+    'graphic-design' => 'graphic-design',
+    'video-editing' => 'video-editing',
+    'corporate-events' => 'corporate-events',
+    'managed-it-services' => 'managed-it-services',
+    'cybersecurity' => 'cybersecurity',
+    'mobile-app-development' => 'mobile-app-development',
+    'cloud-solutions' => 'cloud-solutions',
+    'automation' => 'automation',
+];
+
+/**
+ * A service's card/banner image, or null if it has none yet.
+ *
+ * Prefers `services.banner_image`, the admin-uploaded path set via
+ * admin/services.php (see admin_store_upload()). Services seeded before
+ * that upload flow existed fall back to SERVICE_CARD_IMAGE_FOLDERS' plain
+ * filesystem convention, checked at request time via is_dir()/glob() --
+ * same is_file()-gated pattern as nav_target() -- so those cards keep
+ * working without a backfill. New services should just use the admin field.
+ *
+ * @param array<string,mixed> $service row from `services` (needs 'slug', and 'banner_image' if selected)
+ */
+function service_card_image(array $service): ?string
+{
+    if (!empty($service['banner_image'])) {
+        return asset($service['banner_image']);
+    }
+
+    $folder = SERVICE_CARD_IMAGE_FOLDERS[$service['slug']] ?? null;
+    if ($folder === null) {
+        return null;
+    }
+
+    $dir = dirname(__DIR__) . '/assets/imgs/services/' . $folder;
+    if (!is_dir($dir)) {
+        return null;
+    }
+
+    foreach (glob($dir . '/*.{jpg,jpeg,png,webp}', GLOB_BRACE) as $file) {
+        return asset('imgs/services/' . $folder . '/' . basename($file));
+    }
+
+    return null;
+}
+
 /** Best-effort client IP as a packed binary string for storage. */
 function client_ip_binary(): ?string
 {
@@ -163,9 +225,13 @@ function get_stats(): array
     return db_all('SELECT * FROM stats WHERE is_active = 1 ORDER BY sort_order');
 }
 
-function get_partners(): array
+/** @param ?string $category 'homepage' or 'alliance' -- omit for every active partner. */
+function get_partners(?string $category = null): array
 {
-    return db_all('SELECT * FROM partners WHERE is_active = 1 ORDER BY sort_order');
+    if ($category === null) {
+        return db_all('SELECT * FROM partners WHERE is_active = 1 ORDER BY sort_order');
+    }
+    return db_all('SELECT * FROM partners WHERE is_active = 1 AND category = ? ORDER BY sort_order', [$category]);
 }
 
 function get_social_links(): array

@@ -21,6 +21,7 @@ const PAGE_SEO_KEYS = [
     'about'        => 'Who We Are',
     'services'     => 'What We Do (hub)',
     'products'     => 'Products (hub)',
+    'partners'     => 'Partners',
     'blog'         => 'Blog (hub)',
     'case-studies' => 'Case Studies (hub)',
 ];

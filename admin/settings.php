@@ -28,7 +28,7 @@ function save_site_settings(array $kv): void
     }
 }
 
-$tab = in_array($_GET['tab'] ?? '', ['topbar', 'navbar', 'footer'], true) ? $_GET['tab'] : 'topbar';
+$tab = in_array($_GET['tab'] ?? '', ['topbar', 'navbar', 'footer', 'media'], true) ? $_GET['tab'] : 'topbar';
 
 $errors = [];
 $notice = null;
@@ -277,6 +277,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 admin_audit((int) $admin['id'], 'delete', 'offices', $id, $target['city']);
                 $notice = "Deleted the {$target['city']} office.";
             }
+
+        // ---------------------------------------------------------------
+        // Media: hero background videos (About / Services page heroes,
+        // shared across every country -- there is only one file per slot).
+        // A slot left empty in the form just keeps whatever is already set.
+        // ---------------------------------------------------------------
+        } elseif ($action === 'save_hero_videos') {
+            $videoSlots = [
+                'hero_video_about'    => 'video/1.mp4',
+                'hero_video_services' => 'video/2.mp4',
+                'hero_video_partners' => 'video/3.mp4',
+            ];
+            $toSave = [];
+            foreach ($videoSlots as $key => $default) {
+                [$uploadedPath, $uploadError] = admin_store_upload(
+                    $_FILES[$key] ?? [],
+                    'video',
+                    ['mp4', 'webm'],
+                    'video/',
+                    40 * 1024 * 1024
+                );
+                if ($uploadError !== null) {
+                    $errors[] = $uploadError;
+                } elseif ($uploadedPath !== null) {
+                    $toSave[$key] = $uploadedPath;
+                }
+            }
+
+            if (!$errors && $toSave) {
+                save_site_settings($toSave);
+                admin_audit((int) $admin['id'], 'update', 'site_settings', null, 'hero videos: ' . implode(', ', array_keys($toSave)));
+                $notice = 'Hero video(s) saved.';
+            } elseif (!$errors) {
+                $notice = 'No file chosen -- nothing changed.';
+            }
         }
     }
 }
@@ -326,6 +361,12 @@ $offices = db_all(
 $editingOffice = isset($_GET['edit_office']) ? db_one('SELECT * FROM offices WHERE id = ?', [(int) $_GET['edit_office']]) : null;
 $allCountries  = get_countries();
 
+$heroVideos = [
+    'hero_video_about'    => (string) setting('hero_video_about', 'video/1.mp4'),
+    'hero_video_services' => (string) setting('hero_video_services', 'video/2.mp4'),
+    'hero_video_partners' => (string) setting('hero_video_partners', 'video/3.mp4'),
+];
+
 $pageTitle = 'Settings';
 require __DIR__ . '/includes/layout-header.php';
 $activeNav = 'settings';
@@ -355,6 +396,7 @@ $activeNav = 'settings';
         <a href="<?= esc(admin_url('settings.php?tab=topbar')) ?>" class="cd-admin-tab<?= $tab === 'topbar' ? ' is-active' : '' ?>">Topbar</a>
         <a href="<?= esc(admin_url('settings.php?tab=navbar')) ?>" class="cd-admin-tab<?= $tab === 'navbar' ? ' is-active' : '' ?>">Navbar Menu</a>
         <a href="<?= esc(admin_url('settings.php?tab=footer')) ?>" class="cd-admin-tab<?= $tab === 'footer' ? ' is-active' : '' ?>">Footer</a>
+        <a href="<?= esc(admin_url('settings.php?tab=media')) ?>" class="cd-admin-tab<?= $tab === 'media' ? ' is-active' : '' ?>">Media</a>
     </div>
 
 <?php if ($tab === 'topbar'): ?>
@@ -629,7 +671,7 @@ $activeNav = 'settings';
         </div>
     </section>
 
-<?php else: /* footer */ ?>
+<?php elseif ($tab === 'footer'): ?>
 
     <section class="cd-admin-panel">
         <h2>Identity &amp; contact</h2>
@@ -805,6 +847,43 @@ $activeNav = 'settings';
                 </tbody>
             </table>
         </div>
+    </section>
+
+<?php elseif ($tab === 'media'): ?>
+
+    <section class="cd-admin-panel">
+        <h2>Hero background videos</h2>
+        <p class="cd-admin-lede">The looping background video behind the About, Services and Partners page
+           heroes. One file per slot, shared by every country -- there's no per-country override.</p>
+<?php if ($canEdit): ?>
+        <form method="post" class="cd-admin-form" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?= esc(csrf_token()) ?>">
+            <input type="hidden" name="action" value="save_hero_videos">
+
+            <div class="cd-admin-form-row">
+                <div>
+                    <label for="hero_video_about">About page hero</label>
+                    <video src="<?= esc(asset($heroVideos['hero_video_about'])) ?>" muted loop playsinline style="max-width:280px; border-radius:8px; display:block; margin-bottom:8px;"></video>
+                    <input type="file" id="hero_video_about" name="hero_video_about" accept="video/mp4,video/webm">
+                </div>
+                <div>
+                    <label for="hero_video_services">Services page hero</label>
+                    <video src="<?= esc(asset($heroVideos['hero_video_services'])) ?>" muted loop playsinline style="max-width:280px; border-radius:8px; display:block; margin-bottom:8px;"></video>
+                    <input type="file" id="hero_video_services" name="hero_video_services" accept="video/mp4,video/webm">
+                </div>
+                <div>
+                    <label for="hero_video_partners">Partners page hero</label>
+                    <video src="<?= esc(asset($heroVideos['hero_video_partners'])) ?>" muted loop playsinline style="max-width:280px; border-radius:8px; display:block; margin-bottom:8px;"></video>
+                    <input type="file" id="hero_video_partners" name="hero_video_partners" accept="video/mp4,video/webm">
+                </div>
+            </div>
+            <span class="cd-admin-hint">MP4 or WEBM, up to 40&nbsp;MB. Leave a slot empty to keep its current video.</span>
+
+            <div class="cd-admin-form-actions">
+                <button type="submit" class="cd-admin-btn">Save videos</button>
+            </div>
+        </form>
+<?php endif; ?>
     </section>
 
 <?php endif; ?>
