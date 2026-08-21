@@ -137,9 +137,10 @@ $formId       = $isHero ? 'hero' : ($isRfq ? 'rfq' : 'main');
             <select id="service-<?= $formId ?>" name="service_interest">
                 <option value="">Select an option</option>
 <?php foreach ($lead_options as $opt): ?>
-                <option value="<?= esc($opt['title']) ?>"
-                    <?= (($_POST['service_interest'] ?? '') === $opt['title']) ? 'selected' : '' ?>>
-                    <?= esc($opt['title']) ?>
+<?php $optLabel = $opt['display_title'] ?? $opt['title']; ?>
+                <option value="<?= esc($optLabel) ?>"
+                    <?= (($_POST['service_interest'] ?? '') === $optLabel) ? 'selected' : '' ?>>
+                    <?= esc($optLabel) ?>
                 </option>
 <?php endforeach; ?>
             </select>

@@ -287,6 +287,7 @@ function whatsapp_url(): string
 const COUNTRY_COMPLIANCE_NOTES = [
     'sg' => "Handled in line with Singapore's PDPA.",
     'ae' => 'Built for FTA VAT and e-invoicing compliance.',
+    'us' => 'Invoices itemize state and local sales tax by line.',
 ];
 
 function compliance_note_for_country(string $country_code): ?string
