@@ -33,6 +33,7 @@ foreach (get_countries() as $country) {
         'about'        => 'about',
         'services'     => 'services',
         'products'     => 'products',
+        'partners'     => 'partners',
         'blog'         => 'blog',
         'case-studies' => 'case-studies',
     ];
